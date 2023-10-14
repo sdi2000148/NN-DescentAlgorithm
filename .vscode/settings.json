@@ -2,6 +2,7 @@
     "files.associations": {
         "object.h": "c",
         "priorityqueue.h": "c",
-        "dataset.h": "c"
+        "dataset.h": "c",
+        "BRUTAL.C": "cpp"
     }
 }

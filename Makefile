@@ -3,9 +3,10 @@ CFLAGS = -Wall -Wextra -pthread
 SRC_DIR = .
 DATASET_DIR = Dataset
 HEAP_DIR = Heap
+ALGORITHMS_DIR = Algorithms
 INCLUDE_DIR = Include
 
-SRCS = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(DATASET_DIR)/*.c) $(wildcard $(HEAP_DIR)/*.c)
+SRCS = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(DATASET_DIR)/*.c) $(wildcard $(HEAP_DIR)/*.c) $(wildcard $(ALGORITHMS_DIR)/*.c)
 OBJS = $(SRCS:.c=.o)
 DEPS = $(wildcard $(INCLUDE_DIR)/*.h)
 

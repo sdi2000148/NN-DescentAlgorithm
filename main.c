@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "dataset.h"
 #include "math.h"
+#include "brutal.h"
 
 double l2(int *x, int *y, int d) {
     double result = 0.0, value;
@@ -16,9 +16,12 @@ double l2(int *x, int *y, int d) {
 
 int main(void) {
     Dataset dataset = dataset_create(2, 5);
-    nng_initialization(dataset, 3, l2);
+    brute_force(dataset, 3, l2);
+    //nng_initialization(dataset, 3, l2);
     dataset_print(dataset);
     dataset_free(dataset);
+
+    
 
     return 0;
 }

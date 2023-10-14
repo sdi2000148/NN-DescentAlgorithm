@@ -4,20 +4,10 @@
 #include "PriorityQueue.h"
 #include <time.h>
 
-struct object {
-    int *features;
-    PriorityQueue priorityQueue;
-};
-
-struct dataset {
-    int dimensions;
-    int numberOfObjects;
-    Object *objects;
-};
-
 
 Dataset dataset_create(int dimensions, int numberOfObjects) {
-    Dataset dataset = malloc(sizeof(struct dataset));
+    Object object;
+    Dataset dataset = malloc(sizeof(*dataset));
 
     dataset->objects = malloc(numberOfObjects*sizeof(Object));
     dataset->dimensions = dimensions;
@@ -26,12 +16,14 @@ Dataset dataset_create(int dimensions, int numberOfObjects) {
     srand(5);
 
     for(int i = 0; i < numberOfObjects; i++) {
-        dataset->objects[i] = malloc(sizeof(struct object));
-        dataset->objects[i]->features = malloc(dimensions*sizeof(int));
+        object = malloc(sizeof(*object));
+
+        object->features = malloc(dimensions*sizeof(int));
 
         for(int j = 0; j < dimensions; j++) {
-            dataset->objects[i]->features[j] = rand()%1000+1;
+            object->features[j] = rand()%1000+1;
         }
+        dataset->objects[i] = object;
     }
 
     return dataset;
