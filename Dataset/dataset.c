@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dataset.h"
-#include "PriorityQueue.h"
+#include "heap.h"
 #include <time.h>
 
 
@@ -34,7 +34,7 @@ void nng_initialization(Dataset dataset, int k, Metric metric) {
     samples = malloc(dataset->numberOfObjects*sizeof(int));
 
     for (int i = 0; i < dataset->numberOfObjects; i++) {
-        Initialize(&dataset->objects[i]->priorityQueue, k);
+        heap_initialize(&dataset->objects[i]->heap, k);
 
         for(int j = 0; j < dataset->numberOfObjects; j++) {
             samples[j] = 0;
@@ -51,7 +51,7 @@ void nng_initialization(Dataset dataset, int k, Metric metric) {
                 }
             } while(!unique);
 
-            Insert(dataset->objects[i]->priorityQueue, index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions));
+            heap_update(dataset->objects[i]->heap, index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions));
         }
     }
 
@@ -62,7 +62,7 @@ void nng_initialization(Dataset dataset, int k, Metric metric) {
 
 void dataset_print(Dataset dataset) {
     for (int i=0 ; i < dataset->numberOfObjects ; i++){
-        Print_PQ(dataset->objects[i]->priorityQueue); 
+        heap_print(dataset->objects[i]->heap); 
     }
     for (int i=0 ; i < dataset->numberOfObjects ; i++){
         printf("%d: [ ", i);
@@ -76,7 +76,7 @@ void dataset_print(Dataset dataset) {
 
 void dataset_free(Dataset dataset) {
     for(int i = 0; i < dataset->numberOfObjects; i++) {
-        Free(dataset->objects[i]->priorityQueue);
+        heap_free(dataset->objects[i]->heap);
         free(dataset->objects[i]->features);
         free(dataset->objects[i]);
     }

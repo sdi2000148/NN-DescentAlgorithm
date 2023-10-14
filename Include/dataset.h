@@ -1,9 +1,9 @@
 #pragma once
-#include "PriorityQueue.h"
+#include "heap.h"
 
 struct object {
     int *features;
-    PriorityQueue priorityQueue;
+    Heap heap;
 };
 
 
