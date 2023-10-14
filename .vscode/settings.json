@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "object.h": "c",
+        "priorityqueue.h": "c",
+        "dataset.h": "c"
+    }
+}
