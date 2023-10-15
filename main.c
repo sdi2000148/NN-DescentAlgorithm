@@ -8,7 +8,7 @@
 
 
 int main(void) {
-    int D = 2, N = 5000, k = 2; 
+    int D = 2, N = 10, k = 4; 
 
     Dataset dataset = dataset_create(D, N);
 
@@ -35,6 +35,15 @@ int main(void) {
 
     double rec = recall(actual, predicted_1, N, k);
     printf("recall: %f\n",rec*100) ;
+
+    /*for (int i=0 ; i<N ; i++){
+        int *actual_indexes = heap_getIndexes(actual[i]);
+        for (int j=0 ; j<k ; j++){
+            printf("%d  ",actual_indexes[j]);
+        }
+        printf("\n"); 
+        free(actual_indexes) ;
+    }*/
 
     dataset_free(dataset);
     heap_free_all(actual, N);

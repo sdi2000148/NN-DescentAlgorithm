@@ -155,6 +155,52 @@ void heap_free_all(Heap *heaps, int n)
 }
 
 
+void swap(int *a , int *b)
+{
+    int help = *a ;
+    *a = *b ;
+    *b = help ;
+    return ; 
+}
+
+
+void quick_sort_body(int *array , int up , int down)
+{
+    int start , end; ;
+    start= up ;
+    end= down ;
+    while (up<down){
+        while (array[down]>=array[up] && up<down){
+            down-- ;
+        }
+        if (up!=down){
+            swap(&array[up],&array[down]) ;
+            up++ ;
+        }
+        while (array[up]<=array[down] && up<down){
+            up++ ;
+        }
+        if (up!=down){
+            swap(&array[up],&array[down]) ;
+            down-- ;
+        }
+    }
+    if (start<up-1){
+        quick_sort_body(array,start,up-1) ;
+    }
+    if (end>down+1){
+        quick_sort_body(array,down+1,end) ;
+    }
+    return ;
+}
+
+void quick_sort(int size , int *array)
+{
+    quick_sort_body(array,0,size-1) ;
+    return ;
+}
+
+
 int *heap_getIndexes(Heap hp)
 {
 	int *indexes = malloc(hp->count * (sizeof(int))) ;
@@ -162,7 +208,7 @@ int *heap_getIndexes(Heap hp)
 	for (int i=1 ; i<=hp->count ; i++){
 		indexes[i-1] = hp->array[i].index ;
 	}
-
+	quick_sort(hp->count, indexes) ;
 	return indexes;
 }
 
