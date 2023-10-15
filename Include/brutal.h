@@ -1,3 +1,3 @@
 #include "dataset.h"
 
-int brute_force(Dataset dataset, int k, Metric metric);
+Heap* brute_force(Dataset dataset, int k, Metric metric);

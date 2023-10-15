@@ -89,8 +89,10 @@ int heap_replace(Heap hp, int index, double value)
 	current = 1 ;
 	child = current*2 ;
 	while (child <= hp->count){
-		if (hp->array[child+1].value > hp->array[child].value){
-			child++ ;
+		if (child < hp->count){
+			if (hp->array[child+1].value > hp->array[child].value){
+				child++ ;
+			}
 		}
 		if (value >= hp->array[child].value){
 			hp->array[current].index = index ;
@@ -141,6 +143,32 @@ void heap_free(Heap hp)
 {
 	free(hp->array) ;
 	free(hp) ;
+}
+
+
+void heap_free_all(Heap *heaps, int n)
+{
+	for (int i=0 ; i<n ; i++){
+		heap_free(heaps[i]) ;
+	}
+	free(heaps);
+}
+
+
+int *heap_getIndexes(Heap hp)
+{
+	int *indexes = malloc(hp->count * (sizeof(int))) ;
+	
+	for (int i=1 ; i<=hp->count ; i++){
+		indexes[i-1] = hp->array[i].index ;
+	}
+
+	return indexes;
+}
+
+int heap_getCapacity(Heap hp)
+{
+	return hp->capacity ;
 }
 
 

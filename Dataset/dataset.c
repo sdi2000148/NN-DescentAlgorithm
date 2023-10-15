@@ -13,7 +13,7 @@ Dataset dataset_create(int dimensions, int numberOfObjects) {
     dataset->dimensions = dimensions;
     dataset->numberOfObjects = numberOfObjects;
 
-    srand(5);
+    srand(time(NULL));
 
     for(int i = 0; i < numberOfObjects; i++) {
         object = malloc(sizeof(*object));
@@ -29,12 +29,18 @@ Dataset dataset_create(int dimensions, int numberOfObjects) {
     return dataset;
 }
 
-void nng_initialization(Dataset dataset, int k, Metric metric) {
+Heap* nng_initialization(Dataset dataset, int k, Metric metric) {
     int index, *samples, unique;
+    Heap *heaps = malloc(dataset->numberOfObjects * (sizeof(Heap)));
     samples = malloc(dataset->numberOfObjects*sizeof(int));
 
+    if (dataset->numberOfObjects < k) {
+        printf("K is bigger than the given objects!\n");
+        return NULL;
+    }
+    
     for (int i = 0; i < dataset->numberOfObjects; i++) {
-        heap_initialize(&dataset->objects[i]->heap, k);
+        heap_initialize(&heaps[i], k);
 
         for(int j = 0; j < dataset->numberOfObjects; j++) {
             samples[j] = 0;
@@ -51,19 +57,18 @@ void nng_initialization(Dataset dataset, int k, Metric metric) {
                 }
             } while(!unique);
 
-            heap_update(dataset->objects[i]->heap, index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions));
+            heap_update(heaps[i], index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions));
         }
     }
 
     free(samples);
+
+    return heaps;
 }
 
 
 
 void dataset_print(Dataset dataset) {
-    for (int i=0 ; i < dataset->numberOfObjects ; i++){
-        heap_print(dataset->objects[i]->heap); 
-    }
     for (int i=0 ; i < dataset->numberOfObjects ; i++){
         printf("%d: [ ", i);
         for(int j = 0; j < dataset->dimensions; j++) {
@@ -76,7 +81,6 @@ void dataset_print(Dataset dataset) {
 
 void dataset_free(Dataset dataset) {
     for(int i = 0; i < dataset->numberOfObjects; i++) {
-        heap_free(dataset->objects[i]->heap);
         free(dataset->objects[i]->features);
         free(dataset->objects[i]);
     }

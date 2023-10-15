@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include "brutal.h"
 #include "heap.h"
+#include <stdlib.h>
 
 
-int brute_force(Dataset dataset, int k, Metric metric)
+Heap* brute_force(Dataset dataset, int k, Metric metric)
 {
+    Heap *heaps = malloc(dataset->numberOfObjects * (sizeof(Heap)));
     for (int i=0 ; i < dataset->numberOfObjects ; i++){       
-        heap_initialize(&dataset->objects[i]->heap, k);
+        heap_initialize(&heaps[i], k);
         for (int j=0 ; j < dataset->numberOfObjects ; j++){
             if (j == i) continue;
-            heap_update(dataset->objects[i]->heap, j, metric(dataset->objects[i]->features, dataset->objects[j]->features, dataset->dimensions));
+            heap_update(heaps[i], j, metric(dataset->objects[i]->features, dataset->objects[j]->features, dataset->dimensions));
         }
     }
-    return 0;
+    return heaps; 
 }
