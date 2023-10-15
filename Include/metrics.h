@@ -1,0 +1,1 @@
+double l2(int *x, int *y, int d);

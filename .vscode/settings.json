@@ -3,6 +3,8 @@
         "object.h": "c",
         "priorityqueue.h": "c",
         "dataset.h": "c",
-        "BRUTAL.C": "cpp"
+        "BRUTAL.C": "cpp",
+        "nng_initialization.h": "c",
+        "math.h": "c"
     }
 }
