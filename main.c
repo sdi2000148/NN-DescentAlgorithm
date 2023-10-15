@@ -4,26 +4,40 @@
 #include "brutal.h"
 #include "recall.h"
 #include "heap.h"
+#include "list.h"
+#include "reverse.h"
 #include "nng_initialization.h"
+#include "nn_descent.h"
 
 
 int main(void) {
-    int D = 2, N = 10, k = 4; 
+    int D = 2, N = 5, k = 2; 
+    //Stack *stack;
 
     Dataset dataset = dataset_create(D, N);
 
-
     Heap *actual = brute_force(dataset, k, l2);   // brute force
-    Heap *predicted_1 =  nng_initialization_random(dataset, k, l2);                   // nn descent
+    Heap *predicted_1 = nn_descent(dataset, k, l2);
+    //Heap *predicted_2 =  nng_initialization_random(dataset, k, l2);                   // nn descent
 
     if (predicted_1 == NULL){
-        exit(EXIT_FAILURE);
+       exit(EXIT_FAILURE);
     }
 
+
+    /*for(int i = 0; i < N; i++) {
+        printf("reverse of object %d:  ", i);
+        while(!stack_empty(stack[i])) {
+            printf("%d  " , stack_pop(stack[i]));
+        }
+        printf("\n");
+    }*/
+
     //dataset_print(dataset);
-    printf("\n") ;
-    /*for (int i=0 ; i<dataset->numberOfObjects ; i++){
-        heap_print(actual[i]);
+   /* printf("\n") ;
+    for (int i=0 ; i<dataset->numberOfObjects ; i++){
+        printf("object %d: ", i) ; 
+        heap_print(predicted_1[i]);
     }*/
 
   //  for (int i=0 ; i<N ; i++){
@@ -49,7 +63,10 @@ int main(void) {
     heap_free_all(actual, N);
     heap_free_all(predicted_1, N);
 
-    
+    //for(int i = 0; i < N; i++) {
+   //     stack_free(stack[i]);
+   // }
+   // free(stack);
 
     return 0;
 }

@@ -40,3 +40,6 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
 
     return heaps;
 }
+
+
+
