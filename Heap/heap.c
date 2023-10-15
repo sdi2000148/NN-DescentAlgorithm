@@ -82,7 +82,7 @@ int heap_replace(Heap hp, int index, double value)
 {
 	int current, child ;
 
-	if (hp->array[1].value < value){
+	if ((hp->array[1].value < value) || (hp->array[1].value == value  && hp->array[1].index == index)){
 		return 1 ;
 	}
 
@@ -94,16 +94,19 @@ int heap_replace(Heap hp, int index, double value)
 				child++ ;
 			}
 		}
-		if (value >= hp->array[child].value){
+		if (value >= hp->array[child].value && index != hp->array[child].index){
 			hp->array[current].index = index ;
 			hp->array[current].value = value ;
 			return 0 ;
 		}
-		else{
+		else if (value < hp->array[child].value){
 			hp->array[current].index = hp->array[child].index ;
 			hp->array[current].value = hp->array[child].value ;
 			current = child ;
 			child = child*2 ;
+		}
+		else{
+			return 1;
 		}
 	}
 	hp->array[current].index = index ;

@@ -13,7 +13,7 @@ Dataset dataset_create(int dimensions, int numberOfObjects) {
     dataset->dimensions = dimensions;
     dataset->numberOfObjects = numberOfObjects;
 
-    srand(time(NULL));
+    srand(1);
 
     for(int i = 0; i < numberOfObjects; i++) {
         object = malloc(sizeof(*object));

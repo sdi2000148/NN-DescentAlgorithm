@@ -11,18 +11,18 @@
 
 
 int main(void) {
-    int D = 2, N = 5, k = 2; 
+    int D = 2, N = 1000, k = 20; 
     //Stack *stack;
 
     Dataset dataset = dataset_create(D, N);
 
     Heap *actual = brute_force(dataset, k, l2);   // brute force
     Heap *predicted_1 = nn_descent(dataset, k, l2);
-    //Heap *predicted_2 =  nng_initialization_random(dataset, k, l2);                   // nn descent
+    Heap *predicted_2 =  nng_initialization_random(dataset, k, l2);                   // nn descent
 
-    if (predicted_1 == NULL){
-       exit(EXIT_FAILURE);
-    }
+    //if (predicted_1 == NULL){
+    //   exit(EXIT_FAILURE);
+    //}
 
 
     /*for(int i = 0; i < N; i++) {
@@ -40,15 +40,18 @@ int main(void) {
         heap_print(predicted_1[i]);
     }*/
 
-  //  for (int i=0 ; i<N ; i++){
-      //  heap_print(actual[i]);
-       // heap_print(predicted_1[i]);
-       // printf("\n");
-   // }
+    //for (int i=0 ; i<N ; i++){
+    //    heap_print(actual[i]);
+        //heap_print(predicted_1[i]);
+        //printf("\n");
+   //}
 
 
     double rec = recall(actual, predicted_1, N, k);
-    printf("recall: %f\n",rec*100) ;
+    printf("recall nn_descent: %f\n",rec*100) ;
+
+    rec = recall(actual, predicted_2, N, k);
+    printf("recall nn_initialization: %f\n",rec*100) ;
 
     /*for (int i=0 ; i<N ; i++){
         int *actual_indexes = heap_getIndexes(actual[i]);

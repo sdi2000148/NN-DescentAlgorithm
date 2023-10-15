@@ -1,23 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "list.h"
 
-typedef struct listnode* Node ;
-
-struct listnode{
-	int data ;
-	Node next ;
-};
-
-typedef struct stack* Stack ;
-
-struct stack{
-	Node head ;
-};
 
 void stack_initialize(Stack *s)
 {
 	(*s) = malloc(sizeof(struct stack)) ;
 	(*s)->head = NULL ;
+	(*s)->count = 0 ;
 	return ;
 }
 
@@ -37,6 +27,7 @@ void stack_push(Stack s , int data)
 	newnode->data = data ;
 	newnode->next = s->head ;
 	s->head = newnode ;
+	s->count++ ;
 }
 
 int stack_pop(Stack s)
@@ -50,6 +41,7 @@ int stack_pop(Stack s)
 	temp = s->head ;
 	data = s->head->data ;
 	s->head = s->head->next ;
+	s->count--;
 	free(temp) ;
 	return data ;
 }
@@ -67,6 +59,26 @@ void stack_free(Stack stack)
 	return ;
 }
 
+
+int *stack_array(Stack stack)
+{
+	int *array = malloc(stack->count * sizeof(int)) ;
+	Node temp = stack->head ; 
+	int i = 0 ;
+	while (temp != NULL){
+		array[i] = temp->data ;
+		i++;
+		temp = temp->next;
+	}
+
+	return array;
+}
+
+
+int stack_count(Stack stack)
+{
+	return stack->count ;
+}
 
 
 
