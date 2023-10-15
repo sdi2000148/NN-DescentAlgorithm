@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "heap.h"
+#include <math.h>
 
 
 struct item{
@@ -15,6 +16,16 @@ struct heap{
 	struct item *array ;
 };
 
+
+int equal(double a, double b)
+{
+	if (fabs(a-b) < 1.0e-8){
+		return 1 ;
+	}
+	else{
+		return 0 ;
+	}
+}
 
 
 void heap_initialize(Heap *hp, int k)
@@ -82,7 +93,7 @@ int heap_replace(Heap hp, int index, double value)
 {
 	int current, child ;
 
-	if ((hp->array[1].value < value) || (hp->array[1].value == value  && hp->array[1].index == index)){
+	if (hp->array[1].value < value || equal(value, hp->array[1].value) == 1){
 		return 1 ;
 	}
 
@@ -94,7 +105,7 @@ int heap_replace(Heap hp, int index, double value)
 				child++ ;
 			}
 		}
-		if (value >= hp->array[child].value && index != hp->array[child].index){
+		if (value > hp->array[child].value || equal(value, hp->array[child].value) == 1){
 			hp->array[current].index = index ;
 			hp->array[current].value = value ;
 			return 0 ;
@@ -104,9 +115,6 @@ int heap_replace(Heap hp, int index, double value)
 			hp->array[current].value = hp->array[child].value ;
 			current = child ;
 			child = child*2 ;
-		}
-		else{
-			return 1;
 		}
 	}
 	hp->array[current].index = index ;
@@ -118,6 +126,12 @@ int heap_replace(Heap hp, int index, double value)
 // return return 1 on change, or 0 otherwise
 int heap_update(Heap hp, int index, double value)
 {
+	for (int i=1 ; i <= hp->count ; i++){
+		if (equal(value, hp->array[i].value) == 1 && index == hp->array[i].index){
+			return 0 ;
+		}
+	}
+
 	if (heap_insert(hp, index, value) == 0){
 		return 1 ;
 	}
@@ -214,6 +228,7 @@ int *heap_getIndexes(Heap hp)
 	quick_sort(hp->count, indexes) ;
 	return indexes;
 }
+
 
 int heap_getCapacity(Heap hp)
 {
