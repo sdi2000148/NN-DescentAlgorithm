@@ -8,13 +8,13 @@ double recall(Heap *actual, Heap *predicted, int N, int k)
     int *pred, *act ;
 
     for (int i=0 ; i<N ; i++){
-        pred = heap_getIndexes(predicted[i]);
         act = heap_getIndexes(actual[i]);
-        for (int i=0 ; i<k ; i++){
+        pred = heap_getIndexes(predicted[i]);
+        for (int l=0 ; l<k ; l++){
             for (int j=0 ; j<k; j++){
-                if (act[i] == pred[j]){
+                if (act[l] == pred[j]){
                     true_positive++;
-                    continue;
+                    break;
                 }
             }
         }
