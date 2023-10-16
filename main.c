@@ -11,24 +11,28 @@
 
 
 int main(void) {
-    int D = 2, N = 1000, k = 20; 
-    //Stack *stack;
+    int D = 2, N = 10000, k = 20; 
 
     Dataset dataset = dataset_create(D, N);
 
     Heap *actual = brute_force(dataset, k, l2);   // brute force
+    printf("brute end\n");
     Heap *predicted_1 = nn_descent(dataset, k, l2);
-    Heap *predicted_2 =  nng_initialization_random(dataset, k, l2);                   // nn descent
+    //Heap *predicted_2 =  nng_initialization_random(dataset, k, l2);                   // nn descent
 
     //if (predicted_1 == NULL){
     //   exit(EXIT_FAILURE);
     //}
 
+    //lists = reverse(actual, N);
 
     /*for(int i = 0; i < N; i++) {
-        printf("reverse of object %d:  ", i);
-        while(!stack_empty(stack[i])) {
-            printf("%d  " , stack_pop(stack[i]));
+        printf("reverse neighbours of object %d:  ", i);
+        listnode = list_head(lists[i]);
+
+        while(listnode != NULL) {
+            printf("%d ", listnode_data(listnode));
+            listnode = list_next(listnode);
         }
         printf("\n");
     }*/
@@ -40,18 +44,19 @@ int main(void) {
         heap_print(predicted_1[i]);
     }*/
 
-    //for (int i=0 ; i<N ; i++){
-    //    heap_print(actual[i]);
+    /*for (int i=0 ; i<N ; i++){
+        printf("object %d: ", i) ; 
+        //heap_print(actual[i]);
         //heap_print(predicted_1[i]);
         //printf("\n");
-   //}
+    }*/
 
 
     double rec = recall(actual, predicted_1, N, k);
     printf("recall nn_descent: %f\n",rec*100) ;
 
-    rec = recall(actual, predicted_2, N, k);
-    printf("recall nn_initialization: %f\n",rec*100) ;
+    /*rec = recall(actual, predicted_2, N, k);
+    printf("recall nn_initialization: %f\n",rec*100) ;*/
 
     /*for (int i=0 ; i<N ; i++){
         int *actual_indexes = heap_getIndexes(actual[i]);
@@ -65,11 +70,6 @@ int main(void) {
     dataset_free(dataset);
     heap_free_all(actual, N);
     heap_free_all(predicted_1, N);
-
-    //for(int i = 0; i < N; i++) {
-   //     stack_free(stack[i]);
-   // }
-   // free(stack);
 
     return 0;
 }

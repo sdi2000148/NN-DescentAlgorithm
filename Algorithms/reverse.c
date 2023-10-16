@@ -36,15 +36,15 @@ int seq_search(int value , int size , int *array)
 }
 
 
-Stack *reverse(Heap *heaps, int numberOfObjects) {
+List *reverse(Heap *heaps, int numberOfObjects) {
     int *indices;
     int *current_indices;
-    Stack *result;
+    List *result;
 
-    result = malloc(numberOfObjects * sizeof(Stack));
+    result = malloc(numberOfObjects * sizeof(List));
 
     for(int i = 0; i < numberOfObjects; i++) {
-        stack_initialize(&result[i]);
+        list_initialize(&result[i]);
         current_indices = heap_getIndexes(heaps[i]);
         for(int j = 0; j < numberOfObjects; j++) {
             if(i == j) continue;
@@ -52,7 +52,7 @@ Stack *reverse(Heap *heaps, int numberOfObjects) {
 
             if(binary_search(i, heap_getCapacity(heaps[j]), indices) == 1) {
                 if (binary_search(j, heap_getCapacity(heaps[j]), current_indices) == 0){
-                    stack_push(result[i], j);
+                    list_insert(result[i], j);
                 }
             }  
 

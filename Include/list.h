@@ -1,25 +1,25 @@
+
 #pragma once
 
-typedef struct stack* Stack ;
+typedef struct list *List;
 
-typedef struct listnode* Node ;
+typedef struct listnode *Listnode;
 
-struct listnode{
-	int data ;
-	Node next ;
+struct listnode {
+    int data;
+    Listnode next;
 };
 
-typedef struct stack* Stack ;
 
-struct stack{
-	Node head ;
-    int count ;
+struct list {
+    Listnode head;
 };
 
-void stack_initialize(Stack *) ;
-int stack_empty(Stack) ;
-void stack_push(Stack , int) ;
-int stack_pop(Stack) ;
-void stack_free(Stack);
-int *stack_array(Stack);
-int stack_count(Stack);
+
+void list_initialize(List *list);
+Listnode list_head(List list);
+Listnode list_next(Listnode Listnode);
+int listnode_data(Listnode listnode);
+void list_insert(List list, int data);
+void list_free(List list);
+

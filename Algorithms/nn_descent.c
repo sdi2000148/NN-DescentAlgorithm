@@ -78,17 +78,19 @@
 
 
 Heap * nn_descent(Dataset dataset, int k, Metric metric) {
-    Stack *R;
-    int *B, c, *neighbours, *n_neighbours;
+    List *R;
+    int *B, c, index;
+    Listnode neighbour, n_neighbour;
     
     Heap *heap = nng_initialization_random(dataset, k, metric);
 
     do {
         R = reverse(heap, dataset->numberOfObjects);
+        //printf("reverse end\n");
         for (int i = 0; i < dataset->numberOfObjects; i++) {
             B = heap_getIndexes(heap[i]);
             for (int j = 0; j < k; j++){
-                stack_push(R[i], B[j]); 
+                list_insert(R[i], B[j]); 
             }
             free(B);
         }
@@ -96,24 +98,27 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
         c = 0;
 
         for(int i = 0; i < dataset->numberOfObjects; i++) {
-
-            neighbours = stack_array(R[i]);
-
-            for (int j = 0; j < stack_count(R[i]); j++) {
-                n_neighbours = stack_array(R[neighbours[j]]);
-                for (int l = 0; l < stack_count(R[n_neighbours[j]]); i++) {
-                    if(n_neighbours[l] == i) continue;
-                    c += heap_update(heap[i], n_neighbours[l], metric(dataset->objects[i]->features, dataset->objects[n_neighbours[l]]->features, dataset->dimensions));
+            neighbour = list_head(R[i]);
+            while(neighbour != NULL) {
+                n_neighbour = list_head(R[listnode_data(neighbour)]);
+                while(n_neighbour != NULL) {
+                    index = listnode_data(n_neighbour);
+                    //rintf("%d\n", index);
+                    if(index == i) {
+                        n_neighbour = list_next(n_neighbour);
+                        continue;
+                    }
+                    c += heap_update(heap[i], index, metric(dataset->objects[i]->features, dataset->objects[index]->features, dataset->dimensions));
+                    n_neighbour = list_next(n_neighbour);
                 }
-                free(n_neighbours); 
+                neighbour = list_next(neighbour);
             }
-            free(neighbours);
         }
         for (int i = 0; i < dataset->numberOfObjects; i++) {
-            stack_free(R[i]);
+            list_free(R[i]);
         }
         free(R);
-        printf("%d\n", c);
+        //printf("%d\n", c);
     } while(c);
     
     return heap;

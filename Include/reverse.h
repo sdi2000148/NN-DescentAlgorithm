@@ -2,4 +2,4 @@
 #include "heap.h"
 #include "list.h"
 
-Stack *reverse(Heap *heaps, int numberOfObjects);
+List *reverse(Heap *heaps, int numberOfObjects);
