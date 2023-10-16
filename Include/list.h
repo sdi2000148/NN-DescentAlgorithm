@@ -21,5 +21,6 @@ Listnode list_head(List list);
 Listnode list_next(Listnode Listnode);
 int listnode_data(Listnode listnode);
 void list_insert(List list, int data);
+int list_remove(List list, int item);
 void list_free(List list);
 

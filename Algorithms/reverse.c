@@ -62,9 +62,9 @@ List *reverse(Heap *heaps, int numberOfObjects) {
                 }
             }
 
-            free(indices);   
+            //free(indices);   
         }
-        free(current_indices);
+        //free(current_indices);
     }
     return result;
 }

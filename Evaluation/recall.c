@@ -18,8 +18,8 @@ double recall(Heap *actual, Heap *predicted, int N, int k)
                 }
             }
         }
-        free(pred);
-        free(act);
+        //free(pred);
+        //free(act);
     }
     //printf("%d\n", true_positive) ;
     return (double) (true_positive) / (double) (N * k) ;  
