@@ -118,7 +118,7 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
             list_free(R[i]);
         }
         free(R);
-        //printf("%d\n", c);
+        printf("%d\n", c);
     } while(c);
     
     return heap;

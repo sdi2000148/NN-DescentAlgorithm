@@ -8,16 +8,26 @@
 #include "reverse.h"
 #include "nng_initialization.h"
 #include "nn_descent.h"
+#include <time.h>
 
 
 int main(void) {
     int D = 2, N = 10000, k = 20; 
+    clock_t start_time, end_time;
 
     Dataset dataset = dataset_create(D, N);
 
+
+    start_time = clock();
     Heap *actual = brute_force(dataset, k, l2);   // brute force
-    printf("brute end\n");
+    end_time = clock();
+    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+    start_time = clock();
     Heap *predicted_1 = nn_descent(dataset, k, l2);
+    end_time = clock();
+    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    
     //Heap *predicted_2 =  nng_initialization_random(dataset, k, l2);                   // nn descent
 
     //if (predicted_1 == NULL){

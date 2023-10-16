@@ -225,7 +225,7 @@ int *heap_getIndexes(Heap hp)
 	for (int i=1 ; i<=hp->count ; i++){
 		indexes[i-1] = hp->array[i].index ;
 	}
-	quick_sort(hp->count, indexes) ;
+	// quick_sort(hp->count, indexes) ;
 	return indexes;
 }
 

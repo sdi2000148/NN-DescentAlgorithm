@@ -50,15 +50,17 @@ List *reverse(Heap *heaps, int numberOfObjects) {
             if(i == j) continue;
             indices = heap_getIndexes(heaps[j]);
 
-            if(binary_search(i, heap_getCapacity(heaps[j]), indices) == 1) {
+            /*if(binary_search(i, heap_getCapacity(heaps[j]), indices) == 1) {
                 if (binary_search(j, heap_getCapacity(heaps[j]), current_indices) == 0){
                     list_insert(result[i], j);
                 }
-            }  
+            } */
 
-          /* if (seq_search(i, heap_getCapacity(heaps[j]), indices) == 1){
-                stack_push(result[i], j );
-            }*/
+            if (seq_search(i, heap_getCapacity(heaps[j]), indices) == 1){
+                if (seq_search(j, heap_getCapacity(heaps[j]), current_indices) == 0){
+                    list_insert(result[i], j);
+                }
+            }
 
             free(indices);   
         }
