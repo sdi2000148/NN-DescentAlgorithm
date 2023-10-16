@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "nng_initialization.h"
 
-Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
+Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R) {
     int index, *samples, unique;
     Heap *heaps = malloc(dataset->numberOfObjects * (sizeof(Heap)));
     samples = malloc(dataset->numberOfObjects*sizeof(int));
@@ -13,6 +13,11 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
         printf("K is bigger than the given objects!\n");
         return NULL;
     }
+
+    for (int i = 0; i < dataset->numberOfObjects; i++) {
+        list_initialize(&R[i]);
+    }
+    
     
     for (int i = 0; i < dataset->numberOfObjects; i++) {
         heap_initialize(&heaps[i], k);
@@ -32,7 +37,7 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
                 }
             } while(!unique);
 
-            heap_update(heaps[i], index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions));
+            nn_heap_update(heaps[i], i, index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions), R);
         }
     }
 

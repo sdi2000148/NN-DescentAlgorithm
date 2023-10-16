@@ -8,14 +8,15 @@
 #include "nn_descent.h"
 
 Heap * nn_descent(Dataset dataset, int k, Metric metric) {
-    List *R;
+    List *R = malloc(dataset->numberOfObjects * sizeof(List));
+    List *U = malloc(dataset->numberOfObjects * sizeof(List));
     int *B, c, index;
-    Listnode neighbour, n_neighbour;
+    Listnode neighbour, n_neighbour, temp;
     
-    Heap *heap = nng_initialization_random(dataset, k, metric);
+    Heap *heap = nng_initialization_random(dataset, k, metric, R);
 
     do {
-        R = reverse(heap, dataset->numberOfObjects);
+        /*R = reverse(heap, dataset->numberOfObjects);
         //printf("reverse end\n");
         for (int i = 0; i < dataset->numberOfObjects; i++) {
             B = heap_getIndexes(heap[i]);
@@ -23,14 +24,28 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
                 list_insert(R[i], B[j]); 
             }
             //free(B);
+        }*/
+
+        for (int i = 0; i < dataset->numberOfObjects; i++) {
+            list_initialize(&U[i]);
+            B = heap_getIndexes(heap[i]);
+            for (int j = 0; j < k; j++){
+                list_insert(U[i], B[j]); 
+            }
+            temp = list_head(R[i]);
+            while (temp != NULL) {
+                list_insert(U[i], listnode_data(temp));
+                temp = list_next(temp);
+            }
+            
         }
 
         c = 0;
 
         for(int i = 0; i < dataset->numberOfObjects; i++) {
-            neighbour = list_head(R[i]);
+            neighbour = list_head(U[i]);
             while(neighbour != NULL) {
-                n_neighbour = list_head(R[listnode_data(neighbour)]);
+                n_neighbour = list_head(U[listnode_data(neighbour)]);
                 while(n_neighbour != NULL) {
                     index = listnode_data(n_neighbour);
                     //rintf("%d\n", index);
@@ -45,11 +60,17 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
             }
         }
         for (int i = 0; i < dataset->numberOfObjects; i++) {
-            list_free(R[i]);
+            list_free(U[i]);
         }
-        free(R);
+ 
         printf("%d\n", c);
     } while(c);
+
+    for (int i = 0; i < dataset->numberOfObjects; i++) {
+        list_free(R[i]);
+    }
+    free(R);
+    free(U);
     
     return heap;
 }

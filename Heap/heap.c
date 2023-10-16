@@ -224,6 +224,36 @@ int heap_update(Heap hp, int index, double value)
 }
 
 
+int nn_heap_update(Heap hp, int id, int index, double value, List *Reverse)
+{
+
+	int max = hp->array[1].index ; 
+
+	if (search_index(hp->indices, index, hp->capacity) == 1){
+		return 0 ;
+	}
+
+	if (heap_insert(hp, index, value) == 0){
+		insert_index(hp->indices, index, hp->capacity) ;
+        list_insert(Reverse[index], id);
+		return 1 ;
+	}
+	else if (heap_replace(hp, index, value) == 0){
+		update_index(hp->indices, index, max, hp->capacity) ;
+        if (list_remove(Reverse[max], id) == 0){
+            printf("Error!: not removed\n");
+            return 1 ;   // ??? 
+        }
+        list_insert(Reverse[index], id) ;
+		return 1 ;
+	}
+	else{
+		return 0 ;
+	}
+}
+
+
+
 void heap_print(Heap hp)
 {
 	for (int i=1 ; i<=(hp->count) ; i++){
