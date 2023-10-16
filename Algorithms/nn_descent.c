@@ -53,7 +53,7 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
                         n_neighbour = list_next(n_neighbour);
                         continue;
                     }
-                    c += heap_update(heap[i], index, metric(dataset->objects[i]->features, dataset->objects[index]->features, dataset->dimensions));
+                    c += nn_heap_update(heap[i], i, index, metric(dataset->objects[i]->features, dataset->objects[index]->features, dataset->dimensions), R);
                     n_neighbour = list_next(n_neighbour);
                 }
                 neighbour = list_next(neighbour);
