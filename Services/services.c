@@ -1,28 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "reverse.h"
+#include "services.h"
 #include "list.h"
-
-int binary_search(int value , int size , int *array)
-{
-    int start , end , medium ;
-    start= 0 ;
-    end= size - 1 ;
-    medium= (start+end)/2 ;
-    while (start<=end){
-        if (value<array[medium]){
-            end= medium - 1 ;
-        }
-        else if (value > array[medium]){
-            start= medium + 1 ;
-        }
-        else{
-            return 1 ;
-        }
-        medium= (start+end)/2 ;
-    }
-    return 0 ;
-}
 
 int seq_search(int value , int size , int *array)
 {
@@ -49,24 +28,42 @@ List *reverse(Heap *heaps, int numberOfObjects) {
         for(int j = 0; j < numberOfObjects; j++) {
             if(i == j) continue;
             indices = heap_getIndexes(heaps[j]);
-
-            /*if(binary_search(i, heap_getCapacity(heaps[j]), indices) == 1) {
-                if (binary_search(j, heap_getCapacity(heaps[j]), current_indices) == 0){
-                    list_insert(result[i], j);
-                }
-            } */
-
             if (seq_search(i, heap_getCapacity(heaps[j]), indices) == 1){
                 if (seq_search(j, heap_getCapacity(heaps[j]), current_indices) == 0){
                     list_insert(result[i], j);
                 }
             }
-
-            //free(indices);   
         }
-        //free(current_indices);
     }
     return result;
 }
 
+int nn_update(Heap *B, int v, int u, double l, List *R)
+{
+	int r; 
+	if (heap_update(B[v], u, l, &r) == 0){
+		return 0;
+	}
+	else{
+		if (r == -1){
+			if (heap_search(B[u], v) == 0){
+        		list_insert(R[u], v);
+			}
+		}
+		else{
+			list_remove(R[r], v);
+			if (heap_search(B[u], v) == 0){
+        		list_insert(R[u], v);
+			}
+		}
+		return 1;
+	}
+}
 
+void heap_free_all(Heap *heaps, int n)
+{
+	for (int i=0 ; i<n ; i++){
+		heap_free(heaps[i]) ;
+	}
+	free(heaps);
+}

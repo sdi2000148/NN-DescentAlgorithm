@@ -5,14 +5,14 @@
 #include "recall.h"
 #include "heap.h"
 #include "list.h"
-#include "reverse.h"
+#include "services.h"
 #include "nng_initialization.h"
 #include "nn_descent.h"
 #include <time.h>
 
 
 int main(void) {
-    int D = 2, N = 50000, k = 20; 
+    int D = 2, N = 10000, k = 20; 
     clock_t start_time, end_time;
 
     Dataset dataset = dataset_create(D, N);

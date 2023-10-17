@@ -3,7 +3,7 @@
 #include "heap.h"
 #include "list.h"
 #include "dataset.h"
-#include "reverse.h"
+#include "services.h"
 #include "nng_initialization.h"
 #include "nn_descent.h"
 
@@ -53,7 +53,7 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
                         n_neighbour = list_next(n_neighbour);
                         continue;
                     }
-                    c += nn_heap_update(heap[i], i, index, metric(dataset->objects[i]->features, dataset->objects[index]->features, dataset->dimensions), R);
+                    c += nn_update(heap, i, index, metric(dataset->objects[i]->features, dataset->objects[index]->features, dataset->dimensions), R);
                     n_neighbour = list_next(n_neighbour);
                 }
                 neighbour = list_next(neighbour);

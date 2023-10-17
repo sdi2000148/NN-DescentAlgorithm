@@ -195,16 +195,13 @@ int heap_replace(Heap hp, int index, double value)
 }
 
 
-// return return 1 on change, or 0 otherwise
-int heap_update(Heap hp, int index, double value)
+// return 1 on change, 0 otherwise
+// replaced == -1, when no replacement took place
+int heap_update(Heap hp, int index, double value, int *replaced)
 {
-	/*for (int i=1 ; i <= hp->count ; i++){
-		if (equal(value, hp->array[i].value) == 1 && index == hp->array[i].index){
-			return 0 ;
-		}
-	}*/
 
 	int max = hp->array[1].index ; 
+	*replaced = -1;
 
 	if (search_index(hp->indices, index, hp->capacity) == 1){
 		return 0 ;
@@ -216,35 +213,7 @@ int heap_update(Heap hp, int index, double value)
 	}
 	else if (heap_replace(hp, index, value) == 0){
 		update_index(hp->indices, index, max, hp->capacity) ;
-		return 1 ;
-	}
-	else{
-		return 0 ;
-	}
-}
-
-
-int nn_heap_update(Heap hp, int id, int index, double value, List *Reverse)
-{
-
-	int max = hp->array[1].index ; 
-
-	if (search_index(hp->indices, index, hp->capacity) == 1){
-		return 0 ;
-	}
-
-	if (heap_insert(hp, index, value) == 0){
-		insert_index(hp->indices, index, hp->capacity) ;
-        list_insert(Reverse[index], id);
-		return 1 ;
-	}
-	else if (heap_replace(hp, index, value) == 0){
-		update_index(hp->indices, index, max, hp->capacity) ;
-        if (list_remove(Reverse[max], id) == 0){
-            printf("Error!: not removed\n");
-            return 1 ;   // ??? 
-        }
-        list_insert(Reverse[index], id) ;
+		*replaced = max;
 		return 1 ;
 	}
 	else{
@@ -274,70 +243,9 @@ void heap_free(Heap hp)
 }
 
 
-void heap_free_all(Heap *heaps, int n)
-{
-	for (int i=0 ; i<n ; i++){
-		heap_free(heaps[i]) ;
-	}
-	free(heaps);
-}
-
-
-void swap(int *a , int *b)
-{
-    int help = *a ;
-    *a = *b ;
-    *b = help ;
-    return ; 
-}
-
-
-void quick_sort_body(int *array , int up , int down)
-{
-    int start , end; ;
-    start= up ;
-    end= down ;
-    while (up<down){
-        while (array[down]>=array[up] && up<down){
-            down-- ;
-        }
-        if (up!=down){
-            swap(&array[up],&array[down]) ;
-            up++ ;
-        }
-        while (array[up]<=array[down] && up<down){
-            up++ ;
-        }
-        if (up!=down){
-            swap(&array[up],&array[down]) ;
-            down-- ;
-        }
-    }
-    if (start<up-1){
-        quick_sort_body(array,start,up-1) ;
-    }
-    if (end>down+1){
-        quick_sort_body(array,down+1,end) ;
-    }
-    return ;
-}
-
-void quick_sort(int size , int *array)
-{
-    quick_sort_body(array,0,size-1) ;
-    return ;
-}
-
-
 int *heap_getIndexes(Heap hp)
 {
-	/*int *indexes = malloc(hp->count * (sizeof(int))) ;
-	
-	for (int i=1 ; i<=hp->count ; i++){
-		indexes[i-1] = hp->array[i].index ;
-	}*/
-	// quick_sort(hp->count, indexes) ;
-	//return indexes;
+
     return hp->indices ;
 }
 
@@ -347,6 +255,12 @@ int heap_getCapacity(Heap hp)
 	return hp->capacity ;
 }
 
+
+
+int heap_search(Heap hp, int index)
+{
+	return search_index(hp->indices, index, hp->capacity) ;
+}
 
 
 

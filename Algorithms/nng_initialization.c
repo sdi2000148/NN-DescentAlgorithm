@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "nng_initialization.h"
+#include "services.h"
 
 Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R) {
     int index, *samples, unique;
@@ -16,11 +17,11 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R)
 
     for (int i = 0; i < dataset->numberOfObjects; i++) {
         list_initialize(&R[i]);
+        heap_initialize(&heaps[i], k);
     }
     
     
     for (int i = 0; i < dataset->numberOfObjects; i++) {
-        heap_initialize(&heaps[i], k);
 
         for(int j = 0; j < dataset->numberOfObjects; j++) {
             samples[j] = 0;
@@ -37,7 +38,7 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R)
                 }
             } while(!unique);
 
-            nn_heap_update(heaps[i], i, index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions), R);
+            nn_update(heaps, i, index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions), R);
         }
     }
 

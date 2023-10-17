@@ -38,6 +38,8 @@ int list_remove(List list, int item) {
     Listnode temp = list_head(list);
     Listnode nodeToRemove;
 
+    if (temp == NULL) return 0;
+
     if(temp->data == item) {
         list->head = temp->next;
         free(temp);
