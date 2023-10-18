@@ -2,11 +2,14 @@ CC = gcc
 CFLAGS = -Wall -Wextra -pthread
 SRC_DIR = .
 INCLUDE_DIR = Include
+TESTS_DIR = Tests
 
-DIRS_TO_INCLUDE := $(filter-out $(INCLUDE_DIR), $(wildcard */))
+EXCLUDED_DIRS = $(INCLUDE_DIR) $(TESTS_DIR)
+
+DIRS_TO_INCLUDE := $(filter-out $(EXCLUDED_DIRS), $(wildcard */))
 
 SRCS = $(wildcard $(SRC_DIR)/*.c) $(foreach dir, $(DIRS_TO_INCLUDE), $(wildcard $(dir)*.c))
-OBJS = $(SRCS:.c=.o)
+OBJS = $(filter-out $(TESTS_DIR)/%.o, $(SRCS:.c=.o))
 DEPS = $(wildcard $(INCLUDE_DIR)/*.h)
 
 TARGET = main
