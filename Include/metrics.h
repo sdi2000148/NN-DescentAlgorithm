@@ -1,1 +1,3 @@
-double l2(int *x, int *y, int d);
+#include "common_types.h"
+
+double l2(Pointer *x, Pointer *y, int d);

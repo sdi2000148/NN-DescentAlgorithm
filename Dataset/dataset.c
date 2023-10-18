@@ -1,40 +1,73 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dataset.h"
-#include "heap.h"
-#include <time.h>
+
+struct object {
+    Pointer *array;
+};
 
 
-Dataset dataset_create(int dimensions, int numberOfObjects) {
-    Object object;
-    Dataset dataset = malloc(sizeof(*dataset));
+struct dataset {
+    int dimensions;
+    int numberOfObjects;
+    Object *objects;
+};
 
-    dataset->objects = malloc(numberOfObjects*sizeof(Object));
-    dataset->dimensions = dimensions;
-    dataset->numberOfObjects = numberOfObjects;
-
-    srand(1);
+void dataset_initialize(Dataset *dataset, int numberOfObjects, int dimensions) {
+    (*dataset) = malloc(sizeof(struct dataset));
+    (*dataset)->numberOfObjects = numberOfObjects;
+    (*dataset)->dimensions = dimensions;
+    (*dataset)->objects = malloc(numberOfObjects*sizeof(Object));
 
     for(int i = 0; i < numberOfObjects; i++) {
-        object = malloc(sizeof(*object));
+        (*dataset)->objects[i] = malloc(sizeof(struct object));
+        (*dataset)->objects[i]->array = malloc(dimensions*sizeof(Pointer)); // calloc maybe?
+    }
+}
 
-        object->features = malloc(dimensions*sizeof(int));
+int dataset_addFeature(Dataset dataset, int i, int dimension, Pointer feature) {
+    if(i > dataset->numberOfObjects || dimension > dataset->dimensions) {
+        return -1;
+    }
+    
+    dataset->objects[i]->array[dimension] = feature;
 
-        for(int j = 0; j < dimensions; j++) {
-            object->features[j] = rand()%1000+1;
-        }
-        dataset->objects[i] = object;
+    return 0;
+} 
+
+int dataset_getNumberOfObjects(Dataset dataset) {
+    return dataset->numberOfObjects;
+}
+
+int dataset_getDimensions(Dataset dataset) {
+    return dataset->dimensions;
+}
+
+Pointer dataset_getFeature(Dataset dataset, int i, int dimension) {
+    if(i > dataset->numberOfObjects || dimension > dataset->dimensions) {
+        return NULL;
+    }
+    return dataset->objects[i]->array[dimension];
+} 
+
+Pointer *dataset_getFeatures(Dataset dataset, int i) {
+    if(i > dataset->numberOfObjects) {
+        return NULL;
     }
 
-    return dataset;
+    return dataset->objects[i]->array;
+
 }
 
 
+// assume features are all integers!!!
 void dataset_print(Dataset dataset) {
+    int *feature;
     for (int i=0 ; i < dataset->numberOfObjects ; i++){
         printf("%d: [ ", i);
         for(int j = 0; j < dataset->dimensions; j++) {
-            printf("%d ", dataset->objects[i]->features[j]); 
+            feature = dataset_getFeature(dataset, i, j);
+            printf("%d ", *feature); 
         }
         printf("]\n");
     }
@@ -43,7 +76,7 @@ void dataset_print(Dataset dataset) {
 
 void dataset_free(Dataset dataset) {
     for(int i = 0; i < dataset->numberOfObjects; i++) {
-        free(dataset->objects[i]->features);
+        free(dataset->objects[i]->array);
         free(dataset->objects[i]);
     }
     free(dataset->objects);

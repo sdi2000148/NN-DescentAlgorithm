@@ -12,10 +12,29 @@
 
 
 int main(void) {
-    int D = 2, N = 50000, k = 20; 
+    int D = 2, N = 100, k = 20, *array, count = 0; 
     clock_t start_time, end_time;
 
-    Dataset dataset = dataset_create(D, N);
+    Dataset dataset;
+
+    array = malloc(N*D*sizeof(int));
+
+    srand(1);
+
+    for(int i = 0; i < N*D; i++) {
+        array[i] = rand()%1000+1;
+    }
+
+    dataset_initialize(&dataset, N, D);
+
+
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < D; j++) {
+            dataset_addFeature(dataset, i, j, &array[count]);
+            count++;
+        }
+    }
+
 
 
     start_time = clock();
@@ -80,6 +99,8 @@ int main(void) {
     dataset_free(dataset);
     heap_free_all(actual, N);
     heap_free_all(predicted_1, N);
+
+    free(array);
 
     return 0;
 }

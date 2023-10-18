@@ -5,25 +5,25 @@
 
 Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R) {
     int index, *samples, unique;
-    Heap *heaps = malloc(dataset->numberOfObjects * (sizeof(Heap)));
-    samples = malloc(dataset->numberOfObjects*sizeof(int));
+    Heap *heaps = malloc(dataset_getNumberOfObjects(dataset) * (sizeof(Heap)));
+    samples = malloc(dataset_getNumberOfObjects(dataset)*sizeof(int));
 
     // srand() ... 
 
-    if (dataset->numberOfObjects < k) {
+    if (dataset_getNumberOfObjects(dataset) < k) {
         printf("K is bigger than the given objects!\n");
         return NULL;
     }
 
-    for (int i = 0; i < dataset->numberOfObjects; i++) {
+    for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
         list_initialize(&R[i]);
         heap_initialize(&heaps[i], k);
     }
     
     
-    for (int i = 0; i < dataset->numberOfObjects; i++) {
+    for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
 
-        for(int j = 0; j < dataset->numberOfObjects; j++) {
+        for(int j = 0; j < dataset_getNumberOfObjects(dataset); j++) {
             samples[j] = 0;
         }
 
@@ -31,14 +31,14 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R)
         for(int j = 0; j < k; j++) {
             unique = 0;
             do {
-                index = rand() % dataset->numberOfObjects;
+                index = rand() % dataset_getNumberOfObjects(dataset);
                 if(samples[index] == 0) {
                     unique = 1;
                     samples[index] = 1;
                 }
             } while(!unique);
 
-            nn_update(heaps, i, index, metric(dataset->objects[index]->features, dataset->objects[i]->features, dataset->dimensions), R);
+            nn_update(heaps, i, index, metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dataset_getDimensions(dataset)), R);
         }
     }
 

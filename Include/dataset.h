@@ -1,23 +1,19 @@
-#pragma once
-#include "heap.h"
-
-struct object {
-    int *features;
-};
-
-typedef struct object* Object;
-
-struct dataset {
-    int dimensions;
-    int numberOfObjects;
-    Object *objects;
-};
+#include "common_types.h"
 
 typedef struct dataset* Dataset;
 
-typedef double (*Metric)(int *x, int *y, int d);
+typedef struct object* Object;
 
-Dataset dataset_create(int dimensions, int numberOfObjects);
+
+
+void dataset_initialize(Dataset *dataset, int numberOfObjects, int dimensions);
+int dataset_addFeature(Dataset dataset, int i, int dimension, Pointer feature);
+int dataset_getNumberOfObjects(Dataset dataset);
+int dataset_getDimensions(Dataset dataset);
+Pointer dataset_getFeature(Dataset dataset, int i, int dimension);
+Pointer *dataset_getFeatures(Dataset dataset, int i);
 void dataset_print(Dataset dataset);
 void dataset_free(Dataset dataset);
+
+
 
