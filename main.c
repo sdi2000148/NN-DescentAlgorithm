@@ -12,7 +12,7 @@
 
 
 int main(void) {
-    int D = 2, N = 100, k = 20, *array, count = 0; 
+    int D = 2, N = 10000, k = 20, *array, count = 0; 
     clock_t start_time, end_time;
 
     Dataset dataset;

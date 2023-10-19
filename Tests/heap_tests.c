@@ -12,7 +12,7 @@ void test_initialize(void) {
 	heap_free(heap);
 }
 
-void test_insert(void) {
+void test_update(void) {
     // Δημιουργούμε μια κενή λίστα 
 	Heap heap;
     heap_initialize(&heap, 20);
@@ -44,8 +44,26 @@ void test_insert(void) {
 	heap_free(heap);
 }
 
+void test_search(void) {
+    Heap heap;
+    int replaced;
+    heap_initialize(&heap, 10);
+
+    for (int i = 0; i < 10; i++) {
+        heap_update(heap, i, (double)i, &replaced);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        TEST_ASSERT(heap_search(heap, i) == 1);
+    }
+    
+    TEST_ASSERT(heap_search(heap, 28) == 0);
+    
+}
+
 TEST_LIST = {
 	{ "heap_initialize", test_initialize },
-    { "heap_insert", test_insert },
+    { "heap_update", test_update },
+    { "heap_search", test_search },
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
