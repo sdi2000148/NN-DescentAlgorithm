@@ -13,7 +13,7 @@
 #define BUFFER_SIZE 1024
 #define OBJECTS 5088
 #define DIMENSIONS 4
-#define K 20
+#define K 10
 
 void readme(Dataset dataset, double *numbers) {
     int row = 0, column, i = 0;
@@ -73,12 +73,22 @@ int main(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
 
+    start_time = clock();
+    Heap *predicted_2 = nn_descentBetter(dataset, K, l2);
+    end_time = clock();
+    printf("nn descentBetter time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+
     double rec = recall(actual, predicted_1, OBJECTS, K);
     printf("recall nn_descent: %f\n",rec*100) ;
+    rec = recall(actual, predicted_2, OBJECTS, K);
+    printf("recall nn_descentBetter: %f\n",rec*100) ;
+
 
     dataset_free(dataset);
     heap_free_all(actual, OBJECTS);
     heap_free_all(predicted_1, OBJECTS);
+    heap_free_all(predicted_2, OBJECTS);
     free(numbers);
 
     return 0;
