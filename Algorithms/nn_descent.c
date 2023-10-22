@@ -10,7 +10,7 @@
 Heap * nn_descent(Dataset dataset, int k, Metric metric) {
     List *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
-    int *B, c, index;
+    int *B, c, index, kojo = 0;
     Listnode neighbour, n_neighbour, temp;
     
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
@@ -53,6 +53,7 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
                         n_neighbour = list_next(n_neighbour);
                         continue;
                     }
+                    kojo++;
                     c += nn_update(heap, i, index, metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, index), dataset_getDimensions(dataset)), R);
                     n_neighbour = list_next(n_neighbour);
                 }
@@ -71,6 +72,8 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
     }
     free(R);
     free(U);
+
+    printf("kojo number for metric calculations:%d\n", kojo);
     
     return heap;
 }

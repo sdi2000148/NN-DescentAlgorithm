@@ -62,12 +62,12 @@ Pointer *dataset_getFeatures(Dataset dataset, int i) {
 
 // assume features are all integers!!!
 void dataset_print(Dataset dataset) {
-    int *feature;
+    double *feature;
     for (int i=0 ; i < dataset->numberOfObjects ; i++){
         printf("%d: [ ", i);
         for(int j = 0; j < dataset->dimensions; j++) {
             feature = dataset_getFeature(dataset, i, j);
-            printf("%d ", *feature); 
+            printf("%f ", *feature); 
         }
         printf("]\n");
     }

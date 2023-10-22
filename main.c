@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "metrics.h"
 #include "brutal.h"
 #include "recall.h"
@@ -9,98 +10,76 @@
 #include "nng_initialization.h"
 #include "nn_descent.h"
 #include <time.h>
+#define BUFFER_SIZE 1024
+#define OBJECTS 5088
+#define DIMENSIONS 4
+#define K 20
 
+void readme(Dataset dataset, double *numbers) {
+    int row = 0, column, i = 0;
+    FILE *fp;
+    char buffer[BUFFER_SIZE], *value;
+    
 
-int main(void) {
-    int D = 2, N = 10000, k = 20, *array, count = 0; 
-    clock_t start_time, end_time;
+    fp = fopen("Datasets/5k.RectNode.normal.ascii", "r");
 
-    Dataset dataset;
+    
+    
 
-    array = malloc(N*D*sizeof(int));
-
-    srand(1);
-
-    for(int i = 0; i < N*D; i++) {
-        array[i] = rand()%1000+1;
+    if(!fp) {
+        printf("Can't open file\n");
+        fclose(fp);
+        return;
     }
 
-    dataset_initialize(&dataset, N, D);
+    while(fgets(buffer, BUFFER_SIZE, fp) != NULL) {
+        value = strtok(buffer, " \t\n\r");
+        column = 0;
 
-
-    for(int i = 0; i < N; i++) {
-        for(int j = 0; j < D; j++) {
-            dataset_addFeature(dataset, i, j, &array[count]);
-            count++;
+        while(value != NULL) {
+            numbers[i] = strtod(value, NULL);
+            dataset_addFeature(dataset, row, column, &numbers[i]);
+            column++;
+            i++;
+            value = strtok(NULL, " \t\n\r");
         }
+        row++;
     }
 
+    fclose(fp);
+    
+}
+
+
+
+int main(void) { 
+    clock_t start_time, end_time;
+    Dataset dataset;
+    double *numbers = malloc(OBJECTS*DIMENSIONS*sizeof(double));
+
+    dataset_initialize(&dataset, OBJECTS, DIMENSIONS);
+
+    readme(dataset, numbers);
 
 
     start_time = clock();
-    Heap *actual = brute_force(dataset, k, l2);   // brute force
+    Heap *actual = brute_force(dataset, K, l2);   // brute force
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     start_time = clock();
-    Heap *predicted_1 = nn_descent(dataset, k, l2);
+    Heap *predicted_1 = nn_descent(dataset, K, l2);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-    
-    //Heap *predicted_2 =  nng_initialization_random(dataset, k, l2);                   // nn descent
-
-    //if (predicted_1 == NULL){
-    //   exit(EXIT_FAILURE);
-    //}
-
-    //lists = reverse(actual, N);
-
-    /*for(int i = 0; i < N; i++) {
-        printf("reverse neighbours of object %d:  ", i);
-        listnode = list_head(lists[i]);
-
-        while(listnode != NULL) {
-            printf("%d ", listnode_data(listnode));
-            listnode = list_next(listnode);
-        }
-        printf("\n");
-    }*/
-
-    //dataset_print(dataset);
-   /* printf("\n") ;
-    for (int i=0 ; i<dataset->numberOfObjects ; i++){
-        printf("object %d: ", i) ; 
-        heap_print(predicted_1[i]);
-    }*/
-
-    /*for (int i=0 ; i<N ; i++){
-        printf("object %d: ", i) ; 
-        //heap_print(actual[i]);
-        //heap_print(predicted_1[i]);
-        //printf("\n");
-    }*/
 
 
-    double rec = recall(actual, predicted_1, N, k);
+    double rec = recall(actual, predicted_1, OBJECTS, K);
     printf("recall nn_descent: %f\n",rec*100) ;
 
-    /*rec = recall(actual, predicted_2, N, k);
-    printf("recall nn_initialization: %f\n",rec*100) ;*/
-
-    /*for (int i=0 ; i<N ; i++){
-        int *actual_indexes = heap_getIndexes(actual[i]);
-        for (int j=0 ; j<k ; j++){
-            printf("%d  ",actual_indexes[j]);
-        }
-        printf("\n"); 
-        free(actual_indexes) ;
-    }*/
-
     dataset_free(dataset);
-    heap_free_all(actual, N);
-    heap_free_all(predicted_1, N);
-
-    free(array);
+    heap_free_all(actual, OBJECTS);
+    heap_free_all(predicted_1, OBJECTS);
+    free(numbers);
 
     return 0;
 }
