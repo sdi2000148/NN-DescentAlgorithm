@@ -64,6 +64,7 @@ int main(void) {
 
     start_time = clock();
     Heap *actual = brute_force(dataset, K, l2);   // brute force
+    actual_solution(actual, "Solutions/5k.4.10.txt", 5088, 10);
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
@@ -81,8 +82,13 @@ int main(void) {
 
     double rec = recall(actual, predicted_1, OBJECTS, K);
     printf("recall nn_descent: %f\n",rec*100) ;
+    double rec_new = recall_new("Solutions/5k.4.10.txt", predicted_1, OBJECTS, K);
+    printf("recall_new nn_descent: %f\n",rec_new*100) ;
+
     rec = recall(actual, predicted_2, OBJECTS, K);
     printf("recall nn_descentBetter: %f\n",rec*100) ;
+    rec_new = recall_new("Solutions/5k.4.10.txt", predicted_2, OBJECTS, K);
+    printf("recall_new nn_descent: %f\n",rec_new*100) ;
 
 
     dataset_free(dataset);

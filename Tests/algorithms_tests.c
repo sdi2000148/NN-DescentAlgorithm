@@ -57,11 +57,13 @@ void test_brute_force(void) {
 
 void readme(Dataset dataset, double *numbers) {
     int row = 0, column, i = 0;
-    FILE *fp;
+    FILE *fp, *solution;
     char buffer[BUFFER_SIZE], *value;
     
 
-    fp = fopen("Datasets/5k.RectNode.normal.ascii", "r");
+    fp = fopen("../Datasets/5k.RectNode.normal.ascii", "r");
+
+    solution = fopen("../Solutions/5k.4.10.txt", "r");
     
 
     if(!fp) {
@@ -84,6 +86,8 @@ void readme(Dataset dataset, double *numbers) {
         row++;
     }
 
+
+    fclose(solution);
     fclose(fp);
     
 }
@@ -92,7 +96,7 @@ void readme(Dataset dataset, double *numbers) {
 void test_nn_descent(void) {
 
     Dataset dataset;
-    int dimensions = 2, objects = 5, k = 2;
+    int dimensions = 4, objects = 5088, k = 10;
 
     clock_t start_time, end_time;
     double *numbers = malloc(objects*dimensions*sizeof(double));
@@ -103,25 +107,16 @@ void test_nn_descent(void) {
 
 
     start_time = clock();
-    Heap *actual = brute_force(dataset, k, l2);   // brute force
-    end_time = clock();
-    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-
-    start_time = clock();
     Heap *predicted_1 = nn_descent(dataset, k, l2);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
-
-    start_time = clock();
-
-    double rec = recall(actual, predicted_1, objects, k);
+    double rec = recall_new("../Solutions/5k.4.10.txt", predicted_1, objects, k);
     printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.95);
 
     dataset_free(dataset);
-    heap_free_all(actual, objects);
     heap_free_all(predicted_1, objects);
     free(numbers);
 

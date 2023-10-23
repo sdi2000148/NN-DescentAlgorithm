@@ -71,3 +71,22 @@ void heap_free_all(Heap *heaps, int n)
 	}
 	free(heaps);
 }
+
+
+void actual_solution(Heap *heaps, char *path, int N, int k) {
+    FILE *fp = fopen(path, "w");
+    int *act;
+
+    // #object : #n1 #n2 #n3 
+
+    for (int i=0 ; i<N ; i++){
+        act = heap_getIndexes(heaps[i]);
+        fprintf(fp, "%d:", i);
+        for (int j=0 ; j<k-1; j++){
+            fprintf(fp, "%d,", act[j]);
+        }
+        fprintf(fp, "%d\n", act[k-1]);
+    }
+
+    fclose(fp);
+}
