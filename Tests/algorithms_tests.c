@@ -3,6 +3,10 @@
 #include "dataset.h"
 #include "services.h"
 #include "metrics.h"
+#include "nn_descent.h"
+#include "nng_initialization.h"
+#include "recall.h"
+#define BUFFER_SIZE 1024
 
 
 void test_brute_force(void) {
@@ -51,7 +55,80 @@ void test_brute_force(void) {
     free(numbers);
 }
 
+void readme(Dataset dataset, double *numbers) {
+    int row = 0, column, i = 0;
+    FILE *fp;
+    char buffer[BUFFER_SIZE], *value;
+    
+
+    fp = fopen("Datasets/5k.RectNode.normal.ascii", "r");
+    
+
+    if(!fp) {
+        printf("Can't open file\n");
+        fclose(fp);
+        return;
+    }
+
+    while(fgets(buffer, BUFFER_SIZE, fp) != NULL) {
+        value = strtok(buffer, " \t\n\r");
+        column = 0;
+
+        while(value != NULL) {
+            numbers[i] = strtod(value, NULL);
+            dataset_addFeature(dataset, row, column, &numbers[i]);
+            column++;
+            i++;
+            value = strtok(NULL, " \t\n\r");
+        }
+        row++;
+    }
+
+    fclose(fp);
+    
+}
+
+
+void test_nn_descent(void) {
+
+    Dataset dataset;
+    int dimensions = 2, objects = 5, k = 2;
+
+    clock_t start_time, end_time;
+    double *numbers = malloc(objects*dimensions*sizeof(double));
+
+    dataset_initialize(&dataset, objects, dimensions);
+
+    readme(dataset, numbers);
+
+
+    start_time = clock();
+    Heap *actual = brute_force(dataset, k, l2);   // brute force
+    end_time = clock();
+    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+    start_time = clock();
+    Heap *predicted_1 = nn_descent(dataset, k, l2);
+    end_time = clock();
+    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+
+    start_time = clock();
+
+    double rec = recall(actual, predicted_1, objects, k);
+    printf("recall nn_descent: %f\n",rec*100) ;
+
+    TEST_CHECK(rec >= 0.95);
+
+    dataset_free(dataset);
+    heap_free_all(actual, objects);
+    heap_free_all(predicted_1, objects);
+    free(numbers);
+
+}
+
 TEST_LIST = {
 	{ "brute_force", test_brute_force },
+	{ "nn_descent", test_nn_descent },
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
