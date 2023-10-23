@@ -22,7 +22,7 @@ void test_recall(void) {
         }   
     }
 
-    TEST_ASSERT(recall(actual, predicted, 10, 10) == 0.5);
+    TEST_CHECK(recall(actual, predicted, 10, 10) == 0.5);
     
     for (int i = 0; i < 10; i++) {
         heap_free(actual[i]);

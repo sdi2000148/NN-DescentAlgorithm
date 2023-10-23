@@ -8,7 +8,7 @@ void test_initialize(void) {
 
 	// Ελέγχουμε ότι δεν απέτυχε η malloc στην λίστα, και ότι
 	// αρχικοποιείται με head με NULL (δηλαδή χωρίς κόμβους)
-	TEST_ASSERT(list_head(list) == NULL);
+	TEST_CHECK(list_head(list) == NULL);
 
 	list_free(list);
 }
@@ -24,14 +24,14 @@ void test_insert(void) {
 		list_insert(list, i);
 
 		// Ελέγχουμε εάν ο πρώτος κόμβος περιέχει σαν τιμή τον δείκτη που μόλις κάναμε insert								
-		TEST_ASSERT(listnode_data(list_head(list)) == i);	
+		TEST_CHECK(listnode_data(list_head(list)) == i);	
 	}
 
 	// Ελέγχουμε εάν τα στοιχεία έχουν μπει με την αντίστροφη σειρά
 	Listnode node = list_head(list);
 
 	for (int i = N - 1; i >= 0; i--) {
-		TEST_ASSERT(listnode_data(node) == i);
+		TEST_CHECK(listnode_data(node) == i);
 		node = list_next(node);
 	}
 
@@ -48,7 +48,7 @@ void test_remove(void) {
 
     // Remove σε κενή λίστα 
 
-    TEST_ASSERT(list_remove(list, 0) == 0);
+    TEST_CHECK(list_remove(list, 0) == 0);
 
 	// Χρησιμοποιούμε την insert για να γεμίσουμε την λίστα, αφού την έχουμε δοκιμάσει ήδη στην test_insert()
 	for (int i = 0; i < N; i++) {
@@ -61,11 +61,11 @@ void test_remove(void) {
 		// Διαγράφουμε απο την αρχή και ελέγχουμε εάν η τιμή του πρώτου κόμβου 
 		// ήταν η ίδια με αυτή που κάναμε insert παραπάνω
 
-		TEST_ASSERT(list_remove(list, i) == 1);
+		TEST_CHECK(list_remove(list, i) == 1);
 
 		// Ελέγχουμε εάν η τιμή του πρώτου κόμβου είναι η ίδια με αυτή που κάναμε insert παραπάνω
-        if (i > 0) TEST_ASSERT(listnode_data(list_head(list)) == i - 1);
-        else TEST_ASSERT(list_head(list) == NULL);
+        if (i > 0) TEST_CHECK(listnode_data(list_head(list)) == i - 1);
+        else TEST_CHECK(list_head(list) == NULL);
 	}
 
 	// Ξαναγεμίζουμε την λίστα
@@ -75,39 +75,39 @@ void test_remove(void) {
 	}	
 
     // Δοκιμάζουμε την διαγραφή του πρωτου κομβου
-	TEST_ASSERT(list_remove(list, N - 1) == 1);
+	TEST_CHECK(list_remove(list, N - 1) == 1);
 
     Listnode node = list_head(list);
     for (int i = N - 2; i >= 0; i--) {
-        TEST_ASSERT(listnode_data(node) == i);
+        TEST_CHECK(listnode_data(node) == i);
         node = list_next(node);
     }
 
 	// Δοκιμάζουμε την διαγραφή ενδιάμεσου κόμβου
-    TEST_ASSERT(list_remove(list, 300) == 1);
+    TEST_CHECK(list_remove(list, 300) == 1);
 
 
 	node = list_head(list);
     for (int i = N - 2; i >= 0; i--) {
         if (i == 300) continue;
-        TEST_ASSERT(listnode_data(node) == i);
+        TEST_CHECK(listnode_data(node) == i);
         node = list_next(node);
     }
 
 
 	// Δοκιμάζουμε την διαγραφή τελευταίου κόμβου
-	TEST_ASSERT(list_remove(list, 0) == 1);
+	TEST_CHECK(list_remove(list, 0) == 1);
 
 
 	node = list_head(list);
     for (int i = N - 2; i >= 1; i--) {
         if (i == 300) continue;
-        TEST_ASSERT(listnode_data(node) == i);
+        TEST_CHECK(listnode_data(node) == i);
         node = list_next(node);
     }
 
     // Δοκιμάζουμε να διαγράψουμε στοιχείο που δεν υπάρχει
-    TEST_ASSERT(list_remove(list, 1001) == 0);
+    TEST_CHECK(list_remove(list, 1001) == 0);
 
 	list_free(list);
 }

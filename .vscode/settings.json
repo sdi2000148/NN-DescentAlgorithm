@@ -16,6 +16,7 @@
         "type_traits": "c",
         "utility": "c",
         "heap.h": "c",
-        "list.h": "c"
+        "list.h": "c",
+        "numbers": "c"
     }
 }
