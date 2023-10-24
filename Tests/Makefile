@@ -10,6 +10,8 @@ SERVICES_OBJS = ../List/list.o ../Heap/heap.o ../Services/services.o
 RECALL_OBJS = ../Heap/heap.o ../Evaluation/recall.o
 ALGORITHMS_OBJS = ../Services/services.o ../Dataset/dataset.o ../Heap/heap.o ../Algorithms/brute_force.o ../List/list.o ../Metrics/metrics.o ../Algorithms/nn_descent.o ../Algorithms/nng_initialization.o ../Evaluation/recall.o
 DATASET_OBJS = ../Dataset/dataset.o
+METRIC_OBJS = ../Metrics/metrics.o
+
 
 TEST_SRCS = $(wildcard $(TESTS_DIR)/*.c)
 TEST_TARGETS = $(TEST_SRCS:.c=)
@@ -38,6 +40,9 @@ algorithms_tests: algorithms_tests.c
 
 dataset_tests: dataset_tests.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(DATASET_OBJS) -o $@
+	
+metrics_tests: metrics_tests.c
+	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(METRIC_OBJS) -o $@ -lm
 
 clean:
 	rm -rf $(TEST_TARGETS) *.o
@@ -49,6 +54,7 @@ run: list_tests heap_tests services_tests recall_tests algorithms_tests dataset_
 	./recall_tests
 	./algorithms_tests
 	./dataset_tests
+	./metrics_tests
 
 valgrind: $(TEST_TARGETS)
 	valgrind --leak-check=full ./$^ $(ARGS)
