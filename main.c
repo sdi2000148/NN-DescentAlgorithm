@@ -74,10 +74,10 @@ int main(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
 
-    start_time = clock();
+    /*start_time = clock();
     Heap *predicted_2 = nn_descentBetter(dataset, K, l2);
     end_time = clock();
-    printf("nn descentBetter time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("nn descentBetter time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);*/
 
 
     double rec = recall(actual, predicted_1, OBJECTS, K);
@@ -85,16 +85,16 @@ int main(void) {
     double rec_new = recall_new("Solutions/5k.4.10.txt", predicted_1, OBJECTS, K);
     printf("recall_new nn_descent: %f\n",rec_new*100) ;
 
-    rec = recall(actual, predicted_2, OBJECTS, K);
+    /*rec = recall(actual, predicted_2, OBJECTS, K);
     printf("recall nn_descentBetter: %f\n",rec*100) ;
     rec_new = recall_new("Solutions/5k.4.10.txt", predicted_2, OBJECTS, K);
-    printf("recall_new nn_descent: %f\n",rec_new*100) ;
+    printf("recall_new nn_descent: %f\n",rec_new*100) ;*/
 
 
     dataset_free(dataset);
     heap_free_all(actual, OBJECTS);
     heap_free_all(predicted_1, OBJECTS);
-    heap_free_all(predicted_2, OBJECTS);
+    //heap_free_all(predicted_2, OBJECTS);
     free(numbers);
 
     return 0;

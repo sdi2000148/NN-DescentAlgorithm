@@ -21,7 +21,7 @@ void dataset_initialize(Dataset *dataset, int numberOfObjects, int dimensions) {
 
     for(int i = 0; i < numberOfObjects; i++) {
         (*dataset)->objects[i] = malloc(sizeof(struct object));
-        (*dataset)->objects[i]->array = malloc(dimensions*sizeof(Pointer)); // calloc maybe?
+        (*dataset)->objects[i]->array = calloc(dimensions, sizeof(Pointer)); // calloc maybe?
     }
 }
 

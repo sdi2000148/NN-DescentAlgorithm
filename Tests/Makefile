@@ -9,6 +9,7 @@ HEAP_OBJS = ../List/list.o ../Heap/heap.o
 SERVICES_OBJS = ../List/list.o ../Heap/heap.o ../Services/services.o
 RECALL_OBJS = ../Heap/heap.o ../Evaluation/recall.o
 ALGORITHMS_OBJS = ../Services/services.o ../Dataset/dataset.o ../Heap/heap.o ../Algorithms/brute_force.o ../List/list.o ../Metrics/metrics.o ../Algorithms/nn_descent.o ../Algorithms/nng_initialization.o ../Evaluation/recall.o
+DATASET_OBJS = ../Dataset/dataset.o
 
 TEST_SRCS = $(wildcard $(TESTS_DIR)/*.c)
 TEST_TARGETS = $(TEST_SRCS:.c=)
@@ -35,15 +36,19 @@ recall_tests: recall_tests.c
 algorithms_tests: algorithms_tests.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(ALGORITHMS_OBJS) -o $@ -lm
 
+dataset_tests: dataset_tests.c
+	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(DATASET_OBJS) -o $@
+
 clean:
 	rm -rf $(TEST_TARGETS) *.o
 
-run: list_tests heap_tests services_tests recall_tests algorithms_tests
+run: list_tests heap_tests services_tests recall_tests algorithms_tests dataset_tests
 	./list_tests
 	./heap_tests
 	./services_tests
 	./recall_tests
 	./algorithms_tests
+	./dataset_tests
 
 valgrind: $(TEST_TARGETS)
 	valgrind --leak-check=full ./$^ $(ARGS)
