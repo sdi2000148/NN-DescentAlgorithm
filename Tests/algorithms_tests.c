@@ -6,6 +6,7 @@
 #include "nn_descent.h"
 #include "nng_initialization.h"
 #include "recall.h"
+#include "metrics.h"
 #define BUFFER_SIZE 1024
 
 
@@ -52,6 +53,57 @@ void test_brute_force(void) {
     
     dataset_free(dataset);
     heap_free_all(actual, objects);
+    free(numbers);
+}
+
+void test_nng_initialization(void) {
+    Dataset dataset;
+    int dimensions = 2, objects = 5, k = 2, *indexes;
+    double *numbers = malloc(objects*dimensions*sizeof(double));
+
+    dataset_initialize(&dataset, objects, dimensions);
+
+    numbers[0] = 0.0; 
+    dataset_addFeature(dataset, 0, 0, &numbers[0]);
+    numbers[1] = 0.0; 
+    dataset_addFeature(dataset, 0, 1, &numbers[1]);
+    numbers[2] = 2.0; 
+    dataset_addFeature(dataset, 1, 0, &numbers[2]);
+    numbers[3] = 3.0; 
+    dataset_addFeature(dataset, 1, 1, &numbers[3]);
+    numbers[4] = -3.0; 
+    dataset_addFeature(dataset, 2, 0, &numbers[4]);
+    numbers[5] = 1.0; 
+    dataset_addFeature(dataset, 2, 1, &numbers[5]);
+    numbers[6] = -1.5; 
+    dataset_addFeature(dataset, 3, 0, &numbers[6]);
+    numbers[7] = -2.5; 
+    dataset_addFeature(dataset, 3, 1, &numbers[7]);
+    numbers[8] = 1.0; 
+    dataset_addFeature(dataset, 4, 0, &numbers[8]);
+    numbers[9] = -10.0; 
+    dataset_addFeature(dataset, 4, 1, &numbers[9]);
+
+    List *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
+
+    Heap *heap = nng_initialization_random(dataset, k, l2, R);
+
+    for (int i = 0; i < objects; i++) {
+        indexes = heap_getIndexes(heap[i]);
+        for (int j = 0; j < k; j++) {
+            for (int l = 0; l < k; l++) {
+                if (l != j) TEST_CHECK(indexes[j] != indexes[l]);
+            }
+            TEST_CHECK(list_remove(R[i], indexes[j]) == 0);
+        }
+    }
+
+    heap_free_all(heap, objects);
+    dataset_free(dataset);
+    for (int i = 0; i < objects; i++) {
+        list_free(R[i]);
+    }
+    free(R);
     free(numbers);
 }
 
@@ -124,6 +176,7 @@ void test_nn_descent(void) {
 
 TEST_LIST = {
 	{ "brute_force", test_brute_force },
+    { "nng_initialization", test_nng_initialization },
 	{ "nn_descent", test_nn_descent },
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
