@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "recall.h"
+
 #define BUFFER_SIZE 1024
 
 double recall(Heap *actual, Heap *predicted, int N, int k)
@@ -28,7 +29,7 @@ double recall(Heap *actual, Heap *predicted, int N, int k)
 }
 
 
-double recall_new(char *filename, Heap *predicted, int N, int k) {
+double recall_new(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
     int true_positive = 0 ;
     int *pred, **act = malloc(N*sizeof(int*)), i, j;
     FILE *fp;
@@ -41,9 +42,13 @@ double recall_new(char *filename, Heap *predicted, int N, int k) {
     fp = fopen(filename, "r");
 
     if(!fp) {
-        printf("Can't open file\n");
-        fclose(fp);
-        return -1.0;
+        Heap *actual = brute_force(dataset, k, l2); 
+        actual_solution(actual, filename, N, k);
+        if (!(fp = fopen(filename, "r"))) {
+            printf("Can't open file\n");
+            fclose(fp);
+            return -1.0;
+        }
     }
 
     while(fgets(buffer, BUFFER_SIZE, fp) != NULL) {
