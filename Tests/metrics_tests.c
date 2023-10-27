@@ -5,14 +5,14 @@
 void test_l2(void) {
     int dimensions = 4;
     Pointer *x = malloc(dimensions * sizeof(Pointer)), *y = malloc(dimensions * sizeof(Pointer));
-    double *array1, *array2;
-    array1 = malloc(dimensions * sizeof(double));
-    array2 = malloc(dimensions * sizeof(double));
+    float *array1, *array2;
+    array1 = malloc(dimensions * sizeof(float));
+    array2 = malloc(dimensions * sizeof(float));
 
 
     for (int i = 0; i < dimensions; i++) {
-        array1[i] = (double) (i + 1);
-        array2[i] = (double) (i + 5);
+        array1[i] = (float) (i + 1);
+        array2[i] = (float) (i + 5);
     }
 
     for (int i = 0; i < dimensions; i++) {

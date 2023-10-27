@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "heap.h"
 #include "list.h"
+#include "avl.h"
 #include "dataset.h"
 #include "services.h"
 #include "nng_initialization.h"
@@ -80,13 +81,17 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
 
 
 Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
+    Avl *avls = malloc(dataset_getNumberOfObjects(dataset)*sizeof(Avl));
     List *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     int *B, c, index1, index2, kojo = 0;
     Listnode neighbour, n_neighbour, temp;
     double met;
-    
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
+
+    for(int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
+        avl_initialize(&avls[i]);
+    }
 
     do {
         for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
@@ -109,10 +114,10 @@ Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
             neighbour = list_head(U[i]);
             while(neighbour != NULL) {
                 index1 = listnode_data(neighbour);
-                n_neighbour = list_head(U[i]);
+                n_neighbour = list_next(neighbour);
                 while(n_neighbour != NULL) {
                     index2 = listnode_data(n_neighbour);
-                    if(index1 == index2) {
+                    if(avl_search(avls[index1], index2) == 1) {
                         n_neighbour = list_next(n_neighbour);
                         continue;
                     }
@@ -120,6 +125,9 @@ Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
                     kojo++;
                     c += nn_update(heap, index1, index2, met, R);
                     c += nn_update(heap, index2, index1, met, R);
+
+                    avl_insert(avls[index1], index2);
+                    avl_insert(avls[index2], index1);
                     n_neighbour = list_next(n_neighbour);
                 }
                 neighbour = list_next(neighbour);
@@ -137,6 +145,12 @@ Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
     }
     free(R);
     free(U);
+
+    for(int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
+        avl_free(avls[i]);
+    }
+    free(avls);
+
 
     printf("kojo number for metric calculations:%d\n", kojo);
     

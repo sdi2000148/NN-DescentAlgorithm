@@ -52,6 +52,7 @@ int nn_update(Heap *B, int v, int u, double l, List *R)
             }
 		}
 		else{
+            list_remove(R[v], u);
 			list_remove(R[r], v);
 			if (heap_search(B[u], v) == 0){
         		list_insert(R[u], v);

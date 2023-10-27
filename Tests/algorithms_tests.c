@@ -16,7 +16,7 @@
 void test_brute_force(void) {
     Dataset dataset;
     int dimensions = 2, objects = 5, k = 2;
-    double *numbers = malloc(objects*dimensions*sizeof(double));
+    float *numbers = malloc(objects*dimensions*sizeof(float));
 
     dataset_initialize(&dataset, objects, dimensions);
 
@@ -62,7 +62,7 @@ void test_brute_force(void) {
 void test_nng_initialization(void) {
     Dataset dataset;
     int dimensions = 2, objects = 5, k = 2, *indexes;
-    double *numbers = malloc(objects*dimensions*sizeof(double));
+    float *numbers = malloc(objects*dimensions*sizeof(float));
 
     dataset_initialize(&dataset, objects, dimensions);
 
@@ -140,7 +140,7 @@ float * readme(char *fileName, Dataset *dataset) {
         if (read(fp, &numbers[i], sizeof(float)) == 0) {
             printf("Can't read float (item of obect)\n");
             close(fp);
-            return NULL;
+            return numbers;
         }
 
         dataset_addFeature((*dataset), row, column, &numbers[i]);
@@ -168,7 +168,7 @@ void test_nn_descent_20(void) {
 
 
     start_time = clock();
-    Heap *predicted_1 = nn_descent(dataset, k, l2);
+    Heap *predicted_1 = nn_descentBetter(dataset, k, l2);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
@@ -195,7 +195,7 @@ void test_nn_descent_10000(void) {
 
 
     start_time = clock();
-    Heap *predicted_1 = nn_descent(dataset, k, l2);
+    Heap *predicted_1 = nn_descentBetter(dataset, k, l2);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 

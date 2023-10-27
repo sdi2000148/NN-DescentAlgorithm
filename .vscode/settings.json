@@ -17,6 +17,7 @@
         "utility": "c",
         "heap.h": "c",
         "list.h": "c",
-        "numbers": "c"
+        "numbers": "c",
+        "common_types.h": "c"
     }
 }
