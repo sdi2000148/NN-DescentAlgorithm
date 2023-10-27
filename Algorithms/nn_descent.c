@@ -73,7 +73,7 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
     free(R);
     free(U);
 
-    printf("kojo number for metric calculations:%d\n", kojo);
+    printf("Number for metric calculations:%d\n", kojo);
     
     return heap;
 }

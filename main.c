@@ -126,7 +126,7 @@ int main(void) {
 
     //double rec = recall(actual, predicted_1, OBJECTS, K);
     //printf("recall nn_descent: %f\n",rec*100) ;
-    double rec_new = recall_new("Solutions/00000020.10.txt", predicted_1, OBJECTS, K, dataset);
+    double rec_new = recall("Solutions/00000020.10.txt", predicted_1, OBJECTS, K, dataset);
     printf("recall_new nn_descent: %f\n",rec_new*100) ;
 
     /*rec = recall(actual, predicted_2, OBJECTS, K);

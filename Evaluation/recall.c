@@ -5,31 +5,8 @@
 
 #define BUFFER_SIZE 1024
 
-double recall(Heap *actual, Heap *predicted, int N, int k)
-{
-    int true_positive = 0 ;
-    int *pred, *act ;
 
-    for (int i=0 ; i<N ; i++){
-        act = heap_getIndexes(actual[i]);
-        pred = heap_getIndexes(predicted[i]);
-        for (int l=0 ; l<k ; l++){
-            for (int j=0 ; j<k; j++){
-                if (act[l] == pred[j]){
-                    true_positive++;
-                    break;
-                }
-            }
-        }
-        //free(pred);
-        //free(act);
-    }
-    //printf("%d\n", true_positive) ;
-    return (double) (true_positive) / (double) (N * k) ;  
-}
-
-
-double recall_new(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
+double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
     int true_positive = 0 ;
     int *pred, **act = malloc(N*sizeof(int*)), i, j;
     FILE *fp;

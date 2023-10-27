@@ -22,7 +22,12 @@ void test_recall(void) {
         }   
     }
 
-    TEST_CHECK(recall(actual, predicted, 10, 10) == 0.5);
+    actual_solution(actual, "../Solutions/recall_test", 10, 10);
+
+    Dataset dataset;
+    dataset_initialize(&dataset, 10, 1);
+
+    TEST_CHECK(recall("../Solutions/recall_test", predicted, 10, 10, dataset) == 0.5);
     
     for (int i = 0; i < 10; i++) {
         heap_free(actual[i]);

@@ -110,7 +110,7 @@ void test_nng_initialization(void) {
     free(numbers);
 }
 
-void readme(char *fileName, Dataset dataset, float *numbers) {
+float * readme(char *fileName, Dataset *dataset) {
     int row = 0, column = 0, dimensions = 100;
     uint32_t N;
     int fp;
@@ -122,24 +122,28 @@ void readme(char *fileName, Dataset dataset, float *numbers) {
     if(fp == -1) {
         printf("Can't open file\n");
         close(fp);
-        return;
+        return NULL;
     }
 
     if (read(fp, &N, sizeof(uint32_t) ) == 0) {
         printf("Can't read N (number of obects)\n");
         close(fp);
-        return;
+        return NULL;
     }
+
+    float *numbers = malloc(N*dimensions*sizeof(float));
+
+    dataset_initialize(dataset, N, dimensions);
 
     for (int i = 0; i < ((int)N * dimensions); i++) {
 
         if (read(fp, &numbers[i], sizeof(float)) == 0) {
             printf("Can't read float (item of obect)\n");
             close(fp);
-            return;
+            return NULL;
         }
 
-        dataset_addFeature(dataset, row, column, &numbers[i]);
+        dataset_addFeature((*dataset), row, column, &numbers[i]);
         
         column++;
         if (column == dimensions) {
@@ -149,19 +153,18 @@ void readme(char *fileName, Dataset dataset, float *numbers) {
     }
 
     close(fp);
+    return numbers;
 }
 
 void test_nn_descent_20(void) {
 
     Dataset dataset;
-    int dimensions = 100, objects = 20, k = 10;
+    int k = 10;
 
     clock_t start_time, end_time;
-    float *numbers = malloc(objects*dimensions*sizeof(float));
+    float *numbers;
 
-    dataset_initialize(&dataset, objects, dimensions);
-
-    readme("../Datasets/00000020.bin", dataset, numbers);
+    numbers = readme("../Datasets/00000020.bin", &dataset);
 
 
     start_time = clock();
@@ -169,64 +172,26 @@ void test_nn_descent_20(void) {
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
-    double rec = recall_new("../Solutions/00000020.10.txt", predicted_1, objects, k, dataset);
+    double rec = recall("../Solutions/00000020.10.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
     printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.95);
 
+    heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);
-    heap_free_all(predicted_1, objects);
     free(numbers);
 
 }
 
-void readme_old(Dataset dataset, double *numbers) {
-    int row = 0, column, i = 0;
-    FILE *fp;
-    char buffer[BUFFER_SIZE], *value;
-    
-
-    fp = fopen("../Datasets/5k.RectNode.normal.ascii", "r");
-
-    
-    
-
-    if(!fp) {
-        printf("Can't open file\n");
-        fclose(fp);
-        return;
-    }
-
-    while(fgets(buffer, BUFFER_SIZE, fp) != NULL) {
-        value = strtok(buffer, " \t\n\r");
-        column = 0;
-
-        while(value != NULL) {
-            numbers[i] = strtod(value, NULL);
-            dataset_addFeature(dataset, row, column, &numbers[i]);
-            column++;
-            i++;
-            value = strtok(NULL, " \t\n\r");
-        }
-        row++;
-    }
-
-    fclose(fp);
-    
-}
-
-
-void test_nn_descent(void) {
+void test_nn_descent_10000(void) {
 
     Dataset dataset;
-    int dimensions = 4, objects = 5088, k = 10;
+    int k = 30;
 
     clock_t start_time, end_time;
-    double *numbers = malloc(objects*dimensions*sizeof(double));
+    float *numbers;
 
-    dataset_initialize(&dataset, objects, dimensions);
-
-    readme_old(dataset, numbers);
+    numbers = readme("../Datasets/00010000-4.bin", &dataset);
 
 
     start_time = clock();
@@ -234,13 +199,13 @@ void test_nn_descent(void) {
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
-    double rec = recall_new("../Solutions/5k.4.10.txt", predicted_1, objects, k, dataset);
+    double rec = recall("../Solutions/00010000-4.100.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
     printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.95);
 
+    heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);
-    heap_free_all(predicted_1, objects);
     free(numbers);
 
 }
@@ -248,7 +213,7 @@ void test_nn_descent(void) {
 TEST_LIST = {
 	{ "brute_force", test_brute_force },
     { "nng_initialization", test_nng_initialization },
-	{ "nn_descent", test_nn_descent },
     { "nn_descent_20", test_nn_descent_20},
+    { "nn_descent_10000", test_nn_descent_10000},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
