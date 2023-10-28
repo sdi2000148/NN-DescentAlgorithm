@@ -84,7 +84,7 @@ Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
     Avl *avls = malloc(dataset_getNumberOfObjects(dataset)*sizeof(Avl));
     Avl *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(Avl));
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
-    int *B, c, index1, index2, kojo = 0;
+    int c, index1, index2, kojo = 0;
     Listnode neighbour, n_neighbour;
     double met;
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
@@ -96,9 +96,8 @@ Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
     do {
         for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
             list_initialize(&U[i]);
-            B = heap_getIndexes(heap[i]);
             for (int j = 0; j < k; j++){
-                list_insert(U[i], B[j]); 
+                list_insert(U[i], heap_getIndex(heap[i], j)); 
             }
             /*temp = list_head(R[i]);
             while (temp != NULL) {

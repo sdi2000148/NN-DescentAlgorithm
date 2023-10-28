@@ -15,7 +15,7 @@ int seq_search(int value , int size , int *array)
 }
 
 
-List *reverse(Heap *heaps, int numberOfObjects) {
+/*List *reverse(Heap *heaps, int numberOfObjects) {
     int *indices;
     int *current_indices;
     List *result;
@@ -36,7 +36,7 @@ List *reverse(Heap *heaps, int numberOfObjects) {
         }
     }
     return result;
-}
+}*/
 
 int nn_update(Heap *B, int v, int u, double l, Avl *R)
 {
@@ -76,17 +76,15 @@ void heap_free_all(Heap *heaps, int n)
 
 void actual_solution(Heap *heaps, char *path, int N, int k) {
     FILE *fp = fopen(path, "w");
-    int *act;
 
     // #object : #n1 #n2 #n3 
 
     for (int i=0 ; i<N ; i++){
-        act = heap_getIndexes(heaps[i]);
         fprintf(fp, "%d:", i);
         for (int j=0 ; j<k-1; j++){
-            fprintf(fp, "%d,", act[j]);
+            fprintf(fp, "%d,", heap_getIndex(heaps[i], j));
         }
-        fprintf(fp, "%d\n", act[k-1]);
+        fprintf(fp, "%d\n", heap_getIndex(heaps[i], k-1));
     }
 
     fclose(fp);

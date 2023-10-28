@@ -8,7 +8,7 @@
 
 double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
     int true_positive = 0 ;
-    int *pred, **act = malloc(N*sizeof(int*)), i, j;
+    int **act = malloc(N*sizeof(int*)), i, j;
     FILE *fp;
     char buffer[BUFFER_SIZE], *value;
 
@@ -44,10 +44,9 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
     fclose(fp);
 
     for (int i=0 ; i<N ; i++){
-        pred = heap_getIndexes(predicted[i]);
         for (int l=0 ; l<k ; l++){
             for (int j=0 ; j<k; j++){
-                if (act[i][l] == pred[j]){
+                if (act[i][l] == heap_getIndex(predicted[i], j)){
                     true_positive++;
                     break;
                 }

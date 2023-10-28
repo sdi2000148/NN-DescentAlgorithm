@@ -61,7 +61,7 @@ void test_brute_force(void) {
 
 void test_nng_initialization(void) {
     Dataset dataset;
-    int dimensions = 2, objects = 5, k = 2, *indexes;
+    int dimensions = 2, objects = 5, k = 2;
     float *numbers = malloc(objects*dimensions*sizeof(float));
 
     dataset_initialize(&dataset, objects, dimensions);
@@ -92,12 +92,11 @@ void test_nng_initialization(void) {
     Heap *heap = nng_initialization_random(dataset, k, l2, R);
 
     for (int i = 0; i < objects; i++) {
-        indexes = heap_getIndexes(heap[i]);
         for (int j = 0; j < k; j++) {
             for (int l = 0; l < k; l++) {
-                if (l != j) TEST_CHECK(indexes[j] != indexes[l]);
+                if (l != j) TEST_CHECK(heap_getIndex(heap[i], j) != heap_getIndex(heap[i], l));
             }
-            TEST_CHECK(avl_search(R[i], indexes[j]) == 0);
+            TEST_CHECK(avl_search(R[i], heap_getIndex(heap[i], j)) == 0);
         }
     }
 
