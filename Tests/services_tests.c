@@ -1,13 +1,13 @@
 #include "acutest.h"
 #include "services.h"
-
+#include "avl.h"
 
 void test_nn_update(void) {
-    List *R = malloc(5* sizeof(List));
+    Avl *R = malloc(5* sizeof(Avl));
     Heap *heaps = malloc(5 * (sizeof(Heap)));
 
     for (int i = 0; i < 5; i++) {
-        list_initialize(&R[i]);
+        avl_initialize(&R[i]);
         heap_initialize(&heaps[i], 2);
     }
 
@@ -22,31 +22,27 @@ void test_nn_update(void) {
     nn_update(heaps, 4, 2, 17.4, R);
     nn_update(heaps, 4, 1, 19.4, R);
 
-    TEST_CHECK(list_head(R[0]) == NULL);
 
-    TEST_CHECK(list_remove(R[1],2) == 1);
-    TEST_CHECK(list_head(R[1]) == NULL);
-    
-    TEST_CHECK(list_remove(R[2],3) == 1);
-    TEST_CHECK(list_head(R[2]) == NULL);
+    avl_remove(R[1], 2);
+    TEST_CHECK(avl_search(R[1],2) == 0);
 
-    TEST_CHECK(list_head(R[3]) == NULL);
+    avl_remove(R[2], 3);
+    TEST_CHECK(avl_search(R[2],3) == 0);
 
-    TEST_CHECK(list_remove(R[4],0) == 1);
-    TEST_CHECK(list_remove(R[4],3) == 1);
-    TEST_CHECK(list_head(R[4]) == NULL);
+    avl_remove(R[4], 0);
+    TEST_CHECK(avl_search(R[4],0) == 0);
+
+    avl_remove(R[4], 3);
+    TEST_CHECK(avl_search(R[4], 3) == 0);
+
 
     nn_update(heaps, 2, 3, 9.4, R);
 
-    TEST_CHECK(list_remove(R[2],4) == 1);
-    TEST_CHECK(list_head(R[2]) == NULL);
-
-    TEST_CHECK(list_head(R[3]) == NULL);
-
-    TEST_CHECK(list_head(R[4]) == NULL);
+    avl_remove(R[2], 4);
+    TEST_CHECK(avl_search(R[2], 4) == 0);
 
     for (int i = 0; i < 5; i++) {
-        list_free(R[i]);
+        avl_free(R[i]);
         heap_free(heaps[i]);
     }
     free(R);

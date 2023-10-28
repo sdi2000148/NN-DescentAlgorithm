@@ -1,3 +1,5 @@
+#include "list.h"
+
 typedef struct avl *Avl;
 
 
@@ -12,6 +14,9 @@ void avl_remove(Avl avl, int value);
 
 /* Search value in avl, return 1 if found, 0 otherwise */
 int avl_search(Avl avl, int value);
+
+/* Insert all the values of the avl to the list */
+void avl_copyToList(Avl avl, List list);
 
 /* Free memory of avl */
 void avl_free(Avl avl);

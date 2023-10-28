@@ -87,7 +87,7 @@ void test_nng_initialization(void) {
     numbers[9] = -10.0; 
     dataset_addFeature(dataset, 4, 1, &numbers[9]);
 
-    List *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
+    Avl *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(Avl));
 
     Heap *heap = nng_initialization_random(dataset, k, l2, R);
 
@@ -97,14 +97,14 @@ void test_nng_initialization(void) {
             for (int l = 0; l < k; l++) {
                 if (l != j) TEST_CHECK(indexes[j] != indexes[l]);
             }
-            TEST_CHECK(list_remove(R[i], indexes[j]) == 0);
+            TEST_CHECK(avl_search(R[i], indexes[j]) == 0);
         }
     }
 
     heap_free_all(heap, objects);
     dataset_free(dataset);
     for (int i = 0; i < objects; i++) {
-        list_free(R[i]);
+        avl_free(R[i]);
     }
     free(R);
     free(numbers);
@@ -186,7 +186,7 @@ void test_nn_descent_20(void) {
 void test_nn_descent_10000(void) {
 
     Dataset dataset;
-    int k = 30;
+    int k = 100;
 
     clock_t start_time, end_time;
     float *numbers;
@@ -199,7 +199,10 @@ void test_nn_descent_10000(void) {
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
+    start_time = clock();
     double rec = recall("../Solutions/00010000-4.100.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
+    end_time = clock();
+     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.95);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "avl.h"
+#include "list.h"
 
 typedef struct node *Node;
 
@@ -206,11 +207,11 @@ static void nodeDestroy(Node node) {
     free(node);
 }
 
-static void printPreOrder(Node root) {
-    if (root != NULL) {
-        printf("%d ", root->value);
-        printPreOrder(root->left);
-        printPreOrder(root->right);
+static void copyToList(Node node, List list) {
+    if (node != NULL) {
+        copyToList(node->left, list);
+        list_insert(list, node->value);
+        copyToList(node->right, list);
     }
 }
 
@@ -235,8 +236,9 @@ int avl_search(Avl avl, int value) {
     return searchNode(avl->root, value);
 }
 
-void avl_print(Avl avl) {
-    printPreOrder(avl->root);
+
+void avl_copyToList(Avl avl, List list) {
+    copyToList(avl->root, list);
 }
 
 void avl_free(Avl avl) {

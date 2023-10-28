@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include "nng_initialization.h"
 #include "services.h"
+#include "avl.h"
 
-Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R) {
+Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl * R) {
     int index, *samples, unique;
     Heap *heaps = malloc(dataset_getNumberOfObjects(dataset) * (sizeof(Heap)));
     samples = malloc(dataset_getNumberOfObjects(dataset)*sizeof(int));
@@ -16,7 +17,7 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, List * R)
     }
 
     for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
-        list_initialize(&R[i]);
+        avl_initialize(&R[i]);
         heap_initialize(&heaps[i], k);
     }
     

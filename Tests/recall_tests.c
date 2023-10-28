@@ -33,6 +33,8 @@ void test_recall(void) {
         heap_free(actual[i]);
         heap_free(predicted[i]);
     }
+
+    dataset_free(dataset);
     
 }
 

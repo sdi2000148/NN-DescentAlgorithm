@@ -8,7 +8,7 @@
 #include "nng_initialization.h"
 #include "nn_descent.h"
 
-Heap * nn_descent(Dataset dataset, int k, Metric metric) {
+/*Heap * nn_descent(Dataset dataset, int k, Metric metric) {
     List *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     int *B, c, index, kojo = 0;
@@ -17,7 +17,7 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
 
     do {
-        /*R = reverse(heap, dataset->numberOfObjects);
+        R = reverse(heap, dataset->numberOfObjects);
         //printf("reverse end\n");
         for (int i = 0; i < dataset->numberOfObjects; i++) {
             B = heap_getIndexes(heap[i]);
@@ -25,7 +25,7 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
                 list_insert(R[i], B[j]); 
             }
             //free(B);
-        }*/
+        }
 
         for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
             list_initialize(&U[i]);
@@ -77,15 +77,15 @@ Heap * nn_descent(Dataset dataset, int k, Metric metric) {
     printf("Number for metric calculations:%d\n", kojo);
     
     return heap;
-}
+}*/
 
 
 Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
     Avl *avls = malloc(dataset_getNumberOfObjects(dataset)*sizeof(Avl));
-    List *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
+    Avl *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(Avl));
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     int *B, c, index1, index2, kojo = 0;
-    Listnode neighbour, n_neighbour, temp;
+    Listnode neighbour, n_neighbour;
     double met;
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
 
@@ -100,11 +100,12 @@ Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
             for (int j = 0; j < k; j++){
                 list_insert(U[i], B[j]); 
             }
-            temp = list_head(R[i]);
+            /*temp = list_head(R[i]);
             while (temp != NULL) {
                 list_insert(U[i], listnode_data(temp));
                 temp = list_next(temp);
-            }
+            }*/
+            avl_copyToList(R[i], U[i]);
             
         }
 
@@ -141,7 +142,7 @@ Heap * nn_descentBetter(Dataset dataset, int k, Metric metric) {
     } while(c);
 
     for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
-        list_free(R[i]);
+        avl_free(R[i]);
     }
     free(R);
     free(U);

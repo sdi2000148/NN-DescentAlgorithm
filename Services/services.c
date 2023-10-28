@@ -38,7 +38,7 @@ List *reverse(Heap *heaps, int numberOfObjects) {
     return result;
 }
 
-int nn_update(Heap *B, int v, int u, double l, List *R)
+int nn_update(Heap *B, int v, int u, double l, Avl *R)
 {
 	int r; 
 	if (heap_update(B[v], u, l, &r) == 0){
@@ -46,19 +46,19 @@ int nn_update(Heap *B, int v, int u, double l, List *R)
 	}
 	else{
 		if (r == -1){
-            list_remove(R[v], u);
+            avl_remove(R[v], u);
 			if (heap_search(B[u], v) == 0){
-        		list_insert(R[u], v);
+        		avl_insert(R[u], v);
             }
 		}
 		else{
-            list_remove(R[v], u);
-			list_remove(R[r], v);
+            avl_remove(R[v], u);
+			avl_remove(R[r], v);
 			if (heap_search(B[u], v) == 0){
-        		list_insert(R[u], v);
+        		avl_insert(R[u], v);
 			}
             if (heap_search(B[r], v) == 1){
-        		list_insert(R[v], r);
+        		avl_insert(R[v], r);
 			}
 		}
 		return 1;

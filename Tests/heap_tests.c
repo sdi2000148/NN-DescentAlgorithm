@@ -58,6 +58,8 @@ void test_search(void) {
     }
     
     TEST_CHECK(heap_search(heap, 28) == 0);
+
+    heap_free(heap);
     
 }
 
