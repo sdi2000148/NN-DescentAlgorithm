@@ -9,5 +9,6 @@ int heap_getCapacity(Heap) ;
 int heap_getCount(Heap) ;
 int heap_getIndex(Heap, int) ;
 int heap_search(Heap, int) ;
+int heap_remove(Heap) ;
 
 double heap_getValue(Heap, int); 

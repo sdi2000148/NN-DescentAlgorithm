@@ -55,9 +55,45 @@ void test_search(void) {
     heap_free(heap);
 }
 
+
+void test_remove(void) {
+    Heap heap;
+    int replaced;
+
+    heap_initialize(&heap, 10);
+
+    for (int i = 0; i < 10; i++) {
+        heap_update(heap, i, (double)i, &replaced);
+    }
+
+    for (int i = 9; i >= 0; i--) {
+        TEST_CHECK(heap_remove(heap) == i);
+    }
+
+    TEST_CHECK(heap_remove(heap) == -1);
+
+    for (int i = 0; i < 10; i++) {
+        heap_update(heap, i, (double)i, &replaced);
+    }
+
+    for (int i = 9; i >= 0; i--) {
+        TEST_CHECK(heap_remove(heap) == i);
+    }
+    
+    TEST_CHECK(heap_remove(heap) == -1);
+
+    heap_update(heap, 5, (double)5, &replaced);
+    TEST_CHECK(heap_remove(heap) == 5);
+    TEST_CHECK(heap_remove(heap) == -1);
+    
+    heap_free(heap); 
+}
+
+
 TEST_LIST = {
 	{ "heap_initialize", test_initialize },
-    { "heap_update", test_update },
     { "heap_search", test_search },
+    { "heap_update", test_update },
+    { "heap_remove", test_remove },
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };

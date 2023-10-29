@@ -198,6 +198,49 @@ int heap_replace(Heap hp, int index, double value)
 }
 
 
+// return removed index, otherwise return -1
+int heap_remove(Heap hp)
+{
+	int returned_index = hp->array[1].index;
+	int index = hp->array[hp->count].index;
+	double value = hp->array[hp->count].value; 
+	int current, child ;
+
+	if (heap_empty(hp)){
+		return -1;
+	}
+
+	hp->count--;
+	avl_remove(hp->indexes_tree, returned_index);
+
+	current = 1 ;
+	child = current*2 ;
+	while (child <= hp->count){
+		if (child < hp->count){
+			if (hp->array[child+1].value > hp->array[child].value  && equal(hp->array[child+1].value, hp->array[child].value) == 0){   // check which sibling is bigger
+				child++ ;
+			}
+		}
+		if (value > hp->array[child].value || equal(value, hp->array[child].value) == 1){
+			hp->array[current].index = index ;
+			hp->array[current].value = value ;
+			return returned_index ;
+		}
+		else{
+			hp->array[current].index = hp->array[child].index ;
+			hp->array[current].value = hp->array[child].value ;
+			current = child ;
+			child = child*2 ;
+		}
+	}
+
+	hp->array[current].index = index ;         // reached leaf
+	hp->array[current].value = value ;
+
+	return returned_index;
+}
+
+
 // return 1 on change, 0 otherwise
 // replaced == -1, when no replacement took place
 int heap_update(Heap hp, int index, double value, int *replaced)
