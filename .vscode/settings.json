@@ -18,6 +18,7 @@
         "heap.h": "c",
         "list.h": "c",
         "numbers": "c",
-        "common_types.h": "c"
+        "common_types.h": "c",
+        "search.h": "c"
     }
 }

@@ -10,6 +10,7 @@
 #include "nng_initialization.h"
 #include "recall.h"
 #include "metrics.h"
+#include "knn_search.h"
 #define BUFFER_SIZE 1024
 
 
@@ -210,8 +211,52 @@ void test_nn_descent_10000(void) {
 
 }
 
+
+void test_search(void)
+{
+    Dataset dataset;
+    int k = 20, object = 4, matches = 0;
+    int *solution, *brute_force_solution;
+    float *numbers;
+
+    numbers = readme("../Datasets/00005000-5.bin", &dataset);
+
+    // using knn graph for searching
+    Heap *actual = brute_force(dataset, k, l2);
+    solution = search_knn(dataset, actual, dataset_getFeatures(dataset, object), k, l2);
+
+    // using brute force
+    brute_force_solution =search_knn_brute_force(dataset, dataset_getFeatures(dataset, object), k, l2);
+
+    for (int i=0 ; i<k ; i++){
+       //printf("%d - %d\n", solution[i], brute_force_solution[i]);
+       for (int j=0 ; j<k ; j++){
+        if (solution[i] == brute_force_solution[j]){
+            matches++;
+            break;
+        }
+       }
+    }
+
+    TEST_CHECK(matches == k);
+
+    heap_free_all(actual, dataset_getNumberOfObjects(dataset));
+    dataset_free(dataset);
+    free(numbers);
+    free(solution);
+    free(brute_force_solution);
+}
+
+
+
+
+
+
+
+
 TEST_LIST = {
 	{ "brute_force", test_brute_force },
+    { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
     //{ "nn_descent_10000", test_nn_descent_10000},

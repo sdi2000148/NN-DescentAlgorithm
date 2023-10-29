@@ -89,7 +89,7 @@ int search_index(int *indexes, int index, int k)
 
 
 // return 1 when the two floating point numbers are equal, 0 otherwise
-int equal(double a, double b)
+static int equal(double a, double b)
 {
 	if (fabs(a-b) < 1.0e-8){
 		return 1 ;
@@ -211,7 +211,9 @@ int heap_remove(Heap hp)
 	}
 
 	hp->count--;
-	avl_remove(hp->indexes_tree, returned_index);
+	update_index(hp->indexes, -1, returned_index, hp->capacity);
+	//avl_remove(hp->indexes_tree, returned_index);
+	
 
 	current = 1 ;
 	child = current*2 ;
@@ -326,6 +328,25 @@ double heap_getValue(Heap hp, int i)
 	}
 	return hp->array[i].value;
 }
+
+
+int heap_getMaxIndex(Heap hp)
+{
+	if (heap_empty(hp)){
+		return -1;
+	}
+	return hp->array[1].index;
+}
+
+
+double heap_getMaxValue(Heap hp)
+{
+	if (heap_empty(hp)){
+		return -1.0;
+	}
+	return hp->array[1].value;
+}
+
 
 
 int heap_search(Heap hp, int index)
