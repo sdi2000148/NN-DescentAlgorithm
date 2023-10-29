@@ -5,4 +5,4 @@
 
 
 
-Heap* nng_initialization_random(Dataset dataset, int k, Metric metric);
+Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R);

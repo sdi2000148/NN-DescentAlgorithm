@@ -2,15 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "recall.h"
-
 #define BUFFER_SIZE 1024
 
 
 double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
-    int true_positive = 0 ;
-    int **act = malloc(N*sizeof(int*)), i, j;
-    FILE *fp;
+    int **act = malloc(N*sizeof(int*)), i, j, true_positive = 0;
     char buffer[BUFFER_SIZE], *value;
+    Heap *actual;
+    FILE *fp;
 
     for(int l = 0; l < N; l++) {
         act[l] = malloc(k*sizeof(int));
@@ -19,7 +18,7 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
     fp = fopen(filename, "r");
 
     if(!fp) {
-        Heap *actual = brute_force(dataset, k, l2); 
+        actual = brute_force(dataset, k, l2); 
         actual_solution(actual, filename, N, k);
         if (!(fp = fopen(filename, "r"))) {
             printf("Can't open file\n");
@@ -44,10 +43,10 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
 
     fclose(fp);
 
-    for (int i=0 ; i<N ; i++){
-        for (int l=0 ; l<k ; l++){
-            for (int j=0 ; j<k; j++){
-                if (act[i][l] == heap_getIndex(predicted[i], j)){
+    for (int i=0 ; i<N ; i++) {
+        for (int l=0 ; l<k ; l++) {
+            for (int j=0 ; j<k; j++) {
+                if (act[i][l] == heap_getIndex(predicted[i], j)) {
                     true_positive++;
                     break;
                 }
@@ -60,6 +59,5 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
     }
     free(act);
 
-
-    return (double) (true_positive) / (double) (N * k) ;      
+    return (double)(true_positive) / (double)(N * k) ;      
 }

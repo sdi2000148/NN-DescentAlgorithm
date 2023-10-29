@@ -2,8 +2,9 @@
 #include "acutest.h"
 
 void test_recall(void) {
-    Heap actual[10], predicted[10];
     int replaced;
+    Dataset dataset;
+    Heap actual[10], predicted[10];
 
     for (int i = 0; i < 10; i++){
         heap_initialize(&actual[i], 10);
@@ -23,8 +24,7 @@ void test_recall(void) {
     }
 
     actual_solution(actual, "../Solutions/recall_test", 10, 10);
-
-    Dataset dataset;
+    
     dataset_initialize(&dataset, 10, 1);
 
     TEST_CHECK(recall("../Solutions/recall_test", predicted, 10, 10, dataset) == 0.5);

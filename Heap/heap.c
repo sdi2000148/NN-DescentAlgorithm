@@ -14,8 +14,8 @@ struct heap{
 	int count ;
 	int capacity ;
 	struct item *array ;
-	//int *indexes;
-	Avl indexes_tree ;
+	int *indexes;
+	//Avl indexes_tree ;
 };
 
 
@@ -102,11 +102,11 @@ void heap_initialize(Heap *hp, int k)
 {
 	(*hp) = malloc(sizeof(struct heap)) ;
 	(*hp)->array = malloc((k+1) * sizeof(struct item)) ; 
-	//(*hp)->indexes = malloc(k * sizeof(int)) ;
-	//for (int i=0 ; i<k ; i++){
-	//	(*hp)->indexes[i] = -1 ;
-	//}
-	avl_initialize(&((*hp)->indexes_tree)) ;
+	(*hp)->indexes = malloc(k * sizeof(int)) ;
+	for (int i=0 ; i<k ; i++){
+		(*hp)->indexes[i] = -1 ;
+	}
+	//avl_initialize(&((*hp)->indexes_tree)) ;
 	(*hp)->count = 0 ;
 	(*hp)->capacity = k ;
 	return ;
@@ -205,23 +205,23 @@ int heap_update(Heap hp, int index, double value, int *replaced)
 	int max = hp->array[1].index ; 
 	*replaced = -1;
 
-	//if (search_index(hp->indexes, index, hp->capacity) == 1){
-	//	return 0 ;
-	//}
-
-	if (avl_search(hp->indexes_tree, index) == 1){
+	if (search_index(hp->indexes, index, hp->capacity) == 1){
 		return 0 ;
 	}
 
+	//if (avl_search(hp->indexes_tree, index) == 1){
+	//	return 0 ;
+	//}
+
 	if (heap_insert(hp, index, value) == 1){
-		//insert_index(hp->indexes, index, hp->capacity) ;
-		avl_insert(hp->indexes_tree, index) ;
+		insert_index(hp->indexes, index, hp->capacity) ;
+		//avl_insert(hp->indexes_tree, index) ;
 		return 1 ;
 	}
 	else if (heap_replace(hp, index, value) == 1){
-		//update_index(hp->indexes, index, max, hp->capacity) ;
-		avl_remove(hp->indexes_tree, max) ;
-		avl_insert(hp->indexes_tree, index) ;
+		update_index(hp->indexes, index, max, hp->capacity) ;
+		//avl_remove(hp->indexes_tree, max) ;
+		//avl_insert(hp->indexes_tree, index) ;
 		*replaced = max;
 		return 1 ;
 	}
@@ -247,8 +247,8 @@ void heap_print(Heap hp)
 void heap_free(Heap hp)
 {
 	free(hp->array) ;
-	//free(hp->indexes) ;
-	avl_free(hp->indexes_tree) ;
+	free(hp->indexes) ;
+	//avl_free(hp->indexes_tree) ;
 	free(hp) ;
 }
 
@@ -287,8 +287,8 @@ double heap_getValue(Heap hp, int i)
 
 int heap_search(Heap hp, int index)
 {
-	//return search_index(hp->indexes, index, hp->capacity);
-	return avl_search(hp->indexes_tree, index);
+	return search_index(hp->indexes, index, hp->capacity);
+	//return avl_search(hp->indexes_tree, index);
 }
 
 

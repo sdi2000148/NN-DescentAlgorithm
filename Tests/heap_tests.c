@@ -31,16 +31,9 @@ void test_update(void) {
         }
     }
 
-    /*for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 20; j++ {}
-        TEST_CHECK( heap_getIndex(heap, i) == N+i);
-    }*/
-
-
     TEST_CHECK(heap_update(heap, 30, 30.0, &replaced) == 1);
     TEST_CHECK(replaced != -1);
     
-
 	heap_free(heap);
 }
 
@@ -60,7 +53,6 @@ void test_search(void) {
     TEST_CHECK(heap_search(heap, 28) == 0);
 
     heap_free(heap);
-    
 }
 
 TEST_LIST = {

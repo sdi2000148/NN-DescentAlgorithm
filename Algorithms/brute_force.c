@@ -18,9 +18,5 @@ Heap* brute_force(Dataset dataset, int k, Metric metric)
         }
     }
 
-    /*int temp = objects * (objects-1);
-    double rate = (double)(evaluations) / ((double)temp / (double)2);
-    printf("brute force scan-rate: %f\n", rate);*/
-
     return heaps; 
 }
