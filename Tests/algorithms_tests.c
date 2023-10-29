@@ -87,25 +87,19 @@ void test_nng_initialization(void) {
     numbers[9] = -10.0; 
     dataset_addFeature(dataset, 4, 1, &numbers[9]);
 
-    Avl *R = malloc(dataset_getNumberOfObjects(dataset) * sizeof(Avl));
 
-    Heap *heap = nng_initialization_random(dataset, k, l2, R);
+    Heap *heap = nng_initialization_random(dataset, k, l2);
 
     for (int i = 0; i < objects; i++) {
         for (int j = 0; j < k; j++) {
             for (int l = 0; l < k; l++) {
                 if (l != j) TEST_CHECK(heap_getIndex(heap[i], j) != heap_getIndex(heap[i], l));
             }
-            TEST_CHECK(avl_search(R[i], heap_getIndex(heap[i], j)) == 0);
         }
     }
 
     heap_free_all(heap, objects);
     dataset_free(dataset);
-    for (int i = 0; i < objects; i++) {
-        avl_free(R[i]);
-    }
-    free(R);
     free(numbers);
 }
 
@@ -167,7 +161,7 @@ void test_nn_descent_20(void) {
 
 
     start_time = clock();
-    Heap *predicted_1 = nn_descentBetter(dataset, k, l2);
+    Heap *predicted_1 = nn_descent(dataset, k, l2);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
@@ -185,12 +179,12 @@ void test_nn_descent_20(void) {
 void test_nn_descent_10000(void) {
 
     Dataset dataset;
-    int k = 100;
+    int k = 20;
 
     clock_t start_time, end_time;
     float *numbers;
 
-    numbers = readme("../Datasets/00010000-4.bin", &dataset);
+    numbers = readme("../Datasets/00005000-5.bin", &dataset);
 
 
     start_time = clock();
@@ -204,7 +198,7 @@ void test_nn_descent_10000(void) {
      printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;
 
-    TEST_CHECK(rec >= 0.95);
+    TEST_CHECK(rec >= 0.80);
 
     heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);

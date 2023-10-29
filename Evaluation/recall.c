@@ -26,6 +26,7 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
             fclose(fp);
             return -1.0;
         }
+        heap_free_all(actual, N);
     }
 
     while(fgets(buffer, BUFFER_SIZE, fp) != NULL) {

@@ -205,6 +205,10 @@ int heap_update(Heap hp, int index, double value, int *replaced)
 	int max = hp->array[1].index ; 
 	*replaced = -1;
 
+	//if (search_index(hp->indexes, index, hp->capacity) == 1){
+	//	return 0 ;
+	//}
+
 	if (avl_search(hp->indexes_tree, index) == 1){
 		return 0 ;
 	}
@@ -283,6 +287,7 @@ double heap_getValue(Heap hp, int i)
 
 int heap_search(Heap hp, int index)
 {
+	//return search_index(hp->indexes, index, hp->capacity);
 	return avl_search(hp->indexes_tree, index);
 }
 

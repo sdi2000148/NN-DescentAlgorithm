@@ -47,7 +47,7 @@ metrics_tests: metrics_tests.c
 clean:
 	rm -rf $(TEST_TARGETS) *.o
 
-run: list_tests heap_tests services_tests recall_tests algorithms_tests dataset_tests
+run: list_tests heap_tests services_tests recall_tests algorithms_tests dataset_tests metrics_tests
 	./list_tests
 	./heap_tests
 	./services_tests

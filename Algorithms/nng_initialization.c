@@ -4,8 +4,8 @@
 #include "services.h"
 #include "avl.h"
 
-Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl * R) {
-    int index, *samples, unique;
+Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
+    int index, *samples, unique, replaced;
     Heap *heaps = malloc(dataset_getNumberOfObjects(dataset) * (sizeof(Heap)));
     samples = malloc(dataset_getNumberOfObjects(dataset)*sizeof(int));
 
@@ -17,7 +17,6 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl * R) 
     }
 
     for (int i = 0; i < dataset_getNumberOfObjects(dataset); i++) {
-        avl_initialize(&R[i]);
         heap_initialize(&heaps[i], k);
     }
     
@@ -39,7 +38,7 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl * R) 
                 }
             } while(!unique);
 
-            nn_update(heaps, i, index, metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dataset_getDimensions(dataset)), R);
+            heap_update(heaps[i], index, metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dataset_getDimensions(dataset)), &replaced);
         }
     }
 

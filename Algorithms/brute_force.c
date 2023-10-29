@@ -6,14 +6,21 @@
 
 Heap* brute_force(Dataset dataset, int k, Metric metric)
 {
-    int replaced ; // placeholder
-    Heap *heaps = malloc(dataset_getNumberOfObjects(dataset) * (sizeof(Heap)));
-    for (int i=0 ; i < dataset_getNumberOfObjects(dataset) ; i++){       
+    int objects = dataset_getNumberOfObjects(dataset), replaced, evaluations;
+    Heap *heaps = malloc(objects * (sizeof(Heap)));
+    
+    for (int i=0 ; i < objects ; i++){       
         heap_initialize(&heaps[i], k);
-        for (int j=0 ; j < dataset_getNumberOfObjects(dataset) ; j++){
+        for (int j=0 ; j < objects ; j++){
             if (j == i) continue;
+            evaluations++;
             heap_update(heaps[i], j, metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, j), dataset_getDimensions(dataset)), &replaced);
         }
     }
+
+    /*int temp = objects * (objects-1);
+    double rate = (double)(evaluations) / ((double)temp / (double)2);
+    printf("brute force scan-rate: %f\n", rate);*/
+
     return heaps; 
 }

@@ -110,21 +110,21 @@ float * readme(char *fileName, Dataset *dataset) {
 
 int main(void) { 
     Dataset dataset;
-    int k = 30;
+    int k = 5;
 
     clock_t start_time, end_time;
     float *numbers;
 
-    numbers = readme("Datasets/00010000-4.bin", &dataset);
+    numbers = readme("Datasets/00002000-1.bin", &dataset);
 
 
     start_time = clock();
-    Heap *predicted_1 = nn_descentBetter(dataset, k, l2);
+    Heap *predicted_1 = nn_descent(dataset, k, l2);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     start_time = clock();
-    double rec = recall("Solutions/00010000-4.30.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
+    double rec = recall("Solutions/00002000-4.30.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;
