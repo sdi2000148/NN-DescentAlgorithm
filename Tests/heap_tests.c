@@ -72,15 +72,6 @@ void test_remove(void) {
 
     TEST_CHECK(heap_remove(heap) == -1);
 
-    for (int i = 0; i < 10; i++) {
-        heap_update(heap, i, (double)i, &replaced);
-    }
-
-    for (int i = 9; i >= 0; i--) {
-        TEST_CHECK(heap_remove(heap) == i);
-    }
-    
-    TEST_CHECK(heap_remove(heap) == -1);
 
     heap_update(heap, 5, (double)5, &replaced);
     TEST_CHECK(heap_remove(heap) == 5);

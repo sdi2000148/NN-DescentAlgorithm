@@ -211,6 +211,35 @@ void test_nn_descent_10000(void) {
 
 }
 
+void test_nn_descent_50000(void) {
+    double rec;
+    int k = 20;
+    float *numbers;
+    Dataset dataset;
+    clock_t start_time, end_time;
+    Heap *predicted_1;
+
+    numbers = readme("../Datasets/00050000-3.bin", &dataset);
+
+    start_time = clock();
+    predicted_1 = nn_descentBetter(dataset, k, l2);
+    end_time = clock();
+    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+    start_time = clock();
+    rec = recall("../Solutions/00050000-3.20.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
+    end_time = clock();
+    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("recall nn_descent: %f\n",rec*100) ;
+
+    TEST_CHECK(rec >= 0.80);
+
+    heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
+    dataset_free(dataset);
+    free(numbers);
+
+}
+
 
 void test_search(void)
 {
@@ -259,6 +288,7 @@ TEST_LIST = {
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
-    //{ "nn_descent_10000", test_nn_descent_10000},
+    { "nn_descent_10000", test_nn_descent_10000},
+    //{ "nn_descent_50000", test_nn_descent_50000},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };

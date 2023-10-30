@@ -22,24 +22,68 @@ void test_nn_update(void) {
     nn_update(heaps, 4, 2, 17.4, R);
     nn_update(heaps, 4, 1, 19.4, R);
 
+    TEST_CHECK(avl_search(R[0], 0) == 0);
+    TEST_CHECK(avl_search(R[0], 1) == 0);
+    TEST_CHECK(avl_search(R[0], 2) == 0);
+    TEST_CHECK(avl_search(R[0], 3) == 0);
+    TEST_CHECK(avl_search(R[0], 4) == 0);
 
-    avl_remove(R[1], 2);
-    TEST_CHECK(avl_search(R[1],2) == 0);
+    TEST_CHECK(avl_search(R[1], 0) == 0);
+    TEST_CHECK(avl_search(R[1], 1) == 0);
+    TEST_CHECK(avl_search(R[1], 2) == 1);
+    TEST_CHECK(avl_search(R[1], 3) == 0);
+    TEST_CHECK(avl_search(R[1], 4) == 0);
 
-    avl_remove(R[2], 3);
-    TEST_CHECK(avl_search(R[2],3) == 0);
+    TEST_CHECK(avl_search(R[2], 0) == 0);
+    TEST_CHECK(avl_search(R[2], 1) == 0);
+    TEST_CHECK(avl_search(R[2], 2) == 0);
+    TEST_CHECK(avl_search(R[2], 3) == 1);
+    TEST_CHECK(avl_search(R[2], 4) == 0);
 
-    avl_remove(R[4], 0);
-    TEST_CHECK(avl_search(R[4],0) == 0);
+    TEST_CHECK(avl_search(R[3], 0) == 0);
+    TEST_CHECK(avl_search(R[3], 1) == 0);
+    TEST_CHECK(avl_search(R[3], 2) == 0);
+    TEST_CHECK(avl_search(R[3], 3) == 0);
+    TEST_CHECK(avl_search(R[3], 4) == 0);
 
-    avl_remove(R[4], 3);
-    TEST_CHECK(avl_search(R[4], 3) == 0);
+    TEST_CHECK(avl_search(R[4], 0) == 1);
+    TEST_CHECK(avl_search(R[4], 1) == 0);
+    TEST_CHECK(avl_search(R[4], 2) == 0);
+    TEST_CHECK(avl_search(R[4], 3) == 1);
+    TEST_CHECK(avl_search(R[4], 4) == 0);
 
 
     nn_update(heaps, 2, 3, 9.4, R);
 
-    avl_remove(R[2], 4);
-    TEST_CHECK(avl_search(R[2], 4) == 0);
+    TEST_CHECK(avl_search(R[0], 0) == 0);
+    TEST_CHECK(avl_search(R[0], 1) == 0);
+    TEST_CHECK(avl_search(R[0], 2) == 0);
+    TEST_CHECK(avl_search(R[0], 3) == 0);
+    TEST_CHECK(avl_search(R[0], 4) == 0);
+
+    TEST_CHECK(avl_search(R[1], 0) == 0);
+    TEST_CHECK(avl_search(R[1], 1) == 0);
+    TEST_CHECK(avl_search(R[1], 2) == 1);
+    TEST_CHECK(avl_search(R[1], 3) == 0);
+    TEST_CHECK(avl_search(R[1], 4) == 0);
+
+    TEST_CHECK(avl_search(R[2], 0) == 0);
+    TEST_CHECK(avl_search(R[2], 1) == 0);
+    TEST_CHECK(avl_search(R[2], 2) == 0);
+    TEST_CHECK(avl_search(R[2], 3) == 0);
+    TEST_CHECK(avl_search(R[2], 4) == 1);
+
+    TEST_CHECK(avl_search(R[3], 0) == 0);
+    TEST_CHECK(avl_search(R[3], 1) == 0);
+    TEST_CHECK(avl_search(R[3], 2) == 0);
+    TEST_CHECK(avl_search(R[3], 3) == 0);
+    TEST_CHECK(avl_search(R[3], 4) == 0);
+
+    TEST_CHECK(avl_search(R[4], 0) == 1);
+    TEST_CHECK(avl_search(R[4], 1) == 0);
+    TEST_CHECK(avl_search(R[4], 2) == 0);
+    TEST_CHECK(avl_search(R[4], 3) == 1);
+    TEST_CHECK(avl_search(R[4], 4) == 0);
 
     for (int i = 0; i < 5; i++) {
         avl_free(R[i]);
