@@ -6,6 +6,7 @@ void test_recall(void) {
     Dataset dataset;
     Heap actual[10], predicted[10];
 
+    //γεμιζουμε τα heaps ετσι ωστε να έχοθμε 50% ακρίβεια
     for (int i = 0; i < 10; i++){
         heap_initialize(&actual[i], 10);
         heap_initialize(&predicted[i], 10);

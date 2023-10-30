@@ -6,9 +6,14 @@ void test_dataset_initialization(void)
     Dataset dataset;
     int objects = 10, dimensions = 5;
 
+    //Δημιουργούμε ενα κενο dataset με 10 objects και 5 dimensions
     dataset_initialize(&dataset, objects, dimensions);
+    
+    //ελενχουμε οτι ειναι σωστα τα dimensions, objects
     TEST_CHECK(dataset_getDimensions(dataset) == dimensions);
     TEST_CHECK(dataset_getNumberOfObjects(dataset) == objects);
+
+    //και οτι το καθε feature ειναι NULL
     for (int i = 0; i < objects; i++)
     {
         for (int j = 0; j < dimensions; j++)
@@ -24,6 +29,7 @@ void test_dataset_addFeature(void)
     Dataset dataset;
     int objects = 10, dimensions = 5, **array, value;
 
+    //Δημιουργούμε ενα array που αποθηκευει τα feature
     array = malloc(objects * sizeof(int *));
     for (int i = 0; i < objects; i++)
     {
@@ -32,6 +38,7 @@ void test_dataset_addFeature(void)
 
     dataset_initialize(&dataset, objects, dimensions);
 
+    //προσθετουμε το αντιστοιχο feature στο dataset
     value = 1;
     for (int i = 0; i < objects; i++)
     {
@@ -43,6 +50,7 @@ void test_dataset_addFeature(void)
         }
     }
 
+    //και ελενχουμε αν περιεχονται στο dataset οι σωστες τιμες
     value = 1;
     for (int i = 0; i < objects; i++)
     {

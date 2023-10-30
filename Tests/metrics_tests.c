@@ -9,7 +9,7 @@ void test_l2(void) {
     array1 = malloc(dimensions * sizeof(float));
     array2 = malloc(dimensions * sizeof(float));
 
-
+    //το array1 = [1,2,3,4] και το array2 = [5,6,7,8]
     for (int i = 0; i < dimensions; i++) {
         array1[i] = (float) (i + 1);
         array2[i] = (float) (i + 5);
@@ -20,6 +20,7 @@ void test_l2(void) {
         y[i] = &array2[i];
     }
 
+    // sqr((1-5)^2 + (2-6)^2 + (3-7)^2 + (4-8)^2) = 8
     double value = l2(x, y, dimensions);
 
     TEST_CHECK(value == 8.0);

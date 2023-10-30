@@ -22,6 +22,7 @@ void test_brute_force(void) {
 
     dataset_initialize(&dataset, objects, dimensions);
 
+    //Δημιουργούμε ενα dataset και ελενχουμε αν η λυση ειναι ιδια με αυτη που υπολογισαμε με το χερι
     numbers[0] = 0.0; 
     dataset_addFeature(dataset, 0, 0, &numbers[0]);
     numbers[1] = 0.0; 
@@ -68,6 +69,8 @@ void test_nng_initialization(void) {
     Dataset dataset;
     Heap *heap;
 
+
+    //Δημιουργούμε ενα dataset
     dataset_initialize(&dataset, objects, dimensions);
 
     numbers[0] = 0.0; 
@@ -93,10 +96,12 @@ void test_nng_initialization(void) {
 
     heap = nng_initialization_random(dataset, k, l2, R);
 
+    //ελενχουμε οτι δεν το καθε heap δεν εχει διπλοτυπα και οτι κανες κομβος δεν εχει τον εαυτο του ως κοντινο
     for (int i = 0; i < objects; i++) {
         for (int j = 0; j < k; j++) {
             for (int l = 0; l < k; l++) {
                 if (l != j) TEST_CHECK(heap_getIndex(heap[i], j) != heap_getIndex(heap[i], l));
+                TEST_CHECK(heap_getIndex(heap[i], j) != i);
             }
         }
     }
@@ -164,7 +169,8 @@ void test_nn_descent_20(void) {
 
     numbers = readme("../Datasets/00000020.bin", &dataset);
 
-
+    // ελενχουμε την ακριβεια του nn_descent και εκτυπωνουμε τον χρονο του και του brute_force
+    //αλλα και το scan rate 
     start_time = clock();
     predicted_1 = nn_descent(dataset, k, l2);
     end_time = clock();
@@ -192,6 +198,8 @@ void test_nn_descent_10000(void) {
 
     numbers = readme("../Datasets/00010000-4.bin", &dataset);
 
+    // ελενχουμε την ακριβεια του nn_descentBetter με 10000 δεδομενα και εκτυπωνουμε τον χρονο του και του brute_force
+    //αλλα και το scan rate 
     start_time = clock();
     predicted_1 = nn_descentBetter(dataset, k, l2);
     end_time = clock();
@@ -220,6 +228,9 @@ void test_nn_descent_50000(void) {
     Heap *predicted_1;
 
     numbers = readme("../Datasets/00050000-3.bin", &dataset);
+
+    // ελενχουμε την ακριβεια του nn_descentBetter με 50000 δεδομενα και εκτυπωνουμε τον χρονο του και του brute_force
+    //αλλα και το scan rate 
 
     start_time = clock();
     predicted_1 = nn_descentBetter(dataset, k, l2);
