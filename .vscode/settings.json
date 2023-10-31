@@ -19,6 +19,11 @@
         "list.h": "c",
         "numbers": "c",
         "common_types.h": "c",
-        "search.h": "c"
+        "search.h": "c",
+        "services.h": "c",
+        "acutest.h": "c",
+        "unistd.h": "c",
+        "stdio.h": "c",
+        "fcntl.h": "c"
     }
 }

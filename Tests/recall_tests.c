@@ -28,7 +28,7 @@ void test_recall(void) {
     
     dataset_initialize(&dataset, 10, 1);
 
-    TEST_CHECK(recall("../Solutions/recall_test", predicted, 10, 10, dataset) == 0.5);
+    TEST_CHECK(recall("../Solutions/recall_test", predicted, 10, 10, dataset, l2) == 0.5);
     
     for (int i = 0; i < 10; i++) {
         heap_free(actual[i]);

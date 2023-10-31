@@ -5,7 +5,7 @@
 #define BUFFER_SIZE 1024
 
 
-double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
+double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset, Metric metric) {
     int **act = malloc(N*sizeof(int*)), i, j, true_positive = 0;
     char buffer[BUFFER_SIZE], *value;
     Heap *actual;
@@ -18,7 +18,7 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset) {
     fp = fopen(filename, "r");
 
     if(!fp) {
-        actual = brute_force(dataset, k, l2); 
+        actual = brute_force(dataset, k, metric); 
         actual_solution(actual, filename, N, k);
         if (!(fp = fopen(filename, "r"))) {
             printf("Can't open file\n");

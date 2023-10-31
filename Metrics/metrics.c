@@ -21,3 +21,12 @@ double manhattan(Pointer *x, Pointer *y, int d) {
     }
     return result;
 }
+
+double l2_double(Pointer *x, Pointer *y, int d) {
+    double result = 0.0, value;
+    for(int i = 0; i < d; i++) {
+        value = fabs(*(double*)x[i]- *(double*)y[i]);
+        result += pow(value, 2.0);
+    }
+    return sqrt(result);
+}

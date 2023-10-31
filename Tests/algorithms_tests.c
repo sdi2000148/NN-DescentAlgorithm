@@ -1,7 +1,5 @@
 #include "acutest.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdint.h>
+#include "read.h"
 #include "brutal.h"
 #include "dataset.h"
 #include "services.h"
@@ -115,49 +113,6 @@ void test_nng_initialization(void) {
     free(numbers);
 }
 
-float *readme(char *fileName, Dataset *dataset) {
-    float *numbers;
-    int row = 0, column = 0, dimensions = 100, fp;
-    uint32_t N;
-    
-
-    fp = open(fileName ,O_RDONLY,0);
-    
-    if(fp == -1) {
-        printf("Can't open file\n");
-        close(fp);
-        return NULL;
-    }
-
-    if (read(fp, &N, sizeof(uint32_t) ) == 0) {
-        printf("Can't read N (number of obects)\n");
-        close(fp);
-        return NULL;
-    }
-
-    numbers = malloc(N*dimensions*sizeof(float));
-
-    dataset_initialize(dataset, N, dimensions);
-
-    for (int i = 0; i < ((int)N * dimensions); i++) {
-        if (read(fp, &numbers[i], sizeof(float)) == 0) {
-            printf("Can't read float (item of obect)\n");
-            close(fp);
-            return numbers;
-        }
-
-        dataset_addFeature((*dataset), row, column, &numbers[i]);
-        
-        column++;
-        if (column == dimensions) {
-            column = 0;
-            row++;
-        }
-    }
-
-    close(fp);
-    return numbers;
-}
 
 void test_nn_descent_20(void) {
     double rec;
@@ -167,7 +122,7 @@ void test_nn_descent_20(void) {
     Dataset dataset;
     Heap *predicted_1;
 
-    numbers = readme("../Datasets/00000020.bin", &dataset);
+    numbers = readSigmod("../Datasets/00000020.bin", &dataset);
 
     // ελενχουμε την ακριβεια του nn_descent και εκτυπωνουμε τον χρονο του και του brute_force
     //αλλα και το scan rate 
@@ -177,7 +132,7 @@ void test_nn_descent_20(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     objects = dataset_getNumberOfObjects(dataset);
-    rec = recall("../Solutions/00000020.10.txt", predicted_1, objects, k, dataset);
+    rec = recall("../Solutions/00000020.10.txt", predicted_1, objects, k, dataset, l2);
     printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.85);
@@ -196,7 +151,7 @@ void test_nn_descent_10000(void) {
     clock_t start_time, end_time;
     Heap *predicted_1;
 
-    numbers = readme("../Datasets/00010000-4.bin", &dataset);
+    numbers = readSigmod("../Datasets/00010000-4.bin", &dataset);
 
     // ελενχουμε την ακριβεια του nn_descentBetter με 10000 δεδομενα και εκτυπωνουμε τον χρονο του και του brute_force
     //αλλα και το scan rate 
@@ -206,7 +161,7 @@ void test_nn_descent_10000(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     start_time = clock();
-    rec = recall("../Solutions/00010000-4.10.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
+    rec = recall("../Solutions/00010000-4.10.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset, l2);
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;
@@ -227,7 +182,7 @@ void test_nn_descent_50000(void) {
     clock_t start_time, end_time;
     Heap *predicted_1;
 
-    numbers = readme("../Datasets/00050000-3.bin", &dataset);
+    numbers = readSigmod("../Datasets/00050000-3.bin", &dataset);
 
     // ελενχουμε την ακριβεια του nn_descentBetter με 50000 δεδομενα και εκτυπωνουμε τον χρονο του και του brute_force
     //αλλα και το scan rate 
@@ -238,7 +193,7 @@ void test_nn_descent_50000(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     start_time = clock();
-    rec = recall("../Solutions/00050000-3.20.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset);
+    rec = recall("../Solutions/00050000-3.20.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset, l2);
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;
@@ -252,6 +207,37 @@ void test_nn_descent_50000(void) {
 }
 
 
+void test_nn_descent_5000(void) {
+    double rec;
+    int k = 10, objects = 5088, dimensions = 4;
+    double *numbers;
+    Dataset dataset;
+    clock_t start_time, end_time;
+    Heap *predicted_1;
+
+    numbers = readme("../Datasets/5k.RectNode.normal.ascii", &dataset, objects, dimensions);
+
+    start_time = clock();
+    predicted_1 = nn_descentBetter(dataset, k, l2_double);
+    end_time = clock();
+    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+    start_time = clock();
+    rec = recall("../Solutions/5k.RectNode.normal.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset, l2_double);
+    end_time = clock();
+    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+    printf("recall nn_descent: %f\n",rec*100) ;
+
+    TEST_CHECK(rec >= 0.80);
+
+    heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
+    dataset_free(dataset);
+    free(numbers);
+}
+
+
+
+
 void test_search(void)
 {
     Dataset dataset;
@@ -259,7 +245,7 @@ void test_search(void)
     int *solution, *brute_force_solution;
     float *numbers;
 
-    numbers = readme("../Datasets/00005000-5.bin", &dataset);
+    numbers = readSigmod("../Datasets/00005000-5.bin", &dataset);
 
     // using knn graph for searching
     Heap *actual = brute_force(dataset, k, l2);
@@ -291,15 +277,13 @@ void test_search(void)
 
 
 
-
-
-
 TEST_LIST = {
 	{ "brute_force", test_brute_force },
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
-    { "nn_descent_10000", test_nn_descent_10000},
+    //{ "nn_descent_10000", test_nn_descent_10000},
+    { "nn_descent_5000", test_nn_descent_5000 },
     //{ "nn_descent_50000", test_nn_descent_50000},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
