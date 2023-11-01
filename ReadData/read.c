@@ -2,35 +2,50 @@
 
 #define BUFFER_SIZE 1024
 
-double *readme(char *fileName, Dataset *dataset, int objects, int dimensions) {
-    int row = 0, column, i = 0;
+double *readme(char *fileName, Dataset *dataset) {
+    int objects = 0, dimensions = 0, count = 0;
     FILE *fp;
     char buffer[BUFFER_SIZE], *value;
-    double *numbers = malloc(objects * dimensions * sizeof(double));
-    
-    dataset_initialize(dataset, objects, dimensions);
+    double *numbers;
 
     fp = fopen(fileName, "r");
-    
 
     if(!fp) {
         printf("Can't open file\n");
         fclose(fp);
-        return numbers;
+        return NULL;
     }
 
-    while(fgets(buffer, BUFFER_SIZE, fp) != NULL) {
-        value = strtok(buffer, " \t\n\r");
-        column = 0;
-
-        while(value != NULL) {
-            numbers[i] = strtod(value, NULL);
-            dataset_addFeature((*dataset), row, column, &numbers[i]);
-            column++;
-            i++;
-            value = strtok(NULL, " \t\n\r");
+    while (fgets(buffer, BUFFER_SIZE, fp) != NULL) {
+        if (objects == 0) {
+            value = strtok(buffer, " \t\n\r"); 
+            while (value != NULL) {
+                dimensions++;
+                value = strtok(NULL, " \t\n\r");
+            }
         }
-        row++;
+        objects++;
+    }
+
+    numbers = malloc(objects * dimensions * sizeof(double));
+    dataset_initialize(dataset, objects, dimensions);
+
+    fseek(fp, 0, SEEK_SET);
+
+    for (int row = 0; row < objects; row++) {
+    
+        fgets(buffer, BUFFER_SIZE, fp);
+
+        for (int column = 0; column < dimensions; column++) {
+
+            if (column == 0) value = strtok(buffer, " \t\n\r");
+            else value = strtok(NULL, " \t\n\r");
+
+            numbers[count] = strtod(value, NULL);
+            dataset_addFeature((*dataset), row, column, &numbers[count]);
+            
+            count++;   
+        }
     }
 
     fclose(fp);

@@ -7,4 +7,4 @@
 #include <string.h>
 
 float *readSigmod(char *fileName, Dataset *dataset);
-double *readme(char *fileName, Dataset *dataset, int objects, int dimensions);
+double *readme(char *fileName, Dataset *dataset);

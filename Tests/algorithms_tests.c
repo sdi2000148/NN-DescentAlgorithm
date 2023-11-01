@@ -209,13 +209,13 @@ void test_nn_descent_50000(void) {
 
 void test_nn_descent_5000(void) {
     double rec;
-    int k = 10, objects = 5088, dimensions = 4;
+    int k = 10;
     double *numbers;
     Dataset dataset;
     clock_t start_time, end_time;
     Heap *predicted_1;
 
-    numbers = readme("../Datasets/5k.RectNode.normal.ascii", &dataset, objects, dimensions);
+    numbers = readme("../Datasets/5k.RectNode.normal.ascii", &dataset);
 
     start_time = clock();
     predicted_1 = nn_descentBetter(dataset, k, l2_double);
