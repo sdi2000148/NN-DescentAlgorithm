@@ -5,6 +5,7 @@ TESTS_DIR = .
 CURRENT_DIR = .
 
 LIST_OBJS = ../List/list.o
+AVL_OBJS = ../List/list.o ../Avl/avl.o
 HEAP_OBJS = ../List/list.o ../Heap/heap.o ../Avl/avl.o
 SERVICES_OBJS = ../List/list.o ../Heap/heap.o ../Avl/avl.o ../Services/services.o
 RECALL_OBJS = ../Heap/heap.o ../Avl/avl.o ../Evaluation/recall.o ../Dataset/dataset.o ../Services/services.o ../Algorithms/brute_force.o ../Metrics/metrics.o ../List/list.o
@@ -25,6 +26,9 @@ all: $(TEST_TARGETS)
 
 list_tests: list_tests.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(LIST_OBJS) -o $@
+
+avl_tests: avl_tests.c
+	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(AVL_OBJS) -o $@
 
 heap_tests: heap_tests.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(HEAP_OBJS) -o $@
@@ -47,8 +51,9 @@ metrics_tests: metrics_tests.c
 clean:
 	rm -rf $(TEST_TARGETS) *.o
 
-run: list_tests heap_tests services_tests recall_tests algorithms_tests dataset_tests metrics_tests
+run: list_tests avl_tests heap_tests services_tests recall_tests algorithms_tests dataset_tests metrics_tests
 	./list_tests
+	./avl_tests
 	./heap_tests
 	./services_tests
 	./recall_tests
@@ -58,6 +63,7 @@ run: list_tests heap_tests services_tests recall_tests algorithms_tests dataset_
 
 valgrind: $(TEST_TARGETS)
 	valgrind --leak-check=full ./list_tests
+	valgrind --leak-check=full ./avl_tests
 	valgrind --leak-check=full ./heap_tests
 	valgrind --leak-check=full ./services_tests
 	valgrind --leak-check=full ./recall_tests

@@ -65,7 +65,7 @@ static int getBalance(Node N) {
     return height(N->left) - height(N->right);
 }
 
-static Node insertNode(Node node, int value) {
+static Node insertNode(Node node, int value, int *result) {
     int balance;
     Node newnode;
     if(node == NULL) {
@@ -74,16 +74,17 @@ static Node insertNode(Node node, int value) {
         newnode->left = NULL;
         newnode->right = NULL;
         newnode->height = 1;
+        *result = 1;
         return newnode;
     }
 
     if (value < node->value)
-        node->left = insertNode(node->left, value);
+        node->left = insertNode(node->left, value, result);
     else if (value > node->value)
-        node->right = insertNode(node->right, value);
-    else
+        node->right = insertNode(node->right, value, result);
+    else 
         return node;
-
+    
 
     node->height = 1 + max(height(node->left), height(node->right));
 
@@ -118,17 +119,17 @@ static Node minValueNode(Node node) {
     return current;
 }
 
-static Node deleteNode(Node root, int value) {
+static Node deleteNode(Node root, int value, int *result) {
     Node temp;
     int balance;
     if (root == NULL)
         return root;
 
     if (value < root->value)
-        root->left = deleteNode(root->left, value);
+        root->left = deleteNode(root->left, value, result);
 
     else if (value > root->value)
-        root->right = deleteNode(root->right, value);
+        root->right = deleteNode(root->right, value, result);
 
     else {
         if ((root->left == NULL) || (root->right == NULL)) {
@@ -146,6 +147,7 @@ static Node deleteNode(Node root, int value) {
             }
             else 
                 *root = *temp;
+            *result = 1;
             free(temp);
 
         } 
@@ -154,7 +156,7 @@ static Node deleteNode(Node root, int value) {
 
             root->value = temp->value;
 
-            root->right = deleteNode(root->right, temp->value);
+            root->right = deleteNode(root->right, temp->value, result);
         }
     }
 
@@ -223,13 +225,17 @@ void avl_initialize(Avl *avl) {
 }
 
 
-void avl_insert(Avl avl, int value) {
-    avl->root = insertNode(avl->root, value);
+int avl_insert(Avl avl, int value) {
+    int result = 0;
+    avl->root = insertNode(avl->root, value, &result);
+    return result;
 }
 
 
-void avl_remove(Avl avl, int value) {
-    avl->root = deleteNode(avl->root, value);
+int avl_remove(Avl avl, int value) {
+    int result = 0;
+    avl->root = deleteNode(avl->root, value, &result);
+    return result;
 }
 
 int avl_search(Avl avl, int value) {
