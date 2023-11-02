@@ -20,7 +20,7 @@ struct heap{
 
 
 // return 1 on success, 0 otherwise
-int insert_index(int *indexes, int index, int k)
+static int insert_index(int *indexes, int index, int k)
 {
 	int bucket = index % k ;
 	if (indexes[bucket] == -1){
@@ -44,7 +44,7 @@ int insert_index(int *indexes, int index, int k)
 
 
 // return 1 on success, 0 otherwise
-int update_index(int *indexes, int new, int old, int k)
+static int update_index(int *indexes, int new, int old, int k)
 {
 	int bucket = old % k ;
 	if (indexes[bucket] == old){
@@ -68,7 +68,7 @@ int update_index(int *indexes, int new, int old, int k)
 
 
 // return 1 on success, 0 otherwise
-int search_index(int *indexes, int index, int k)
+static int search_index(int *indexes, int index, int k)
 {
 	int bucket = index % k ;
 	if (indexes[bucket] == index){
@@ -125,8 +125,9 @@ int heap_empty(Heap hp)
 }
 
 
+// insert new item in heap
 // return 1 on success, 0 otherwise
-int heap_insert(Heap hp, int index, double value)
+static int heap_insert(Heap hp, int index, double value)
 {
 	int child, parent ;
 
@@ -163,8 +164,9 @@ int heap_insert(Heap hp, int index, double value)
 }
 
 
+// replace root of heap with new item
 // return 1 on success, 0 otherwise
-int heap_replace(Heap hp, int index, double value)
+static int heap_replace(Heap hp, int index, double value)
 {
 	int current, child ;
 
@@ -243,8 +245,6 @@ int heap_remove(Heap hp)
 }
 
 
-// return 1 on change, 0 otherwise
-// replaced == -1, when no replacement took place
 int heap_update(Heap hp, int index, double value, int *replaced)
 {
 	int max = hp->array[1].index ; 
@@ -274,7 +274,6 @@ int heap_update(Heap hp, int index, double value, int *replaced)
 		return 0 ;
 	}
 }
-
 
 
 void heap_print(Heap hp)
