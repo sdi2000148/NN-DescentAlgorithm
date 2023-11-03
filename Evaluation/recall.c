@@ -4,7 +4,8 @@
 #include "recall.h"
 #define BUFFER_SIZE 1024
 
-
+//υπολογισμος της ακριβειας της λυσης (predicted) μεσω της πραγματικης λυσης που δινει το brute force 
+//και ειναι αποθηκευμενη σε ενα αρχειο (filename) αμα το αρχειο δεν υπαρχει δημιουργειτε εκεινη την στιγμη
 double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset, Metric metric) {
     int **act = malloc(N*sizeof(int*)), i, j, true_positive = 0;
     char buffer[BUFFER_SIZE], *value;

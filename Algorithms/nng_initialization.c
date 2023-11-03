@@ -4,6 +4,7 @@
 #include "services.h"
 #include "avl.h"
 
+//random αρχικοποιηση της λύσης (γραφου) 
 Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R) {
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), index, *samples, unique;
     Heap *heaps = malloc(objects* (sizeof(Heap)));

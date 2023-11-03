@@ -282,7 +282,7 @@ TEST_LIST = {
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
-    //{ "nn_descent_10000", test_nn_descent_10000},
+    { "nn_descent_10000", test_nn_descent_10000},
     { "nn_descent_5000", test_nn_descent_5000 },
     //{ "nn_descent_50000", test_nn_descent_50000},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL

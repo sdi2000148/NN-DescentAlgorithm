@@ -12,12 +12,14 @@ Heap *nn_descent(Dataset dataset, int k, Metric metric) {
     double rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, temp, evaluations = 0;
     Avl *R = malloc(objects * sizeof(Avl));
+    //random αρχικοποιηση της λυσης (γραφου)
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     Listnode neighbour, n_neighbour;
 
     do {
         c = 0;
+        //αποθηκευση στιγμιοτυπου του γραφου ωστε οι αλλαγες να μην επηρεάζουν 
         for (int i = 0; i < objects; i++) {
             list_initialize(&U[i]);
             for (int j = 0; j < k; j++)
@@ -25,6 +27,7 @@ Heap *nn_descent(Dataset dataset, int k, Metric metric) {
             avl_copyToList(R[i], U[i]);
         }
 
+        //για καθε γειτονα των γειτονων καθε σημειου βλεπω αμα βελτιωνει την λυση μου
         for(int i = 0; i < objects; i++) {
             neighbour = list_head(U[i]);
             while(neighbour != NULL) {
@@ -46,9 +49,9 @@ Heap *nn_descent(Dataset dataset, int k, Metric metric) {
         for (int i = 0; i < objects; i++) 
             list_free(U[i]);
         
-
         printf("%d\n", c);
-    } while(c);
+
+    } while(c); //σταματαω οταν δεν εχω κανει καμια αλλαγη στην λυση μου 
 
     for (int i = 0; i < objects; i++) 
         avl_free(R[i]);
@@ -68,6 +71,7 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
     double met, rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index1, index2, temp, evaluations = 0;
     Avl *avls = malloc(objects * sizeof(Avl)), *R = malloc(objects * sizeof(Avl));
+    //random αρχικοποιηση της λυσης (γραφου)
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
     List *U = malloc(objects * sizeof(List));
     Listnode neighbour, n_neighbour;
@@ -77,6 +81,7 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
 
     do {
         c = 0;
+        //αποθηκευση στιγμιοτυπου του γραφου ωστε οι αλλαγες να μην επηρεάζουν 
         for (int i = 0; i < objects; i++) {
             list_initialize(&U[i]);
             for (int j = 0; j < k; j++)
@@ -85,6 +90,8 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
             
         }
 
+        //για καθε συνδιασμο γειτονων (α,β) καθε σημειου βλεπω αμα ο α μπορει να προστεθει στους Κ κοντινότερους του β
+        //και το αντιστροφο (local join)
         for(int i = 0; i < objects; i++) {
             neighbour = list_head(U[i]);
             while(neighbour != NULL) {
@@ -102,6 +109,7 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
                     c += nn_update(heap, index1, index2, met, R);
                     c += nn_update(heap, index2, index1, met, R);
 
+                    //καθε φορα αποθηκευω τι εχω υπολογισει ωστε να μην κανω διπλους υπολογισμους
                     avl_insert(avls[index1], index2);
                     avl_insert(avls[index2], index1);
                     n_neighbour = list_next(n_neighbour);
@@ -114,7 +122,7 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
             list_free(U[i]);
 
         printf("%d\n", c);
-    } while(c);
+    } while(c); //σταματαω οταν δεν εχω κανει καμια αλλαγη στην λυση μου 
 
     for (int i = 0; i < objects; i++) 
         avl_free(R[i]);

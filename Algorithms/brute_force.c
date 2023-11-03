@@ -3,9 +3,9 @@
 #include "heap.h"
 #include <stdlib.h>
 
+//κανω ολους τους ελεγχους για να βρω την πραγματικη λυση 
+Heap* brute_force(Dataset dataset, int k, Metric metric) {
 
-Heap* brute_force(Dataset dataset, int k, Metric metric)
-{
     int objects = dataset_getNumberOfObjects(dataset), replaced, evaluations;
     Heap *heaps = malloc(objects * (sizeof(Heap)));
     
