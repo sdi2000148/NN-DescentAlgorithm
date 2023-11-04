@@ -7,52 +7,101 @@
 #include "nng_initialization.h"
 #include "nn_descent.h"
 #include "knn_search.h"
+#include <math.h>
 
-int *search_knn(Dataset dataset, Heap *heap, Pointer *object, int k, Metric metric)
+
+// return 1 when the two floating point numbers are equal, 0 otherwise
+static int equal(double a, double b)
+{
+	if (fabs(a-b) < 1.0e-12){
+		return 1 ;
+	}
+	return 0 ;
+}
+
+
+// get best untried candidate node in the pool
+// return -1 when pool is empty or when there are no untried candidate nodes left
+static int get_candidate(Heap pool, Avl computed, int k)
+{
+    int *indexes = malloc(k * sizeof(int)), replaced, pool_len = heap_getCount(pool), candidate = -1;
+    double *values = malloc(k * sizeof(double));
+
+    if (pool_len == 0){
+        return -1;
+    }
+
+    for (int i=pool_len-1 ; i>=0 ; i--){     // get nodes in descending order of similarity 
+        values[i] = heap_getMaxValue(pool);
+        indexes[i] = heap_getMaxIndex(pool);
+        heap_remove(pool);
+    }
+
+    for (int i=0 ; i < pool_len ; i++){      // rebuild heap  
+        heap_update(pool, indexes[i], values[i], &replaced);
+    }
+
+    for (int i=0 ; i < pool_len ; i++){
+        if (avl_search(computed, indexes[i]) == 0){    // found the best untried node
+            candidate = indexes[i];
+            avl_insert(computed, candidate);
+            break;
+        }
+    }
+
+    free(indexes);
+    free(values);
+
+    return candidate;
+}
+
+
+int *search_knn(Dataset dataset, Heap *graph, Pointer *object, int k, Metric metric)
 {
     Heap pool;
     Avl computed;
-    int current, checked = 0, replaced, pool_len, neighbor;
     int *indexes = malloc(k * sizeof(int));
-    double *values = malloc(k * sizeof(double));
-
-    srand(time(NULL));
-    current = rand() % dataset_getNumberOfObjects(dataset);  // randomly chosen candidate node
+    int current, replaced, pool_len, neighbor, self = -1;
+    double val;
 
     heap_initialize(&pool, k);
     avl_initialize(&computed);
 
-    heap_update(pool, current, metric(dataset_getFeatures(dataset, current), object, dataset_getDimensions(dataset)), &replaced);
+    srand(time(NULL));
+    current = rand() % dataset_getNumberOfObjects(dataset);    // randomly chosen candidate node
+    val = metric(dataset_getFeatures(dataset, current), object, dataset_getDimensions(dataset));
 
-    while (checked == 0){
-        checked = 1;
-        pool_len = heap_getCount(pool);
+    if (equal(val, 0.0) == 1){
+        self = current;
+    }
+    else{
+        heap_update(pool, current, val, &replaced);
+    }
 
-        for (int i=pool_len-1 ; i>=0 ; i--){
-            values[i] = heap_getMaxValue(pool);
-            indexes[i] = heap_getMaxIndex(pool);
-            heap_remove(pool);
+    while (1){
+        if (self == -1){
+            current = get_candidate(pool, computed, k);  
+        }
+        else{
+            current = self;
+            self = -1;
         }
 
-        for (int i=0 ; i < pool_len ; i++){
-            heap_update(pool, indexes[i], values[i], &replaced);
+
+        if (current == -1){
+            break;
         }
 
-        for (int i=0 ; i < pool_len; i++){
-            current = indexes[i];
-
-            if (avl_search(computed, current) == 1){
+        for (int i=0 ; i < heap_getCount(graph[current]) ; i++){   // for every neighbor of the current candidate node
+            neighbor = heap_getIndex(graph[current], i);
+            val = metric(dataset_getFeatures(dataset, neighbor), object, dataset_getDimensions(dataset));
+            if (equal(val, 0.0) == 1){
+                self = neighbor;
                 continue;
             }
-
-            checked = 0;
-            avl_insert(computed, current);
-            
-            for (int j=0 ; j < heap_getCount(heap[current]) ; j++){   // for every neighbor of the current candidate node
-                neighbor = heap_getIndex(heap[current], j);
-                heap_update(pool, neighbor, metric(dataset_getFeatures(dataset, neighbor), object, dataset_getDimensions(dataset)), &replaced);
-            }
+            heap_update(pool, neighbor, val, &replaced);
         }
+
     }
 
     pool_len = heap_getCount(pool);
@@ -63,11 +112,14 @@ int *search_knn(Dataset dataset, Heap *heap, Pointer *object, int k, Metric metr
 
     heap_free(pool);
     avl_free(computed);
-    free(values);
+
+    if (pool_len < k){
+        free(indexes);
+        return NULL;
+    }
 
     return indexes;
 }
-
 
 
 int *search_knn_brute_force(Dataset dataset, Pointer *object, int k, Metric metric)
@@ -75,11 +127,16 @@ int *search_knn_brute_force(Dataset dataset, Pointer *object, int k, Metric metr
     Heap heap;
     int replaced, heap_len;
     int *indexes = malloc(k * sizeof(int));
+    double val;
 
     heap_initialize(&heap, k);
 
     for (int i=0 ; i < dataset_getNumberOfObjects(dataset) ; i++){
-        heap_update(heap, i, metric(dataset_getFeatures(dataset, i), object, dataset_getDimensions(dataset)), &replaced);
+        val = metric(dataset_getFeatures(dataset, i), object, dataset_getDimensions(dataset));
+        if (equal(val, 0.0) == 1){
+            continue;
+        }
+        heap_update(heap, i, val, &replaced);
     }
     
     heap_len = heap_getCount(heap);
@@ -92,6 +149,8 @@ int *search_knn_brute_force(Dataset dataset, Pointer *object, int k, Metric metr
 
     return indexes;
 }
+
+
 
 
 

@@ -241,18 +241,18 @@ void test_nn_descent_5000(void) {
 void test_search(void)
 {
     Dataset dataset;
-    int k = 20, object = 4, matches = 0;
+    int k = 20, object = 10, matches = 0;
     int *solution, *brute_force_solution;
     float *numbers;
 
-    numbers = readSigmod("../Datasets/00005000-5.bin", &dataset);
+    numbers = readSigmod("../Datasets/00002000-1.bin", &dataset);
 
     // using knn graph for searching
     Heap *actual = brute_force(dataset, k, l2);
     solution = search_knn(dataset, actual, dataset_getFeatures(dataset, object), k, l2);
 
     // using brute force
-    brute_force_solution =search_knn_brute_force(dataset, dataset_getFeatures(dataset, object), k, l2);
+    brute_force_solution = search_knn_brute_force(dataset, dataset_getFeatures(dataset, object), k, l2);
 
     for (int i=0 ; i<k ; i++){
        //printf("%d - %d\n", solution[i], brute_force_solution[i]);
