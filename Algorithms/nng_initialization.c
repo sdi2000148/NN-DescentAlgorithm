@@ -5,9 +5,10 @@
 #include "avl.h"
 
 //random αρχικοποιηση της λύσης (γραφου) 
-Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R) {
+Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, Avl *avls) {
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), index, *samples, unique;
     Heap *heaps = malloc(objects* (sizeof(Heap)));
+    double val;
 
     samples = malloc(objects*sizeof(int));
 
@@ -18,6 +19,7 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R) {
 
     for (int i = 0; i < objects; i++) {
         avl_initialize(&R[i]);
+        avl_initialize(&avls[i]);
         heap_initialize(&heaps[i], k);
     }
     
@@ -36,7 +38,10 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R) {
                 }
             } while(!unique);
 
-            nn_update(heaps, i, index, metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dimensions), R);
+            if (avl_insert(avls[i], index) == 1){
+                val = metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dimensions);
+                nn_update(heaps, i, index, val, R);
+            }
         }
     }
 

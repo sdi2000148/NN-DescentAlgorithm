@@ -62,7 +62,7 @@ void test_brute_force(void) {
 void test_nng_initialization(void) {
     int dimensions = 2, objects = 5, k = 2;
     float *numbers = malloc(objects*dimensions*sizeof(float));
-    Avl *R = malloc(objects * sizeof(Avl));
+    Avl *R = malloc(objects * sizeof(Avl)), *avls = malloc(objects * sizeof(Avl));
     Dataset dataset;
     Heap *heap;
 
@@ -91,7 +91,7 @@ void test_nng_initialization(void) {
     numbers[9] = -10.0; 
     dataset_addFeature(dataset, 4, 1, &numbers[9]);
 
-    heap = nng_initialization_random(dataset, k, l2, R);
+    heap = nng_initialization_random(dataset, k, l2, R, avls);
 
     //ελενχουμε οτι δεν το καθε heap δεν εχει διπλοτυπα και οτι κανες κομβος δεν εχει τον εαυτο του ως κοντινο
     for (int i = 0; i < objects; i++) {
@@ -104,6 +104,7 @@ void test_nng_initialization(void) {
     }
 
     avl_free_all(R, objects);
+    avl_free_all(avls, objects);
     heap_free_all(heap, objects);
     dataset_free(dataset);
     free(numbers);
@@ -273,7 +274,7 @@ TEST_LIST = {
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
-    // { "nn_descent_10000", test_nn_descent_10000},
+    //{ "nn_descent_10000", test_nn_descent_10000},
     { "nn_descent_5000", test_nn_descent_5000 },
     //{ "nn_descent_50000", test_nn_descent_50000},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL

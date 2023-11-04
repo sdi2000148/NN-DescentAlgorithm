@@ -42,7 +42,8 @@ List *reverse(Heap *heap, int numberOfObjects) {
 //ενημερωση της λύσης (γραφου) και ενημερωση των reverse
 int nn_update(Heap *B, int v, int u, double l, Avl *R)
 {
-	int r; 
+	int r;
+    
 	if (heap_update(B[v], u, l, &r) == 0){
 		return 0;
 	}

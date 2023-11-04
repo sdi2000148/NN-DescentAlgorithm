@@ -9,15 +9,12 @@
 #include "nn_descent.h"
 
 int **nn_descent(Dataset dataset, int k, Metric metric) {
-    double rate;
+    double rate, val;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, temp, evaluations = 0, **neighours;
     Avl *avls = malloc(objects * sizeof(Avl)), *R = malloc(objects * sizeof(Avl)); // incremental search avls
-    Heap *heap = nng_initialization_random(dataset, k, metric, R); // nng initialization of random graph
+    Heap *heaps = nng_initialization_random(dataset, k, metric, R, avls); // nng initialization of random graph
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     Listnode neighbour, n_neighbour;
-
-    for(int i = 0; i < objects; i++)
-        avl_initialize(&avls[i]);
 
     do {
         c = 0;
@@ -25,7 +22,7 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
         for (int i = 0; i < objects; i++) {
             list_initialize(&U[i]); 
             for (int j = 0; j < k; j++)
-                list_insert(U[i], heap_getIndex(heap[i], j)); // k direct neighbours 
+                list_insert(U[i], heap_getIndex(heaps[i], j)); // k direct neighbours 
             avl_copyToList(R[i], U[i]); // reverse neighbours
         }
 
@@ -40,7 +37,8 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
                         continue;
                     }
                     evaluations++;
-                    c += nn_update(heap, i, index, metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, index), dimensions), R); // update heap
+                    val = metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, index), dimensions);
+                    c += nn_update(heaps, i, index, val, R); // update heap
                     n_neighbour = list_next(n_neighbour);
                 }
                 neighbour = list_next(neighbour);
@@ -63,23 +61,20 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
     rate = (double)(evaluations) / ((double)temp / (double)2); // scan rate
     printf("nn descent scan-rate: %f\n", rate);
     
-    neighours = getNeighbours(heap, objects, k);
+    neighours = getNeighbours(heaps, objects, k);
 
-    heap_free_all(heap, objects);
+    heap_free_all(heaps, objects);
     return neighours;
 }
 
 
 int **nn_descentBetter(Dataset dataset, int k, Metric metric) {
-    double met, rate;
+    double val, rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index1, index2, temp, evaluations = 0, **neighbours;
     Avl *avls = malloc(objects * sizeof(Avl)), *R = malloc(objects * sizeof(Avl)); // incremental search avls
-    Heap *heap = nng_initialization_random(dataset, k, metric, R); // nng initialization of random graph
+    Heap *heaps = nng_initialization_random(dataset, k, metric, R, avls); // nng initialization of random graph
     List *U = malloc(objects * sizeof(List));
     Listnode neighbour, n_neighbour;
-
-    for(int i = 0; i < objects; i++) 
-        avl_initialize(&avls[i]);
 
     do {
         c = 0;
@@ -87,7 +82,7 @@ int **nn_descentBetter(Dataset dataset, int k, Metric metric) {
         for (int i = 0; i < objects; i++) {
             list_initialize(&U[i]);
             for (int j = 0; j < k; j++)
-                list_insert(U[i], heap_getIndex(heap[i], j)); // k direct neighbours 
+                list_insert(U[i], heap_getIndex(heaps[i], j)); // k direct neighbours 
             avl_copyToList(R[i], U[i]); // reverse neighbours
             
         }
@@ -103,11 +98,11 @@ int **nn_descentBetter(Dataset dataset, int k, Metric metric) {
                         n_neighbour = list_next(n_neighbour); 
                         continue;
                     }
-                    met = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
+                    val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
                     evaluations++;
 
-                    c += nn_update(heap, index1, index2, met, R); // update heap of first neighbour
-                    c += nn_update(heap, index2, index1, met, R); // update heap of second neighour
+                    c += nn_update(heaps, index1, index2, val, R); // update heap of first neighbour
+                    c += nn_update(heaps, index2, index1, val, R); // update heap of second neighour
 
                     avl_insert(avls[index2], index1);
                     n_neighbour = list_next(n_neighbour);
@@ -131,9 +126,9 @@ int **nn_descentBetter(Dataset dataset, int k, Metric metric) {
     rate = (double)(evaluations) / ((double)temp / (double)2); // scan rate
     printf("nn descent better scan-rate: %f\n", rate);
 
-    neighbours = getNeighbours(heap, objects, k);
+    neighbours = getNeighbours(heaps, objects, k);
 
-    heap_free_all(heap, objects);
+    heap_free_all(heaps, objects);
 
     return neighbours;
 }

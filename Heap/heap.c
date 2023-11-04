@@ -14,78 +14,8 @@ struct heap{
 	int count ;
 	int capacity ;
 	struct item *array ;
-	int *indexes;
-	//Avl indexes_tree ;
+	Avl indexes ;
 };
-
-
-// return 1 on success, 0 otherwise
-static int insert_index(int *indexes, int index, int k)
-{
-	int bucket = index % k ;
-	if (indexes[bucket] == -1){
-		indexes[bucket] = index ;
-		return 1 ;
-	}
-	for (int i=bucket+1 ; i<k ; i++){
-		if (indexes[i] == -1){
-			indexes[i] = index ;
-			return 1 ;
-		}
-	}
-	for (int i=0 ; i<bucket ; i++){
-		if (indexes[i] == -1){
-			indexes[i] = index ;
-			return 1 ;
-		}
-	}
-	return 0 ; 
-}
-
-
-// return 1 on success, 0 otherwise
-static int update_index(int *indexes, int new, int old, int k)
-{
-	int bucket = old % k ;
-	if (indexes[bucket] == old){
-		indexes[bucket] = new ;
-		return 1 ;
-	}
-	for (int i=bucket+1 ; i<k ; i++){
-		if (indexes[i] == old){
-			indexes[i] = new ;
-			return 1 ;
-		}
-	}
-	for (int i=0 ; i<bucket ; i++){
-		if (indexes[i] == old){
-			indexes[i] = new ;
-			return 1 ;
-		}
-	}
-	return 0 ; 
-}
-
-
-// return 1 on success, 0 otherwise
-static int search_index(int *indexes, int index, int k)
-{
-	int bucket = index % k ;
-	if (indexes[bucket] == index){
-		return 1 ;
-	}
-	for (int i=bucket+1 ; i<k ; i++){
-		if (indexes[i] == index){
-			return 1 ;
-		}
-	}
-	for (int i=0 ; i<bucket ; i++){
-		if (indexes[i] == index){
-			return 1 ;
-		}
-	}
-	return 0 ; 
-}
 
 
 // return 1 when the two floating point numbers are equal, 0 otherwise
@@ -102,13 +32,9 @@ void heap_initialize(Heap *hp, int k)
 {
 	(*hp) = malloc(sizeof(struct heap)) ;
 	(*hp)->array = malloc((k+1) * sizeof(struct item)) ; 
-	(*hp)->indexes = malloc(k * sizeof(int)) ;
-	for (int i=0 ; i<k ; i++){
-		(*hp)->indexes[i] = -1 ;
-	}
-	//avl_initialize(&((*hp)->indexes_tree)) ;
 	(*hp)->count = 0 ;
 	(*hp)->capacity = k ;
+	avl_initialize(&((*hp)->indexes)) ;
 	return ;
 }
 
@@ -213,8 +139,7 @@ int heap_remove(Heap hp)
 	}
 
 	hp->count--;
-	update_index(hp->indexes, -1, returned_index, hp->capacity);
-	//avl_remove(hp->indexes_tree, returned_index);
+	avl_remove(hp->indexes, returned_index);
 	
 
 	current = 1 ;
@@ -250,23 +175,17 @@ int heap_update(Heap hp, int index, double value, int *replaced)
 	int max = hp->array[1].index ; 
 	*replaced = -1;
 
-	if (search_index(hp->indexes, index, hp->capacity) == 1){
+	/*if (avl_search(hp->indexes, index) == 1){
 		return 0 ;
-	}
-
-	//if (avl_search(hp->indexes_tree, index) == 1){
-	//	return 0 ;
-	//}
+	}*/
 
 	if (heap_insert(hp, index, value) == 1){
-		insert_index(hp->indexes, index, hp->capacity) ;
-		//avl_insert(hp->indexes_tree, index) ;
+		avl_insert(hp->indexes, index) ;
 		return 1 ;
 	}
 	else if (heap_replace(hp, index, value) == 1){
-		update_index(hp->indexes, index, max, hp->capacity) ;
-		//avl_remove(hp->indexes_tree, max) ;
-		//avl_insert(hp->indexes_tree, index) ;
+		avl_remove(hp->indexes, max) ;
+		avl_insert(hp->indexes, index) ;
 		*replaced = max;
 		return 1 ;
 	}
@@ -291,8 +210,7 @@ void heap_print(Heap hp)
 void heap_free(Heap hp)
 {
 	free(hp->array) ;
-	free(hp->indexes) ;
-	//avl_free(hp->indexes_tree) ;
+	avl_free(hp->indexes) ;
 	free(hp) ;
 }
 
@@ -350,8 +268,7 @@ double heap_getMaxValue(Heap hp)
 
 int heap_search(Heap hp, int index)
 {
-	return search_index(hp->indexes, index, hp->capacity);
-	//return avl_search(hp->indexes_tree, index);
+	return avl_search(hp->indexes, index);
 }
 
 
