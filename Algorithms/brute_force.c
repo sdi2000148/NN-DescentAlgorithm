@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "brutal.h"
 #include "heap.h"
+#include "services.h"
 #include <stdlib.h>
 
 //κανω ολους τους ελεγχους για να βρω την πραγματικη λυση 
-Heap* brute_force(Dataset dataset, int k, Metric metric) {
-
-    int objects = dataset_getNumberOfObjects(dataset), replaced, evaluations;
+int **brute_force(Dataset dataset, int k, Metric metric) {
+    int objects = dataset_getNumberOfObjects(dataset), replaced, evaluations, **neighbours;
     Heap *heaps = malloc(objects * (sizeof(Heap)));
     
     for (int i=0 ; i < objects ; i++){       
@@ -18,5 +18,9 @@ Heap* brute_force(Dataset dataset, int k, Metric metric) {
         }
     }
 
-    return heaps; 
+    neighbours = getNeighbours(heaps, objects, k);
+
+    heap_free_all(heaps, objects);
+
+    return neighbours; 
 }

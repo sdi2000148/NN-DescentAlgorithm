@@ -13,10 +13,9 @@
 
 
 void test_brute_force(void) {
-    int dimensions = 2, objects = 5, k = 2;
+    int dimensions = 2, objects = 5, k = 2, **actual;
     float *numbers = malloc(objects*dimensions*sizeof(float));
     Dataset dataset;
-    Heap *actual;
 
     dataset_initialize(&dataset, objects, dimensions);
 
@@ -44,19 +43,19 @@ void test_brute_force(void) {
 
     actual = brute_force(dataset, k, l2);
 
-    TEST_CHECK(heap_search(actual[0], 2) == 1);
-    TEST_CHECK(heap_search(actual[0], 3) == 1);
-    TEST_CHECK(heap_search(actual[1], 0) == 1);
-    TEST_CHECK(heap_search(actual[1], 2) == 1);
-    TEST_CHECK(heap_search(actual[2], 0) == 1);
-    TEST_CHECK(heap_search(actual[2], 3) == 1);
-    TEST_CHECK(heap_search(actual[3], 0) == 1);
-    TEST_CHECK(heap_search(actual[3], 2) == 1);
-    TEST_CHECK(heap_search(actual[4], 0) == 1);
-    TEST_CHECK(heap_search(actual[4], 3) == 1);
+    TEST_CHECK(seq_search(2, k, actual[0]) == 1);
+    TEST_CHECK(seq_search(3, k, actual[0]) == 1);
+    TEST_CHECK(seq_search(0, k, actual[1]) == 1);
+    TEST_CHECK(seq_search(2, k, actual[1]) == 1);
+    TEST_CHECK(seq_search(0, k, actual[2]) == 1);
+    TEST_CHECK(seq_search(3, k, actual[2]) == 1);
+    TEST_CHECK(seq_search(0, k, actual[3]) == 1);
+    TEST_CHECK(seq_search(2, k, actual[3]) == 1);
+    TEST_CHECK(seq_search(0, k, actual[4]) == 1);
+    TEST_CHECK(seq_search(3, k, actual[4]) == 1);
     
     dataset_free(dataset);
-    heap_free_all(actual, objects);
+    neighbours_free_all(actual, objects);
     free(numbers);
 }
 
@@ -104,10 +103,7 @@ void test_nng_initialization(void) {
         }
     }
 
-    for(int i = 0; i < objects; i++) 
-        avl_free(R[i]);
-    free(R);
-
+    avl_free_all(R, objects);
     heap_free_all(heap, objects);
     dataset_free(dataset);
     free(numbers);
@@ -116,11 +112,10 @@ void test_nng_initialization(void) {
 
 void test_nn_descent_20(void) {
     double rec;
-    int k = 10, objects;
+    int k = 10, objects, **predicted_1;
     float *numbers;
     clock_t start_time, end_time;
     Dataset dataset;
-    Heap *predicted_1;
 
     numbers = readSigmod("../Datasets/00000020.bin", &dataset);
 
@@ -137,7 +132,7 @@ void test_nn_descent_20(void) {
 
     TEST_CHECK(rec >= 0.85);
 
-    heap_free_all(predicted_1, objects);
+    neighbours_free_all(predicted_1, objects);
     dataset_free(dataset);
     free(numbers);
 
@@ -145,11 +140,10 @@ void test_nn_descent_20(void) {
 
 void test_nn_descent_10000(void) {
     double rec;
-    int k = 10;
+    int k = 10, **predicted_1;
     float *numbers;
     Dataset dataset;
     clock_t start_time, end_time;
-    Heap *predicted_1;
 
     numbers = readSigmod("../Datasets/00010000-4.bin", &dataset);
 
@@ -168,7 +162,7 @@ void test_nn_descent_10000(void) {
 
     TEST_CHECK(rec >= 0.80);
 
-    heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
+    neighbours_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);
     free(numbers);
 
@@ -176,11 +170,10 @@ void test_nn_descent_10000(void) {
 
 void test_nn_descent_50000(void) {
     double rec;
-    int k = 20;
+    int k = 20, **predicted_1;
     float *numbers;
     Dataset dataset;
     clock_t start_time, end_time;
-    Heap *predicted_1;
 
     numbers = readSigmod("../Datasets/00050000-3.bin", &dataset);
 
@@ -200,7 +193,7 @@ void test_nn_descent_50000(void) {
 
     TEST_CHECK(rec >= 0.80);
 
-    heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
+    neighbours_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);
     free(numbers);
 
@@ -209,11 +202,10 @@ void test_nn_descent_50000(void) {
 
 void test_nn_descent_5000(void) {
     double rec;
-    int k = 10;
+    int k = 10, **predicted_1;
     double *numbers;
     Dataset dataset;
     clock_t start_time, end_time;
-    Heap *predicted_1;
 
     numbers = readme("../Datasets/5k.RectNode.normal.ascii", &dataset);
 
@@ -230,7 +222,7 @@ void test_nn_descent_5000(void) {
 
     TEST_CHECK(rec >= 0.80);
 
-    heap_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
+    neighbours_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);
     free(numbers);
 }
@@ -248,14 +240,13 @@ void test_search(void)
     numbers = readSigmod("../Datasets/00002000-1.bin", &dataset);
 
     // using knn graph for searching
-    Heap *actual = brute_force(dataset, k, l2);
+    int **actual = brute_force(dataset, k, l2);
     solution = search_knn(dataset, actual, dataset_getFeatures(dataset, object), k, l2);
 
     // using brute force
     brute_force_solution = search_knn_brute_force(dataset, dataset_getFeatures(dataset, object), k, l2);
 
     for (int i=0 ; i<k ; i++){
-       //printf("%d - %d\n", solution[i], brute_force_solution[i]);
        for (int j=0 ; j<k ; j++){
         if (solution[i] == brute_force_solution[j]){
             matches++;
@@ -266,7 +257,7 @@ void test_search(void)
 
     TEST_CHECK(matches == k);
 
-    heap_free_all(actual, dataset_getNumberOfObjects(dataset));
+    neighbours_free_all(actual, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);
     free(numbers);
     free(solution);
@@ -279,7 +270,7 @@ void test_search(void)
 
 TEST_LIST = {
 	{ "brute_force", test_brute_force },
-    //{ "searching knn", test_search },
+    { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
     // { "nn_descent_10000", test_nn_descent_10000},

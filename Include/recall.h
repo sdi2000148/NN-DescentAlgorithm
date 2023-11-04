@@ -4,4 +4,4 @@
 #include "services.h"
 #include "dataset.h"
 
-double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset, Metric metric);
+double recall(char *filename, int **predicted, int N, int k, Dataset dataset, Metric metric);

@@ -6,10 +6,10 @@
 
 //υπολογισμος της ακριβειας της λυσης (predicted) μεσω της πραγματικης λυσης που δινει το brute force 
 //και ειναι αποθηκευμενη σε ενα αρχειο (filename) αμα το αρχειο δεν υπαρχει δημιουργειτε εκεινη την στιγμη
-double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset, Metric metric) {
+double recall(char *filename, int **predicted, int N, int k, Dataset dataset, Metric metric) {
     int **act = malloc(N*sizeof(int*)), i, j, true_positive = 0;
     char buffer[BUFFER_SIZE], *value;
-    Heap *actual;
+    int **actual;
     FILE *fp;
 
     for(int l = 0; l < N; l++) {
@@ -26,7 +26,7 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset, Me
             fclose(fp);
             return -1.0;
         }
-        heap_free_all(actual, N);
+        neighbours_free_all(actual, N);
     }
 
     while(fgets(buffer, BUFFER_SIZE, fp) != NULL) {
@@ -47,7 +47,7 @@ double recall(char *filename, Heap *predicted, int N, int k, Dataset dataset, Me
     for (int i=0 ; i<N ; i++) {
         for (int l=0 ; l<k ; l++) {
             for (int j=0 ; j<k; j++) {
-                if (act[i][l] == heap_getIndex(predicted[i], j)) {
+                if (act[i][l] == predicted[i][j]) {
                     true_positive++;
                     break;
                 }

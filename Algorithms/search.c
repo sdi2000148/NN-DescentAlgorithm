@@ -8,6 +8,7 @@
 #include "nn_descent.h"
 #include "knn_search.h"
 #include <math.h>
+#include "heap.h"
 
 
 // return 1 when the two floating point numbers are equal, 0 otherwise
@@ -56,7 +57,7 @@ static int get_candidate(Heap pool, Avl computed, int k)
 }
 
 
-int *search_knn(Dataset dataset, Heap *graph, Pointer *object, int k, Metric metric)
+int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric metric)
 {
     Heap pool;
     Avl computed;
@@ -92,8 +93,8 @@ int *search_knn(Dataset dataset, Heap *graph, Pointer *object, int k, Metric met
             break;
         }
 
-        for (int i=0 ; i < heap_getCount(graph[current]) ; i++){   // for every neighbor of the current candidate node
-            neighbor = heap_getIndex(graph[current], i);
+        for (int i=0 ; i < k ; i++){        // for every neighbor of the current candidate node
+            neighbor = graph[current][i]; 
             val = metric(dataset_getFeatures(dataset, neighbor), object, dataset_getDimensions(dataset));
             if (equal(val, 0.0) == 1){
                 self = neighbor;
