@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include "metrics.h"
-#include "brutal.h"
+#include "brute_force.h"
 #include "recall.h"
 #include "heap.h"
 #include "list.h"

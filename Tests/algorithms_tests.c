@@ -1,6 +1,6 @@
 #include "acutest.h"
 #include "read.h"
-#include "brutal.h"
+#include "brute_force.h"
 #include "dataset.h"
 #include "services.h"
 #include "metrics.h"

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "brutal.h"
+#include "brute_force.h"
 #include "heap.h"
 #include "services.h"
 #include <stdlib.h>

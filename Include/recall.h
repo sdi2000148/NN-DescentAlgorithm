@@ -1,5 +1,5 @@
 #include "heap.h"
-#include "brutal.h"
+#include "brute_force.h"
 #include "metrics.h"
 #include "services.h"
 #include "dataset.h"

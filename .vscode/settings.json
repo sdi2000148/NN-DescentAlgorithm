@@ -24,6 +24,7 @@
         "acutest.h": "c",
         "unistd.h": "c",
         "stdio.h": "c",
-        "fcntl.h": "c"
+        "fcntl.h": "c",
+        "recall.h": "c"
     }
 }
