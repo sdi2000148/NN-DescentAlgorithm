@@ -11,11 +11,14 @@
 Heap *nn_descent(Dataset dataset, int k, Metric metric) {
     double rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, temp, evaluations = 0;
-    Avl *R = malloc(objects * sizeof(Avl));
+    Avl *avls = malloc(objects * sizeof(Avl)), *R = malloc(objects * sizeof(Avl));
     //random αρχικοποιηση της λυσης (γραφου)
     Heap *heap = nng_initialization_random(dataset, k, metric, R);
     List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
     Listnode neighbour, n_neighbour;
+
+    for(int i = 0; i < objects; i++)
+        avl_initialize(&avls[i]);
 
     do {
         c = 0;
@@ -34,7 +37,7 @@ Heap *nn_descent(Dataset dataset, int k, Metric metric) {
                 n_neighbour = list_head(U[listnode_data(neighbour)]);
                 while(n_neighbour != NULL) {
                     index = listnode_data(n_neighbour);
-                    if(index == i) {
+                    if(index == i || avl_insert(avls[i], index) == 0) {
                         n_neighbour = list_next(n_neighbour);
                         continue;
                     }
@@ -53,9 +56,8 @@ Heap *nn_descent(Dataset dataset, int k, Metric metric) {
 
     } while(c); //σταματαω οταν δεν εχω κανει καμια αλλαγη στην λυση μου 
 
-    for (int i = 0; i < objects; i++) 
-        avl_free(R[i]);
-    free(R);
+    avl_free_all(R, objects);
+    avl_free_all(avls, objects);
 
     free(U);
 
@@ -99,7 +101,7 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
                 n_neighbour = list_next(neighbour);
                 while(n_neighbour != NULL) {
                     index2 = listnode_data(n_neighbour);
-                   if(avl_search(avls[index1], index2) == 1) {
+                   if(avl_insert(avls[index1], index2) == 0) {
                         n_neighbour = list_next(n_neighbour);
                         continue;
                     }
@@ -110,7 +112,6 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
                     c += nn_update(heap, index2, index1, met, R);
 
                     //καθε φορα αποθηκευω τι εχω υπολογισει ωστε να μην κανω διπλους υπολογισμους
-                    avl_insert(avls[index1], index2);
                     avl_insert(avls[index2], index1);
                     n_neighbour = list_next(n_neighbour);
                 }
@@ -124,13 +125,8 @@ Heap *nn_descentBetter(Dataset dataset, int k, Metric metric) {
         printf("%d\n", c);
     } while(c); //σταματαω οταν δεν εχω κανει καμια αλλαγη στην λυση μου 
 
-    for (int i = 0; i < objects; i++) 
-        avl_free(R[i]);
-    free(R);
-
-    for(int i = 0; i < objects; i++) 
-        avl_free(avls[i]);
-    free(avls);
+    avl_free_all(R, objects);
+    avl_free_all(avls, objects);
 
     free(U);
 

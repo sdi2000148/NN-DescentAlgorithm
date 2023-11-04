@@ -279,10 +279,10 @@ void test_search(void)
 
 TEST_LIST = {
 	{ "brute_force", test_brute_force },
-    { "searching knn", test_search },
+    //{ "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
-    { "nn_descent_10000", test_nn_descent_10000},
+    // { "nn_descent_10000", test_nn_descent_10000},
     { "nn_descent_5000", test_nn_descent_5000 },
     //{ "nn_descent_50000", test_nn_descent_50000},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL

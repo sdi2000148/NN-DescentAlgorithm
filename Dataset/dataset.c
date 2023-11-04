@@ -21,7 +21,7 @@ void dataset_initialize(Dataset *dataset, int numberOfObjects, int dimensions) {
 
     for(int i = 0; i < numberOfObjects; i++) {
         (*dataset)->objects[i] = malloc(sizeof(struct object));
-        (*dataset)->objects[i]->array = calloc(dimensions, sizeof(Pointer)); // calloc maybe?
+        (*dataset)->objects[i]->array = calloc(dimensions, sizeof(Pointer)); // initiaize features 
     }
 }
 
@@ -30,7 +30,7 @@ int dataset_addFeature(Dataset dataset, int i, int dimension, Pointer feature) {
         return -1;
     }
     
-    dataset->objects[i]->array[dimension] = feature;
+    dataset->objects[i]->array[dimension] = feature; // add feature
 
     return 0;
 } 
@@ -47,7 +47,7 @@ Pointer dataset_getFeature(Dataset dataset, int i, int dimension) {
     if(i > dataset->numberOfObjects || dimension > dataset->dimensions) {
         return NULL;
     }
-    return dataset->objects[i]->array[dimension];
+    return dataset->objects[i]->array[dimension]; // typical indexing
 } 
 
 Pointer *dataset_getFeatures(Dataset dataset, int i) {
@@ -55,22 +55,8 @@ Pointer *dataset_getFeatures(Dataset dataset, int i) {
         return NULL;
     }
 
-    return dataset->objects[i]->array;
+    return dataset->objects[i]->array; // return the whole array 
 
-}
-
-
-// assume features are all integers!!!
-void dataset_print(Dataset dataset) {
-    double *feature;
-    for (int i=0 ; i < dataset->numberOfObjects ; i++){
-        printf("%d: [ ", i);
-        for(int j = 0; j < dataset->dimensions; j++) {
-            feature = dataset_getFeature(dataset, i, j);
-            printf("%f ", *feature); 
-        }
-        printf("]\n");
-    }
 }
 
 

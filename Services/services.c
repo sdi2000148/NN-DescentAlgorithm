@@ -89,6 +89,12 @@ void heap_free_all(Heap *heaps, int n)
 	free(heaps);
 }
 
+void avl_free_all(Avl *avls, int n) {
+    for(int i = 0; i < n; i++) 
+        avl_free(avls[i]);
+    free(avls);
+}
+
 
 void actual_solution(Heap *heaps, char *path, int N, int k) {
     FILE *fp = fopen(path, "w");

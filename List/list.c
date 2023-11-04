@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "list.h"
 
+
 void list_initialize(List *list) {
     (*list) = malloc(sizeof(struct list));
     (*list)->head = NULL;
@@ -18,7 +19,7 @@ Listnode list_next(Listnode node) {
 
 int listnode_data(Listnode node) {
     if(node == NULL) {
-        return -1; // indices, we don't care for negatives
+        return -1; // list used for positives, therefore -1 can be used as code not found
     }
 
     return node->data;
@@ -29,7 +30,7 @@ void list_insert(List list, int data) {
 
     newNode->data = data;
     newNode->next = list->head;
-    list->head = newNode;
+    list->head = newNode; // insert at the start of the list
 
     return;
 }
@@ -40,6 +41,7 @@ int list_remove(List list, int item) {
 
     if (temp == NULL) return 0;
 
+    //search for the item until it's found
     if(temp->data == item) {
         list->head = temp->next;
         free(temp);

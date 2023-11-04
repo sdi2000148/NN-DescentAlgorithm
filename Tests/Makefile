@@ -19,7 +19,12 @@ TEST_TARGETS = $(TEST_SRCS:.c=)
 
 .PHONY: all clean run valgrind
 
-all: $(TEST_TARGETS)
+all: outer_make inner_make
+
+outer_make: 
+	$(MAKE) -C ..
+
+inner_make: $(TEST_TARGETS)
 
 %: %.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< -o $@
@@ -49,9 +54,10 @@ metrics_tests: metrics_tests.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(METRIC_OBJS) -o $@ -lm
 
 clean:
+	$(MAKE) -C .. clean
 	rm -rf $(TEST_TARGETS) *.o
 
-run: list_tests avl_tests heap_tests services_tests recall_tests algorithms_tests dataset_tests metrics_tests
+run: outer_make $(TEST_TARGETS)
 	./list_tests
 	./avl_tests
 	./heap_tests
@@ -61,7 +67,7 @@ run: list_tests avl_tests heap_tests services_tests recall_tests algorithms_test
 	./dataset_tests
 	./metrics_tests
 
-valgrind: $(TEST_TARGETS)
+valgrind: outer_make $(TEST_TARGETS)
 	valgrind --leak-check=full ./list_tests
 	valgrind --leak-check=full ./avl_tests
 	valgrind --leak-check=full ./heap_tests
