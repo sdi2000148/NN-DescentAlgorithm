@@ -3,11 +3,14 @@
 #include "nng_initialization.h"
 #include "services.h"
 #include "avl.h"
+#include "time.h"
 
 Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, Avl *avls) {
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), index, *samples, unique;
     Heap *heaps = malloc(objects* (sizeof(Heap)));
     double val;
+
+    srand(time(NULL));
 
     samples = malloc(objects*sizeof(int));
 
@@ -41,6 +44,9 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, A
             if (avl_insert(avls[i], index) == 1) {
                 val = metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dimensions);
                 nn_update(heaps, i, index, val, R);
+                if (avl_insert(avls[index], i) == 1) {
+                    nn_update(heaps, index, i, val, R);
+                }
             }
         }
     }

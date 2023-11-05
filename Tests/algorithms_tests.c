@@ -145,6 +145,41 @@ void test_nn_descent_20(void) {
 
 }
 
+void test_nn_descent_20_LJ(void) {
+    double rec;
+    Dataset dataset;
+    int **actual, k = 10, objects, **predicted;
+    float *numbers;
+    clock_t start_time, end_time;
+    
+
+    numbers = readSigmod("../Datasets/00000020.bin", &dataset);
+    objects = dataset_getNumberOfObjects(dataset);
+
+    // ελενχουμε την ακριβεια του nn_descent και εκτυπωνουμε τον χρονο του και του brute_force
+    //αλλα και το scan rate 
+    start_time = clock();
+    predicted = nn_descent_LJ(dataset, k, l2);
+    end_time = clock();
+    printf("nn descent LJ time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
+
+    
+    actual = brute_force(dataset, k, l2);
+
+    rec = recall(actual, predicted, objects, k);
+
+    printf("recall nn_descent: %f\n",rec*100) ;
+
+    TEST_CHECK(rec >= 0.85);
+
+    neighbours_free_all(predicted, objects);
+    neighbours_free_all(actual, objects);
+    dataset_free(dataset);
+    free(numbers);
+
+}
+
+
 
 void test_search(void)
 {
@@ -189,5 +224,6 @@ TEST_LIST = {
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
+    { "nn_descent_20 local join", test_nn_descent_20_LJ},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };

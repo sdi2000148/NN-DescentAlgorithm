@@ -68,7 +68,7 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
 }
 
 
-int **nn_descentBetter(Dataset dataset, int k, Metric metric) {
+int **nn_descent_LJ(Dataset dataset, int k, Metric metric) {
     double val, rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index1, index2, temp, evaluations = 0, **neighbours;
     Avl *avls = malloc(objects * sizeof(Avl)), *R = malloc(objects * sizeof(Avl)); // incremental search avls
@@ -94,7 +94,7 @@ int **nn_descentBetter(Dataset dataset, int k, Metric metric) {
                 n_neighbour = list_next(neighbour);
                 while(n_neighbour != NULL) {
                     index2 = listnode_data(n_neighbour); // second neighbour
-                   if(avl_insert(avls[index1], index2) == 0) {
+                    if(avl_insert(avls[index1], index2) == 0) {
                         n_neighbour = list_next(n_neighbour); 
                         continue;
                     }
@@ -105,6 +105,7 @@ int **nn_descentBetter(Dataset dataset, int k, Metric metric) {
                     c += nn_update(heaps, index2, index1, val, R); // update heap of second neighour
 
                     avl_insert(avls[index2], index1);
+                    
                     n_neighbour = list_next(n_neighbour);
                 }
                 neighbour = list_next(neighbour);
