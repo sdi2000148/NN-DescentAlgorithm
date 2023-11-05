@@ -1,49 +1,51 @@
 #include "recall.h"
 #include "acutest.h"
+#define N 10
+
 
 void test_recall(void) {
-    int replaced;
-    Dataset dataset;
-    Heap actual[10], predicted[10];
-    int **actual_n, **predicted_n;
+    char *filename = "kojo.txt";
+    int replaced, k = 10, **actual_n, **predicted_n;
+    Heap actual[N], predicted[N];
 
     //γεμιζουμε τα heaps ετσι ωστε να έχοθμε 50% ακρίβεια
-    for (int i = 0; i < 10; i++){
-        heap_initialize(&actual[i], 10);
-        heap_initialize(&predicted[i], 10);
+    for (int i = 0; i < N; i++){
+        heap_initialize(&actual[i], k);
+        heap_initialize(&predicted[i], k);
         if ((i % 2) == 0) {
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < k; j++) {
                 heap_update(actual[i], j, (double)j, &replaced);
                 heap_update(predicted[i], j, (double)j, &replaced);
             }
         }
         else {
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < k; j++) {
                 heap_update(actual[i], j, (double)j, &replaced);
-                heap_update(predicted[i], j+10, (double)(j+10), &replaced);
+                heap_update(predicted[i], j+N, (double)(j+N), &replaced);
             }
         }   
     }
 
-    
-    actual_n = getNeighbours(actual, 10, 10);
-    predicted_n = getNeighbours(predicted, 10, 10);
+    actual_n = getNeighbours(actual, N, k);
+    predicted_n = getNeighbours(predicted, N, k);
 
-    save_solution(actual_n, "../Solutions/recall_test", 10, 10);
-    
-    dataset_initialize(&dataset, 10, 1);
 
-    TEST_CHECK(recall("../Solutions/recall_test", predicted_n, 10, dataset, l2) == 0.5);
+    save_solution(actual_n, filename, N, k);
     
-    for (int i = 0; i < 10; i++) {
+
+    TEST_CHECK(recall(actual_n, predicted_n, N, k) == 0.5);
+    TEST_CHECK(recall_file(filename, predicted_n, N, k) == 0.5);
+    
+    for (int i = 0; i < N; i++) {
         heap_free(actual[i]);
         heap_free(predicted[i]);
     }
 
-    neighbours_free_all(actual_n, 10);
-    neighbours_free_all(predicted_n, 10);
+    neighbours_free_all(actual_n, N);
+    neighbours_free_all(predicted_n, N);
 
-    dataset_free(dataset);
+    if(remove(filename) != 0) 
+        printf("Error deleting the file %s\n", filename);
     
 }
 

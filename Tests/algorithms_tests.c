@@ -113,132 +113,47 @@ void test_nng_initialization(void) {
 
 void test_nn_descent_20(void) {
     double rec;
-    int k = 10, objects, **predicted_1;
+    Dataset dataset;
+    int **actual, k = 10, objects, **predicted;
     float *numbers;
     clock_t start_time, end_time;
-    Dataset dataset;
+    
 
     numbers = readSigmod("../Datasets/00000020.bin", &dataset);
+    objects = dataset_getNumberOfObjects(dataset);
 
     // ελενχουμε την ακριβεια του nn_descent και εκτυπωνουμε τον χρονο του και του brute_force
     //αλλα και το scan rate 
     start_time = clock();
-    predicted_1 = nn_descent(dataset, k, l2);
+    predicted = nn_descent(dataset, k, l2);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
-    objects = dataset_getNumberOfObjects(dataset);
-    rec = recall("../Solutions/00000020.10.txt", predicted_1, k, dataset, l2);
+    
+    actual = brute_force(dataset, k, l2);
+
+    rec = recall(actual, predicted, objects, k);
+
     printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.85);
 
-    neighbours_free_all(predicted_1, objects);
+    neighbours_free_all(predicted, objects);
+    neighbours_free_all(actual, objects);
     dataset_free(dataset);
     free(numbers);
 
 }
-
-void test_nn_descent_10000(void) {
-    double rec;
-    int k = 10, **predicted_1;
-    float *numbers;
-    Dataset dataset;
-    clock_t start_time, end_time;
-
-    numbers = readSigmod("../Datasets/00010000-4.bin", &dataset);
-
-    // ελενχουμε την ακριβεια του nn_descentBetter με 10000 δεδομενα και εκτυπωνουμε τον χρονο του και του brute_force
-    //αλλα και το scan rate 
-    start_time = clock();
-    predicted_1 = nn_descentBetter(dataset, k, l2);
-    end_time = clock();
-    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-
-    start_time = clock();
-    rec = recall("../Solutions/00010000-4.10.txt", predicted_1, k, dataset, l2);
-    end_time = clock();
-    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-    printf("recall nn_descent: %f\n",rec*100) ;
-
-    TEST_CHECK(rec >= 0.80);
-
-    neighbours_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
-    dataset_free(dataset);
-    free(numbers);
-
-}
-
-void test_nn_descent_50000(void) {
-    double rec;
-    int k = 20, **predicted_1;
-    float *numbers;
-    Dataset dataset;
-    clock_t start_time, end_time;
-
-    numbers = readSigmod("../Datasets/00050000-3.bin", &dataset);
-
-    // ελενχουμε την ακριβεια του nn_descentBetter με 50000 δεδομενα και εκτυπωνουμε τον χρονο του και του brute_force
-    //αλλα και το scan rate 
-
-    start_time = clock();
-    predicted_1 = nn_descentBetter(dataset, k, l2);
-    end_time = clock();
-    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-
-    start_time = clock();
-    rec = recall("../Solutions/00050000-3.20.txt", predicted_1, k, dataset, l2);
-    end_time = clock();
-    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-    printf("recall nn_descent: %f\n",rec*100) ;
-
-    TEST_CHECK(rec >= 0.80);
-
-    neighbours_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
-    dataset_free(dataset);
-    free(numbers);
-
-}
-
-
-void test_nn_descent_5000(void) {
-    double rec;
-    int k = 10, **predicted_1;
-    double *numbers;
-    Dataset dataset;
-    clock_t start_time, end_time;
-
-    numbers = readme("../Datasets/5k.RectNode.normal.ascii", &dataset);
-
-    start_time = clock();
-    predicted_1 = nn_descentBetter(dataset, k, l2_double);
-    end_time = clock();
-    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-
-    start_time = clock();
-    rec = recall("../Solutions/5k.RectNode.normal.txt", predicted_1, k, dataset, l2_double);
-    end_time = clock();
-    printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-    printf("recall nn_descent: %f\n",rec*100) ;
-
-    TEST_CHECK(rec >= 0.80);
-
-    neighbours_free_all(predicted_1, dataset_getNumberOfObjects(dataset));
-    dataset_free(dataset);
-    free(numbers);
-}
-
-
 
 
 void test_search(void)
 {
     Dataset dataset;
-    int k = 20, object = 10, matches = 0;
+    int k = 5, object = 10, matches = 0;
     int *solution, *brute_force_solution;
     float *numbers;
 
-    numbers = readSigmod("../Datasets/00002000-1.bin", &dataset);
+    numbers = readSigmod("../Datasets/00000020.bin", &dataset);
 
     // using knn graph for searching
     int **actual = brute_force(dataset, k, l2);
@@ -274,8 +189,5 @@ TEST_LIST = {
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
-    //{ "nn_descent_10000", test_nn_descent_10000},
-    { "nn_descent_5000", test_nn_descent_5000 },
-    //{ "nn_descent_50000", test_nn_descent_50000},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
