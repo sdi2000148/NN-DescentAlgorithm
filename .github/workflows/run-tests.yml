@@ -1,0 +1,16 @@
+name: run-tests
+on: [push, pull_request]
+
+jobs:
+  build-deploy:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: make run
+      run: |
+        cd Tests/ 
+        make run CFLAGS=-fPIC
