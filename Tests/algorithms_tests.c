@@ -128,7 +128,7 @@ void test_nn_descent_20(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     objects = dataset_getNumberOfObjects(dataset);
-    rec = recall("../Solutions/00000020.10.txt", predicted_1, objects, k, dataset, l2);
+    rec = recall("../Solutions/00000020.10.txt", predicted_1, k, dataset, l2);
     printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.85);
@@ -156,7 +156,7 @@ void test_nn_descent_10000(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     start_time = clock();
-    rec = recall("../Solutions/00010000-4.10.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset, l2);
+    rec = recall("../Solutions/00010000-4.10.txt", predicted_1, k, dataset, l2);
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;
@@ -187,7 +187,7 @@ void test_nn_descent_50000(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     start_time = clock();
-    rec = recall("../Solutions/00050000-3.20.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset, l2);
+    rec = recall("../Solutions/00050000-3.20.txt", predicted_1, k, dataset, l2);
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;
@@ -216,7 +216,7 @@ void test_nn_descent_5000(void) {
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 
     start_time = clock();
-    rec = recall("../Solutions/5k.RectNode.normal.txt", predicted_1, dataset_getNumberOfObjects(dataset), k, dataset, l2_double);
+    rec = recall("../Solutions/5k.RectNode.normal.txt", predicted_1, k, dataset, l2_double);
     end_time = clock();
     printf("brute force time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
     printf("recall nn_descent: %f\n",rec*100) ;

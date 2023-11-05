@@ -4,10 +4,8 @@
 #include "recall.h"
 #define BUFFER_SIZE 1024
 
-//υπολογισμος της ακριβειας της λυσης (predicted) μεσω της πραγματικης λυσης που δινει το brute force 
-//και ειναι αποθηκευμενη σε ενα αρχειο (filename) αμα το αρχειο δεν υπαρχει δημιουργειτε εκεινη την στιγμη
-double recall(char *filename, int **predicted, int N, int k, Dataset dataset, Metric metric) {
-    int **act = malloc(N*sizeof(int*)), i, j, true_positive = 0;
+double recall(char *filename, int **predicted, int k, Dataset dataset, Metric metric) {
+    int N = dataset_getNumberOfObjects(dataset), **act = malloc(N*sizeof(int*)), i, j, true_positive = 0;
     char buffer[BUFFER_SIZE], *value;
     int **actual;
     FILE *fp;
@@ -20,7 +18,7 @@ double recall(char *filename, int **predicted, int N, int k, Dataset dataset, Me
 
     if(!fp) {
         actual = brute_force(dataset, k, metric); 
-        actual_solution(actual, filename, N, k);
+        save_solution(actual, filename, N, k);
         if (!(fp = fopen(filename, "r"))) {
             printf("Can't open file\n");
             fclose(fp);
@@ -47,8 +45,8 @@ double recall(char *filename, int **predicted, int N, int k, Dataset dataset, Me
     for (int i=0 ; i<N ; i++) {
         for (int l=0 ; l<k ; l++) {
             for (int j=0 ; j<k; j++) {
-                if (act[i][l] == predicted[i][j]) {
-                    true_positive++;
+                if (act[i][l] == predicted[i][j]) { 
+                    true_positive++; // number of similar values
                     break;
                 }
             }

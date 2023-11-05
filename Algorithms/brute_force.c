@@ -1,11 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "brute_force.h"
 #include "heap.h"
 #include "services.h"
-#include <stdlib.h>
 
-//κανω ολους τους ελεγχους για να βρω την πραγματικη λυση 
 int **brute_force(Dataset dataset, int k, Metric metric) {
+    double val;
     int objects = dataset_getNumberOfObjects(dataset), replaced, evaluations, **neighbours;
     Heap *heaps = malloc(objects * (sizeof(Heap)));
     
@@ -14,7 +14,8 @@ int **brute_force(Dataset dataset, int k, Metric metric) {
         for (int j=0 ; j < objects ; j++){
             if (j == i) continue;
             evaluations++;
-            heap_update(heaps[i], j, metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, j), dataset_getDimensions(dataset)), &replaced);
+            val = metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, j), dataset_getDimensions(dataset));
+            heap_update(heaps[i], j, val, &replaced);
         }
     }
 

@@ -39,7 +39,6 @@ List *reverse(Heap *heap, int numberOfObjects) {
     return R;
 }
 
-//ενημερωση της λύσης (γραφου) και ενημερωση των reverse
 int nn_update(Heap *B, int v, int u, double l, Avl *R)
 {
 	int r;
@@ -48,35 +47,40 @@ int nn_update(Heap *B, int v, int u, double l, Avl *R)
 		return 0;
 	}
 	else{
-        //περιπτωση που αρχικοποιειτε ακομα ο γραφος 
-		if (r == -1){
-            //αρα για να αποφυγουμε τα διπλοτυπα πρεπει να βγαλουμε αυτον που μπηκε
-            //στους Κ κοντινους του v (δηλαδη ο u) απο τους reverse του v αν υπαρχει (Περιπτωση (v <--> u))
+		if (r == -1){ // graph is not fully initialized
+            // to avoid duplicates, try to remove u from the reverse neighbours of v 
 
-            //και να προσθεσουμε στους reverse του u τον v αμα δεν ειναι ηδη στους γειτονες
-            //του u ως ενας απο τους Κ κοντινοτερους (Περιπτωση (v --> u))
-			if (avl_remove(R[v], u) == 0){
-        		avl_insert(R[u], v);
+			if (avl_remove(R[v], u) == 0){ // u is not reverse neighbour of v
+        		avl_insert(R[u], v); 
+                // add v to the reverse neighbours of u 
+                // case 1: the graph looks like that: (v -> u)
             }
+            // else, if the remove succeed, 
+            // case 2: the graph looks like that: (v <-> u)
+
 		}
-        //περιπτωση που ενημερωνετε ο γραφος 
-		else{
+		else{ // graph is initialized
 
-            //αρα για να αποφυγουμε τα διπλοτυπα πρεπει να βγαλουμε αυτον που μπηκε
-            //στους Κ κοντινους του v (δηλαδη ο u) απο τους reverse του v αν υπαρχει (Περιπτωση (v <--> u))
+            // to avoid duplicates, try to remove u from the reverse neighbours of v 
 
-            //και να προσθεσουμε στους reverse του u τον v αμα δεν ειναι ηδη στους γειτονες
-            //του u ως ενας απο τους Κ κοντινοτερους (Περιπτωση (v --> u))
-			if (avl_remove(R[v], u) == 0){
-        		avl_insert(R[u], v);
+			if (avl_remove(R[v], u) == 0){ //try to remove u from reverse neighbours of v
+        		avl_insert(R[u], v); 
+                // add v to the reverse neighbours of u
+                // case 1: the graph looks like that: (v -> u) 
             }
-            //επισης πρεπει να βγαλουμε αν υπαρχει τον v απο τους reverse του r (που βγηκε απο τους Κ κοντινους του v) (Περιπτωση (r καμια ακμη v))
 
-            //και να προσθεσουμε στους reverse του v τον r αμα ειναι στους γειτονες
-            //του r ως ενας απο τους Κ κοντινοτερους (Περιπτωση (r --> v))
-            if (avl_remove(R[r], v) == 0){
-        		avl_insert(R[v], r);
+            // else, if the remove succeed, 
+            // case 2: the graph looks like that: (v <-> u)
+            
+            if (avl_remove(R[r], v) == 0){ // try to remove v for the reverse neighbours of r
+        		avl_insert(R[v], r); 
+                // add r to the reverse neighbours of v
+                // case 1: the graph look like that: (r -> v)
 			}
+
+            // else, if the remove succeed, 
+            // case 2: the graph looks like that: (r and v not connected at all)
+
 		}
 		return 1;
 	}
@@ -103,7 +107,7 @@ void neighbours_free_all(int **neighbours, int n) {
 }
 
 
-void actual_solution(int **neighbours, char *path, int N, int k) {
+void save_solution(int **neighbours, char *path, int N, int k) {
     FILE *fp = fopen(path, "w");
 
     // #object : #n1 #n2 #n3 

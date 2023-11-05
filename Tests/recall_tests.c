@@ -29,11 +29,11 @@ void test_recall(void) {
     actual_n = getNeighbours(actual, 10, 10);
     predicted_n = getNeighbours(predicted, 10, 10);
 
-    actual_solution(actual_n, "../Solutions/recall_test", 10, 10);
+    save_solution(actual_n, "../Solutions/recall_test", 10, 10);
     
     dataset_initialize(&dataset, 10, 1);
 
-    TEST_CHECK(recall("../Solutions/recall_test", predicted_n, 10, 10, dataset, l2) == 0.5);
+    TEST_CHECK(recall("../Solutions/recall_test", predicted_n, 10, dataset, l2) == 0.5);
     
     for (int i = 0; i < 10; i++) {
         heap_free(actual[i]);

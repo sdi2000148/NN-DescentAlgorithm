@@ -4,7 +4,6 @@
 #include "services.h"
 #include "avl.h"
 
-//random αρχικοποιηση της λύσης (γραφου) 
 Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, Avl *avls) {
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), index, *samples, unique;
     Heap *heaps = malloc(objects* (sizeof(Heap)));
@@ -17,6 +16,7 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, A
         return NULL;
     }
 
+    // initialize ADTs
     for (int i = 0; i < objects; i++) {
         avl_initialize(&R[i]);
         avl_initialize(&avls[i]);
@@ -36,9 +36,9 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, A
                     unique = 1;
                     samples[index] = 1;
                 }
-            } while(!unique);
+            } while(!unique); // duplicate avoidance 
 
-            if (avl_insert(avls[i], index) == 1){
+            if (avl_insert(avls[i], index) == 1) {
                 val = metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dimensions);
                 nn_update(heaps, i, index, val, R);
             }
