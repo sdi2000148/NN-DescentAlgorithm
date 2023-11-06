@@ -11,7 +11,6 @@ void test_nn_update(void) {
         heap_initialize(&heaps[i], 2);
     }
 
-    //γεμιζουμε το heap και ελενχουμε την ορθότητα των reverse
     nn_update(heaps, 0, 1, 16.4, R);
     nn_update(heaps, 0, 4, 15.6, R);
     nn_update(heaps, 1, 4, 10.0, R);

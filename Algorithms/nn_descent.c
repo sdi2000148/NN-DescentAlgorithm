@@ -32,13 +32,14 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
                 n_neighbour = list_head(U[listnode_data(neighbour)]); // reverse neighbour
                 while(n_neighbour != NULL) {
                     index = listnode_data(n_neighbour);
-                    if(index == i || avl_insert(avls[i], index) == 0) {
+                    if(index == i || avl_search(avls[index], i) == 1 || avl_insert(avls[i], index) == 0) {
                         n_neighbour = list_next(n_neighbour);
                         continue;
                     }
-                    evaluations++;
                     val = metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, index), dimensions);
+                    evaluations++;
                     c += nn_update(heaps, i, index, val, R); // update heap
+                    c += nn_update(heaps, index, i, val, R); // update heap
                     n_neighbour = list_next(n_neighbour);
                 }
                 neighbour = list_next(neighbour);
@@ -94,17 +95,14 @@ int **nn_descent_LJ(Dataset dataset, int k, Metric metric) {
                 n_neighbour = list_next(neighbour);
                 while(n_neighbour != NULL) {
                     index2 = listnode_data(n_neighbour); // second neighbour
-                    if(avl_insert(avls[index1], index2) == 0) {
+                    if(avl_search(avls[index2], index1) == 1 || avl_insert(avls[index1], index2) == 0) {
                         n_neighbour = list_next(n_neighbour); 
                         continue;
                     }
                     val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
                     evaluations++;
-
                     c += nn_update(heaps, index1, index2, val, R); // update heap of first neighbour
                     c += nn_update(heaps, index2, index1, val, R); // update heap of second neighour
-
-                    avl_insert(avls[index2], index1);
                     
                     n_neighbour = list_next(n_neighbour);
                 }

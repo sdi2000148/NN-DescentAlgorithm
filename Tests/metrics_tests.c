@@ -9,7 +9,7 @@ void test_l2(void) {
     array1 = malloc(dimensions * sizeof(float));
     array2 = malloc(dimensions * sizeof(float));
 
-    //το array1 = [1,2,3,4] και το array2 = [5,6,7,8]
+
     for (int i = 0; i < dimensions; i++) {
         array1[i] = (float) (i + 1);
         array2[i] = (float) (i + 5);

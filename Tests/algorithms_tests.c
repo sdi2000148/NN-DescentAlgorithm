@@ -19,7 +19,6 @@ void test_brute_force(void) {
 
     dataset_initialize(&dataset, objects, dimensions);
 
-    //Δημιουργούμε ενα dataset και ελενχουμε αν η λυση ειναι ιδια με αυτη που υπολογισαμε με το χερι
     numbers[0] = 0.0; 
     dataset_addFeature(dataset, 0, 0, &numbers[0]);
     numbers[1] = 0.0; 
@@ -66,8 +65,6 @@ void test_nng_initialization(void) {
     Dataset dataset;
     Heap *heap;
 
-
-    //Δημιουργούμε ενα dataset
     dataset_initialize(&dataset, objects, dimensions);
 
     numbers[0] = 0.0; 
@@ -93,7 +90,6 @@ void test_nng_initialization(void) {
 
     heap = nng_initialization_random(dataset, k, l2, R, avls);
 
-    //ελενχουμε οτι δεν το καθε heap δεν εχει διπλοτυπα και οτι κανες κομβος δεν εχει τον εαυτο του ως κοντινο
     for (int i = 0; i < objects; i++) {
         for (int j = 0; j < k; j++) {
             for (int l = 0; l < k; l++) {
@@ -122,8 +118,6 @@ void test_nn_descent_20(void) {
     numbers = readSigmod("../Datasets/00000020.bin", &dataset);
     objects = dataset_getNumberOfObjects(dataset);
 
-    // ελενχουμε την ακριβεια του nn_descent και εκτυπωνουμε τον χρονο του και του brute_force
-    //αλλα και το scan rate 
     start_time = clock();
     predicted = nn_descent(dataset, k, l2);
     end_time = clock();
@@ -156,8 +150,6 @@ void test_nn_descent_20_LJ(void) {
     numbers = readSigmod("../Datasets/00000020.bin", &dataset);
     objects = dataset_getNumberOfObjects(dataset);
 
-    // ελενχουμε την ακριβεια του nn_descent και εκτυπωνουμε τον χρονο του και του brute_force
-    //αλλα και το scan rate 
     start_time = clock();
     predicted = nn_descent_LJ(dataset, k, l2);
     end_time = clock();

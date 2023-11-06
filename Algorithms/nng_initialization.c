@@ -41,12 +41,10 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, A
                 }
             } while(!unique); // duplicate avoidance 
 
-            if (avl_insert(avls[i], index) == 1) {
+            if (avl_search(avls[index], i) == 0 && avl_insert(avls[i], index) == 1) {
                 val = metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dimensions);
                 nn_update(heaps, i, index, val, R);
-                if (avl_insert(avls[index], i) == 1) {
-                    nn_update(heaps, index, i, val, R);
-                }
+                nn_update(heaps, index, i, val, R);
             }
         }
     }

@@ -8,7 +8,7 @@ void test_recall(void) {
     int replaced, k = 10, **actual_n, **predicted_n;
     Heap actual[N], predicted[N];
 
-    //γεμιζουμε τα heaps ετσι ωστε να έχοθμε 50% ακρίβεια
+    // 50% recall
     for (int i = 0; i < N; i++){
         heap_initialize(&actual[i], k);
         heap_initialize(&predicted[i], k);
