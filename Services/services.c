@@ -16,9 +16,7 @@ int seq_search(int value , int size , int *array)
 }
 
 
-List *reverse(Avl *avls, int numberOfObjects) {
-    List *R = malloc(numberOfObjects * sizeof(List));
-
+void reverse(Avl *avls, List *R, int numberOfObjects) {
     for (int i=0 ; i < numberOfObjects ; i++){
         list_initialize(&R[i]);
     }
@@ -27,7 +25,7 @@ List *reverse(Avl *avls, int numberOfObjects) {
         avl_findReverses(avls, i, R);
     }
 
-    return R;
+    return;
 }
 
 void heap_free_all(Heap *heaps, int n)

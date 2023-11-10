@@ -85,7 +85,7 @@ void test_copytolist(void) {
         avl_insert(avl, i);
     
 
-    avl_copyToList(avl, list);
+    avl_copyToList(avl, list, N);
 
     node = list_head(list);
     for(int i = 0; i < N; i++) {

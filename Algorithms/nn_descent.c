@@ -10,11 +10,13 @@
 
 int **nn_descent(Dataset dataset, int k, Metric metric) {
     double val, rate;
-    int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, temp, evaluations = 0, **neighbours, flag;
+    int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, temp, evaluations = 0, **neighbours, flag,
+    sampling = (int)(0.5 *(float)k), count;
     Avl *new = malloc(objects * sizeof(Avl)), *old = malloc(objects * sizeof(Avl)); // incremental search avls
     Heap *heaps = nng_initialization_random(dataset, k, metric); // nng initialization of random graph
-    List *old_u, *new_u;
+    List *old_u = malloc(objects * sizeof(List)), *new_u = malloc(objects * sizeof(List));
     Listnode neighbour1, neighbour2;
+    float d = 0.001;
 
 
     do {
@@ -23,27 +25,29 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
         for(int i = 0; i < objects; i++) {
             avl_initialize(&old[i]);
             avl_initialize(&new[i]);
+            count = 0;
             for(int j = 0; j < k; j++) {
                 index = heap_getIndex(heaps[i], j);
                 flag = heap_getFlag(heaps[i], j);
                 if(flag == 0) {
                     avl_insert(old[i], index);
                 }
-                else { // sampling
+                else if(count <= sampling) { // sampling
                     avl_insert(new[i], index);
                     heap_setFlag(heaps[i], j);
+                    count++;
                 }
             }
         }
 
         // reverse calcuation
 
-        old_u = reverse(old, objects);
-        new_u = reverse(new, objects);
+        reverse(old, old_u, objects);
+        reverse(new, new_u, objects);
 
         for(int i = 0; i < objects; i++) {
-            avl_copyToList(old[i], old_u[i]);
-            avl_copyToList(new[i], new_u[i]);
+            avl_copyToList(old[i], old_u[i], sampling);
+            avl_copyToList(new[i], new_u[i], sampling);
 
             neighbour1 = list_head(new_u[i]);
             while(neighbour1 != NULL) {
@@ -78,12 +82,9 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
             list_free(old_u[i]);
             list_free(new_u[i]);
         }
-        free(old_u);
-        free(new_u);
-
 
         printf("%d\n", c);
-    } while(c);
+    } while(c > (int)(d * (float)(objects * k)));
 
     temp = objects * (objects-1);
     rate = (double)(evaluations) / ((double)temp / (double)2); // scan rate
@@ -94,6 +95,8 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
     heap_free_all(heaps, objects);
     free(old);
     free(new);
+    free(old_u);
+    free(new_u);
 
     return neighbours;
 }

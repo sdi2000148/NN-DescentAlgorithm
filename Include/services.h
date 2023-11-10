@@ -6,7 +6,7 @@
 
 int seq_search(int value , int size , int *array);
 
-List *reverse(Avl *avls, int numberOfObjects);
+void reverse(Avl *avls, List *R, int numberOfObjects);
 
 // take a knn graph (NxK array) and save it in a file defined by the path parameter
 void save_solution(int **neighbours, char *path, int N, int k);

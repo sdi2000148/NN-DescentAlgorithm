@@ -213,11 +213,11 @@ static void nodeDestroy(Node node) { // destruction of the subtree of the node
     free(node);
 }
 
-static void copyToList(Node node, List list) { // copy all the values to a list
-    if (node != NULL) {
-        copyToList(node->left, list);
+static void copyToList(Node node, List list, int currentSample, int maxSamples) { // copy all the values to a list
+    if (node != NULL && currentSample <= maxSamples) {
+        copyToList(node->left, list, ++currentSample, maxSamples);
         list_insert(list, node->value);
-        copyToList(node->right, list);
+        copyToList(node->right, list, ++currentSample, maxSamples);
     }
 }
 
@@ -262,8 +262,8 @@ int avl_search(Avl avl, int value) {
 }
 
 
-void avl_copyToList(Avl avl, List list) {
-    copyToList(avl->root, list);
+void avl_copyToList(Avl avl, List list, int maxSamples) {
+    copyToList(avl->root, list, 0, maxSamples);
 }
 
 

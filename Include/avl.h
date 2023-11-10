@@ -16,7 +16,7 @@ int avl_remove(Avl avl, int value);
 int avl_search(Avl avl, int value);
 
 /* Insert all the values of the avl to the list */
-void avl_copyToList(Avl avl, List list);
+void avl_copyToList(Avl avl, List list, int maxSamples);
 
 
 void avl_findReverses(Avl *avls, int i, List *R);
