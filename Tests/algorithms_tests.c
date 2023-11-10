@@ -61,7 +61,6 @@ void test_brute_force(void) {
 void test_nng_initialization(void) {
     int dimensions = 2, objects = 5, k = 2;
     float *numbers = malloc(objects*dimensions*sizeof(float));
-    Avl *R = malloc(objects * sizeof(Avl)), *avls = malloc(objects * sizeof(Avl));
     Dataset dataset;
     Heap *heap;
 
@@ -88,7 +87,7 @@ void test_nng_initialization(void) {
     numbers[9] = -10.0; 
     dataset_addFeature(dataset, 4, 1, &numbers[9]);
 
-    heap = nng_initialization_random(dataset, k, l2, R, avls);
+    heap = nng_initialization_random(dataset, k, l2);
 
     for (int i = 0; i < objects; i++) {
         for (int j = 0; j < k; j++) {
@@ -99,8 +98,6 @@ void test_nng_initialization(void) {
         }
     }
 
-    avl_free_all(R, objects);
-    avl_free_all(avls, objects);
     heap_free_all(heap, objects);
     dataset_free(dataset);
     free(numbers);
@@ -138,39 +135,6 @@ void test_nn_descent_20(void) {
     free(numbers);
 
 }
-
-void test_nn_descent_20_LJ(void) {
-    double rec;
-    Dataset dataset;
-    int **actual, k = 10, objects, **predicted;
-    float *numbers;
-    clock_t start_time, end_time;
-    
-
-    numbers = readSigmod("../Datasets/00000020.bin", &dataset);
-    objects = dataset_getNumberOfObjects(dataset);
-
-    start_time = clock();
-    predicted = nn_descent_LJ(dataset, k, l2);
-    end_time = clock();
-    printf("nn descent LJ time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-
-    
-    actual = brute_force(dataset, k, l2);
-
-    rec = recall(actual, predicted, objects, k);
-
-    printf("recall nn_descent: %f\n",rec*100) ;
-
-    TEST_CHECK(rec >= 0.85);
-
-    neighbours_free_all(predicted, objects);
-    neighbours_free_all(actual, objects);
-    dataset_free(dataset);
-    free(numbers);
-
-}
-
 
 
 void test_search(void)
@@ -216,6 +180,5 @@ TEST_LIST = {
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
-    { "nn_descent_20 local join", test_nn_descent_20_LJ},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };

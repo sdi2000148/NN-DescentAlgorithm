@@ -6,7 +6,7 @@
 
 int **brute_force(Dataset dataset, int k, Metric metric) {
     double val;
-    int objects = dataset_getNumberOfObjects(dataset), replaced, evaluations, **neighbours;
+    int objects = dataset_getNumberOfObjects(dataset), evaluations, **neighbours;
     Heap *heaps = malloc(objects * (sizeof(Heap)));
     
     for (int i=0 ; i < objects ; i++){       
@@ -15,7 +15,7 @@ int **brute_force(Dataset dataset, int k, Metric metric) {
             if (j == i) continue;
             evaluations++;
             val = metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, j), dataset_getDimensions(dataset));
-            heap_update(heaps[i], j, val, &replaced);
+            heap_update(heaps[i], j, val);
         }
     }
 

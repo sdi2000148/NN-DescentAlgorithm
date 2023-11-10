@@ -7,7 +7,6 @@ CURRENT_DIR = .
 LIST_OBJS = ../List/list.o
 AVL_OBJS = ../List/list.o ../Avl/avl.o
 HEAP_OBJS = ../List/list.o ../Heap/heap.o ../Avl/avl.o
-SERVICES_OBJS = ../List/list.o ../Heap/heap.o ../Avl/avl.o ../Services/services.o
 RECALL_OBJS = ../Heap/heap.o ../Avl/avl.o ../Evaluation/recall.o ../Dataset/dataset.o ../Services/services.o ../Algorithms/brute_force.o ../Metrics/metrics.o ../List/list.o
 ALGORITHMS_OBJS = ../Avl/avl.o ../Services/services.o ../ReadData/read.o ../Dataset/dataset.o ../Heap/heap.o ../Algorithms/brute_force.o ../List/list.o ../Metrics/metrics.o ../Algorithms/search.o ../Algorithms/nn_descent.o ../Algorithms/nng_initialization.o ../Evaluation/recall.o
 DATASET_OBJS = ../Dataset/dataset.o
@@ -38,9 +37,6 @@ avl_tests: avl_tests.c
 heap_tests: heap_tests.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(HEAP_OBJS) -o $@
 
-services_tests: services_tests.c
-	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(SERVICES_OBJS) -o $@
-
 recall_tests: recall_tests.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) $< $(RECALL_OBJS) -o $@ -lm
 
@@ -61,7 +57,6 @@ run: outer_make $(TEST_TARGETS)
 	./list_tests
 	./avl_tests
 	./heap_tests
-	./services_tests
 	./recall_tests
 	./algorithms_tests
 	./dataset_tests
@@ -71,7 +66,6 @@ valgrind: outer_make $(TEST_TARGETS)
 	valgrind --leak-check=full ./list_tests
 	valgrind --leak-check=full ./avl_tests
 	valgrind --leak-check=full ./heap_tests
-	valgrind --leak-check=full ./services_tests
 	valgrind --leak-check=full ./recall_tests
 	valgrind --leak-check=full ./algorithms_tests
 	valgrind --leak-check=full ./dataset_tests

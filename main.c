@@ -20,7 +20,7 @@
 
 
 // USED WITH CAUTION
-void find_solutions(void) {
+/*void find_solutions(void) {
     char filename[BUFFER_SIZE], number[BUFFER_SIZE];
     clock_t start_time, end_time;
     Dataset dataset;
@@ -114,7 +114,7 @@ void find_solutions(void) {
         dataset_free(dataset);
         free(numbersSigmod);
     }
-}
+}*/
 
 
 // USED WITH CAUTION
@@ -127,11 +127,11 @@ void run_nn_descents(void) {
     int objects, **solution, k[] = {10, 20, 50, 100}, ks = sizeof(k)/sizeof(int);
 
     
-    for(int i = 0; i < ks; i++) {
+    /*for(int i = 0; i < ks; i++) {
         numbersRect = readme("Datasets/5k.RectNode.normal.ascii", &dataset);
         objects = dataset_getNumberOfObjects(dataset);
         start_time = clock();
-        solution = nn_descent_LJ(dataset, k[i], l2_double);
+        solution = nn_descent(dataset, k[i], l2_double);
         end_time = clock();
         printf("NN descent LJ time 5k.RectNode with k=%d:%f\n", k[i], (double)(end_time - start_time) / CLOCKS_PER_SEC);
         strcpy(filename, "Solutions/5k.RectNode.normal.ascii.");
@@ -143,13 +143,13 @@ void run_nn_descents(void) {
         neighbours_free_all(solution, objects);
         dataset_free(dataset);
         free(numbersRect);
-    }
+    }*/
 
-    for(int i = 0; i < ks; i++) {
+    /*for(int i = 0; i < ks; i++) {
         numbersRect = readme("Datasets/50k.RectNode.normal.ascii", &dataset);
         objects = dataset_getNumberOfObjects(dataset);
         start_time = clock();
-        solution = nn_descent_LJ(dataset, k[i], l2_double);
+        solution = nn_descent(dataset, k[i], l2_double);
         end_time = clock();
         printf("NN descent LJ time 50k.RectNode with k=%d:%f\n", k[i], (double)(end_time - start_time) / CLOCKS_PER_SEC);
         strcpy(filename, "Solutions/50k.RectNode.normal.ascii.");
@@ -161,10 +161,10 @@ void run_nn_descents(void) {
         neighbours_free_all(solution, objects);
         dataset_free(dataset);
         free(numbersRect);
-    }
+    }*/
 
 
-    for(int i = 0; i < ks; i++) {
+    /*for(int i = 0; i < ks; i++) {
         numbersSigmod = readSigmod("Datasets/00002000-1.bin", &dataset);
         objects = dataset_getNumberOfObjects(dataset);
         start_time = clock();
@@ -180,9 +180,9 @@ void run_nn_descents(void) {
         neighbours_free_all(solution, objects);
         dataset_free(dataset);
         free(numbersSigmod);
-    }
+    }*/
 
-    for(int i = 0; i < ks; i++) {
+    /*for(int i = 0; i < ks; i++) {
         numbersSigmod = readSigmod("Datasets/00005000-3.bin", &dataset);
         objects = dataset_getNumberOfObjects(dataset);
         start_time = clock();
@@ -198,13 +198,13 @@ void run_nn_descents(void) {
         neighbours_free_all(solution, objects);
         dataset_free(dataset);
         free(numbersSigmod);
-    }
+    }*/
 
     for(int i = 0; i < ks; i++) {
         numbersSigmod = readSigmod("Datasets/00010000-1.bin", &dataset);
         objects = dataset_getNumberOfObjects(dataset);
         start_time = clock();
-        solution = nn_descent_LJ(dataset, k[i], l2);
+        solution = nn_descent(dataset, k[i], l2);
         end_time = clock();
         printf("Brute force time 00010000-1.bin with k=%d:%f\n", k[i], (double)(end_time - start_time) / CLOCKS_PER_SEC);
         strcpy(filename, "Solutions/00010000-1.");
@@ -222,7 +222,7 @@ void run_nn_descents(void) {
 int main(void) {
     
     //find_solutions();
-    //run_nn_descents();
+    run_nn_descents();
      
     return 0;
 }

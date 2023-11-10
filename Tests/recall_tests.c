@@ -5,7 +5,7 @@
 
 void test_recall(void) {
     char *filename = "kojo.txt";
-    int replaced, k = 10, **actual_n, **predicted_n;
+    int k = 10, **actual_n, **predicted_n;
     Heap actual[N], predicted[N];
 
     // 50% recall
@@ -14,14 +14,14 @@ void test_recall(void) {
         heap_initialize(&predicted[i], k);
         if ((i % 2) == 0) {
             for (int j = 0; j < k; j++) {
-                heap_update(actual[i], j, (double)j, &replaced);
-                heap_update(predicted[i], j, (double)j, &replaced);
+                heap_update(actual[i], j, (double)j);
+                heap_update(predicted[i], j, (double)j);
             }
         }
         else {
             for (int j = 0; j < k; j++) {
-                heap_update(actual[i], j, (double)j, &replaced);
-                heap_update(predicted[i], j+N, (double)(j+N), &replaced);
+                heap_update(actual[i], j, (double)j);
+                heap_update(predicted[i], j+N, (double)(j+N));
             }
         }   
     }

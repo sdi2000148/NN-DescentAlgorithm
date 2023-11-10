@@ -6,6 +6,7 @@
 
 struct item{
     int index ;
+	int flag;
     double value ;
 };
 
@@ -65,6 +66,7 @@ static int heap_insert(Heap hp, int index, double value)
 		hp->count++ ;
 		hp->array[hp->count].index = index;
 		hp->array[hp->count].value = value;
+		hp->array[hp->count].flag = 1;
 		return 1 ;
 	}
 
@@ -75,17 +77,20 @@ static int heap_insert(Heap hp, int index, double value)
 		if (value > hp->array[parent].value && equal(value, hp->array[parent].value) == 0){
 			hp->array[child].value = hp->array[parent].value ;
 			hp->array[child].index = hp->array[parent].index ;
+			hp->array[child].flag = hp->array[parent].flag ;
 			child = parent ;
 			parent = parent/2 ;
 		}
 		else{
 			hp->array[child].value = value ;
 			hp->array[child].index = index ;
+			hp->array[child].flag = 1 ;
 			return 1 ;
 		}
 	}
 	hp->array[child].value = value ;  // reached the root
 	hp->array[child].index = index ;
+	hp->array[child].flag = 1 ;
 	return 1 ;
 }
 
@@ -111,17 +116,20 @@ static int heap_replace(Heap hp, int index, double value)
 		if (value > hp->array[child].value || equal(value, hp->array[child].value) == 1){
 			hp->array[current].index = index ;
 			hp->array[current].value = value ;
+			hp->array[current].flag = 1 ;
 			return 1 ;
 		}
 		else{
 			hp->array[current].index = hp->array[child].index ;
 			hp->array[current].value = hp->array[child].value ;
+			hp->array[current].flag = hp->array[child].flag ;
 			current = child ;
 			child = child*2 ;
 		}
 	}
 	hp->array[current].index = index ;         // reached leaf
 	hp->array[current].value = value ;
+	hp->array[current].flag = 1 ;
 	return 1 ;
 }
 
@@ -153,11 +161,13 @@ int heap_remove(Heap hp)
 		if (value > hp->array[child].value || equal(value, hp->array[child].value) == 1){
 			hp->array[current].index = index ;
 			hp->array[current].value = value ;
+			hp->array[current].flag = 1 ;
 			return returned_index ;
 		}
 		else{
 			hp->array[current].index = hp->array[child].index ;
 			hp->array[current].value = hp->array[child].value ;
+			hp->array[current].flag = hp->array[child].flag ;
 			current = child ;
 			child = child*2 ;
 		}
@@ -165,19 +175,19 @@ int heap_remove(Heap hp)
 
 	hp->array[current].index = index ;         // reached leaf
 	hp->array[current].value = value ;
+	hp->array[current].flag = 1 ;
 
 	return returned_index;
 }
 
 
-int heap_update(Heap hp, int index, double value, int *replaced)
+int heap_update(Heap hp, int index, double value)
 {
 	int max = hp->array[1].index ; 
-	*replaced = -1;
 
-	/*if (avl_search(hp->indexes, index) == 1){
+	if (avl_search(hp->indexes, index) == 1){
 		return 0 ;
-	}*/
+	}
 
 	if (heap_insert(hp, index, value) == 1){
 		avl_insert(hp->indexes, index) ;
@@ -186,7 +196,6 @@ int heap_update(Heap hp, int index, double value, int *replaced)
 	else if (heap_replace(hp, index, value) == 1){
 		avl_remove(hp->indexes, max) ;
 		avl_insert(hp->indexes, index) ;
-		*replaced = max;
 		return 1 ;
 	}
 	else{
@@ -247,6 +256,27 @@ double heap_getValue(Heap hp, int i)
 }
 
 
+int heap_getFlag(Heap hp, int i)
+{
+	i++;
+	if (i < 1 || i > hp->count){
+		return -1;
+	}
+	return hp->array[i].flag;
+}
+
+
+int heap_setFlag(Heap hp, int i)
+{
+	i++;
+	if (i < 1 || i > hp->count){
+		return -1;
+	}
+	hp->array[i].flag = 0;
+	return 1;
+}
+
+
 int heap_getMaxIndex(Heap hp)
 {
 	if (heap_empty(hp)){
@@ -265,11 +295,20 @@ double heap_getMaxValue(Heap hp)
 }
 
 
+int heap_getMaxFlag(Heap hp)
+{
+	if (heap_empty(hp)){
+		return -1;
+	}
+	return hp->array[1].flag;
+}
+
 
 int heap_search(Heap hp, int index)
 {
 	return avl_search(hp->indexes, index);
 }
+
 
 
 

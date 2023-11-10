@@ -222,6 +222,19 @@ static void copyToList(Node node, List list) { // copy all the values to a list
 }
 
 
+static void findReverses(Node node, int i, Avl *avls, List *R) {
+    int index;
+    if(node != NULL) {
+        findReverses(node->left, i, avls, R);
+        index = node->value;
+        if(avl_search(avls[index], i) == 0) {
+            list_insert(R[index], i);
+        }
+        findReverses(node->right, i, avls, R);
+    }
+} 
+
+
 /* General avl apis */
 
 void avl_initialize(Avl *avl) {
@@ -252,6 +265,12 @@ int avl_search(Avl avl, int value) {
 void avl_copyToList(Avl avl, List list) {
     copyToList(avl->root, list);
 }
+
+
+void avl_findReverses(Avl *avls, int i, List *R) {
+    findReverses(avls[i]->root, i, avls, R);
+}
+
 
 void avl_free(Avl avl) {
     nodeDestroy(avl->root);

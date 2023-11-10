@@ -5,7 +5,7 @@
 #include "avl.h"
 #include "time.h"
 
-Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, Avl *avls) {
+Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), index, *samples, unique;
     Heap *heaps = malloc(objects* (sizeof(Heap)));
     double val;
@@ -21,8 +21,6 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, A
 
     // initialize ADTs
     for (int i = 0; i < objects; i++) {
-        avl_initialize(&R[i]);
-        avl_initialize(&avls[i]);
         heap_initialize(&heaps[i], k);
     }
     
@@ -41,11 +39,9 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric, Avl *R, A
                 }
             } while(!unique); // duplicate avoidance 
 
-            if (avl_search(avls[index], i) == 0 && avl_insert(avls[i], index) == 1) {
-                val = metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dimensions);
-                nn_update(heaps, i, index, val, R);
-                nn_update(heaps, index, i, val, R);
-            }
+
+            val = metric(dataset_getFeatures(dataset, index), dataset_getFeatures(dataset, i), dimensions);
+            heap_update(heaps[i], index, val);
         }
     }
 

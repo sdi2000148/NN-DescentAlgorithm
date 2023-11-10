@@ -26,6 +26,7 @@
         "stdio.h": "c",
         "fcntl.h": "c",
         "recall.h": "c",
-        "brute_force.h": "c"
+        "brute_force.h": "c",
+        "list": "c"
     }
 }

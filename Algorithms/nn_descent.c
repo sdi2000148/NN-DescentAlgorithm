@@ -9,117 +9,81 @@
 #include "nn_descent.h"
 
 int **nn_descent(Dataset dataset, int k, Metric metric) {
-    double rate, val;
-    int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, temp, evaluations = 0, **neighours;
-    Avl *avls = malloc(objects * sizeof(Avl)), *R = malloc(objects * sizeof(Avl)); // incremental search avls
-    Heap *heaps = nng_initialization_random(dataset, k, metric, R, avls); // nng initialization of random graph
-    List *U = malloc(dataset_getNumberOfObjects(dataset) * sizeof(List));
-    Listnode neighbour, n_neighbour;
+    double val, rate;
+    int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, temp, evaluations = 0, **neighbours, flag;
+    Avl *new = malloc(objects * sizeof(Avl)), *old = malloc(objects * sizeof(Avl)); // incremental search avls
+    Heap *heaps = nng_initialization_random(dataset, k, metric); // nng initialization of random graph
+    List *old_u, *new_u;
+    Listnode neighbour1, neighbour2;
+
 
     do {
         c = 0;
-        // neighbours lists initializations
-        for (int i = 0; i < objects; i++) {
-            list_initialize(&U[i]); 
-            for (int j = 0; j < k; j++)
-                list_insert(U[i], heap_getIndex(heaps[i], j)); // k direct neighbours 
-            avl_copyToList(R[i], U[i]); // reverse neighbours
-        }
 
         for(int i = 0; i < objects; i++) {
-            neighbour = list_head(U[i]);
-            while(neighbour != NULL) {
-                n_neighbour = list_head(U[listnode_data(neighbour)]); // reverse neighbour
-                while(n_neighbour != NULL) {
-                    index = listnode_data(n_neighbour);
-                    if(index == i || avl_search(avls[index], i) == 1 || avl_insert(avls[i], index) == 0) {
-                        n_neighbour = list_next(n_neighbour);
-                        continue;
-                    }
-                    val = metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, index), dimensions);
-                    evaluations++;
-                    c += nn_update(heaps, i, index, val, R); // update heap
-                    c += nn_update(heaps, index, i, val, R); // update heap
-                    n_neighbour = list_next(n_neighbour);
+            avl_initialize(&old[i]);
+            avl_initialize(&new[i]);
+            for(int j = 0; j < k; j++) {
+                index = heap_getIndex(heaps[i], j);
+                flag = heap_getFlag(heaps[i], j);
+                if(flag == 0) {
+                    avl_insert(old[i], index);
                 }
-                neighbour = list_next(neighbour);
+                else { // sampling
+                    avl_insert(new[i], index);
+                    heap_setFlag(heaps[i], j);
+                }
             }
         }
 
-        for (int i = 0; i < objects; i++) 
-            list_free(U[i]);
-        
-        printf("%d\n", c);
+        // reverse calcuation
 
-    } while(c); // stop when no more updates take place
-
-    avl_free_all(R, objects);
-    avl_free_all(avls, objects);
-
-    free(U);
-
-    temp = objects * (objects-1);
-    rate = (double)(evaluations) / ((double)temp / (double)2); // scan rate
-    printf("nn descent scan-rate: %f\n", rate);
-    
-    neighours = getNeighbours(heaps, objects, k);
-
-    heap_free_all(heaps, objects);
-    return neighours;
-}
-
-
-int **nn_descent_LJ(Dataset dataset, int k, Metric metric) {
-    double val, rate;
-    int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index1, index2, temp, evaluations = 0, **neighbours;
-    Avl *avls = malloc(objects * sizeof(Avl)), *R = malloc(objects * sizeof(Avl)); // incremental search avls
-    Heap *heaps = nng_initialization_random(dataset, k, metric, R, avls); // nng initialization of random graph
-    List *U = malloc(objects * sizeof(List));
-    Listnode neighbour, n_neighbour;
-
-    do {
-        c = 0;
-        // neighbours lists initializations
-        for (int i = 0; i < objects; i++) {
-            list_initialize(&U[i]);
-            for (int j = 0; j < k; j++)
-                list_insert(U[i], heap_getIndex(heaps[i], j)); // k direct neighbours 
-            avl_copyToList(R[i], U[i]); // reverse neighbours
-            
-        }
+        old_u = reverse(old, objects);
+        new_u = reverse(new, objects);
 
         for(int i = 0; i < objects; i++) {
-            neighbour = list_head(U[i]);
-            while(neighbour != NULL) {
-                index1 = listnode_data(neighbour); // first neighbour
-                n_neighbour = list_next(neighbour);
-                while(n_neighbour != NULL) {
-                    index2 = listnode_data(n_neighbour); // second neighbour
-                    if(avl_search(avls[index2], index1) == 1 || avl_insert(avls[index1], index2) == 0) {
-                        n_neighbour = list_next(n_neighbour); 
-                        continue;
-                    }
+            avl_copyToList(old[i], old_u[i]);
+            avl_copyToList(new[i], new_u[i]);
+
+            neighbour1 = list_head(new_u[i]);
+            while(neighbour1 != NULL) {
+                index1 = listnode_data(neighbour1);
+
+                neighbour2 = list_next(neighbour1);
+                while(neighbour2 != NULL) {
+                    index2 = listnode_data(neighbour2);
                     val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
                     evaluations++;
-                    c += nn_update(heaps, index1, index2, val, R); // update heap of first neighbour
-                    c += nn_update(heaps, index2, index1, val, R); // update heap of second neighour
-                    
-                    n_neighbour = list_next(n_neighbour);
+                    c += heap_update(heaps[index1], index2, val);
+                    c += heap_update(heaps[index2], index1, val);
+                    neighbour2 = list_next(neighbour2);
                 }
-                neighbour = list_next(neighbour);
+                neighbour2 = list_head(old_u[i]);
+                while(neighbour2 != NULL) {
+                    index2 = listnode_data(neighbour2);
+                    val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
+                    evaluations++;
+                    c += heap_update(heaps[index1], index2, val);
+                    c += heap_update(heaps[index2], index1, val);
+                    neighbour2 = list_next(neighbour2);
+                }
+
+                neighbour1 = list_next(neighbour1);
             }
         }
 
-        for (int i = 0; i < objects; i++) 
-            list_free(U[i]);
+        for(int i = 0; i < objects; i++) {
+            avl_free(old[i]);
+            avl_free(new[i]);
+            list_free(old_u[i]);
+            list_free(new_u[i]);
+        }
+        free(old_u);
+        free(new_u);
+
 
         printf("%d\n", c);
     } while(c);
-
-    avl_free_all(R, objects);
-    avl_free_all(avls, objects);
-
-    free(U);
 
     temp = objects * (objects-1);
     rate = (double)(evaluations) / ((double)temp / (double)2); // scan rate
@@ -128,6 +92,8 @@ int **nn_descent_LJ(Dataset dataset, int k, Metric metric) {
     neighbours = getNeighbours(heaps, objects, k);
 
     heap_free_all(heaps, objects);
+    free(old);
+    free(new);
 
     return neighbours;
 }

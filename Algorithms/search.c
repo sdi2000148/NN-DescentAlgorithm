@@ -25,7 +25,7 @@ static int equal(double a, double b)
 // return -1 when pool is empty or when there are no untried candidate nodes left
 static int get_candidate(Heap pool, Avl computed, int k)
 {
-    int *indexes = malloc(k * sizeof(int)), replaced, pool_len = heap_getCount(pool), candidate = -1;
+    int *indexes = malloc(k * sizeof(int)), pool_len = heap_getCount(pool), candidate = -1;
     double *values = malloc(k * sizeof(double));
 
     if (pool_len == 0){
@@ -39,7 +39,7 @@ static int get_candidate(Heap pool, Avl computed, int k)
     }
 
     for (int i=0 ; i < pool_len ; i++){      // rebuild heap  
-        heap_update(pool, indexes[i], values[i], &replaced);
+        heap_update(pool, indexes[i], values[i]);
     }
 
     for (int i=0 ; i < pool_len ; i++){
@@ -62,7 +62,7 @@ int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric met
     Heap pool;
     Avl computed;
     int *indexes = malloc(k * sizeof(int));
-    int current, replaced, pool_len, neighbor, self = -1;
+    int current, pool_len, neighbor, self = -1;
     double val;
 
     heap_initialize(&pool, k);
@@ -76,7 +76,7 @@ int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric met
         self = current;
     }
     else{
-        heap_update(pool, current, val, &replaced);
+        heap_update(pool, current, val);
     }
 
     while (1){
@@ -100,7 +100,7 @@ int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric met
                 self = neighbor;
                 continue;
             }
-            heap_update(pool, neighbor, val, &replaced);
+            heap_update(pool, neighbor, val);
         }
 
     }
@@ -126,7 +126,7 @@ int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric met
 int *search_knn_brute_force(Dataset dataset, Pointer *object, int k, Metric metric)
 {
     Heap heap;
-    int replaced, heap_len;
+    int heap_len;
     int *indexes = malloc(k * sizeof(int));
     double val;
 
@@ -137,7 +137,7 @@ int *search_knn_brute_force(Dataset dataset, Pointer *object, int k, Metric metr
         if (equal(val, 0.0) == 1){
             continue;
         }
-        heap_update(heap, i, val, &replaced);
+        heap_update(heap, i, val);
     }
     
     heap_len = heap_getCount(heap);

@@ -18,5 +18,8 @@ int avl_search(Avl avl, int value);
 /* Insert all the values of the avl to the list */
 void avl_copyToList(Avl avl, List list);
 
+
+void avl_findReverses(Avl *avls, int i, List *R);
+
 /* Free memory of avl */
 void avl_free(Avl avl);
