@@ -19,12 +19,12 @@ void test_insert(void) {
 	for (int i = 0; i < N; i++) {
 		list_insert(list, i);
 
-		TEST_CHECK(listnode_data(list_head(list)) == i);	
+		TEST_CHECK(listnode_data(list_tail(list)) == i);	
 	}
 
 	Listnode node = list_head(list);
 
-	for (int i = N - 1; i >= 0; i--) {
+	for (int i = 0; i < N; i++) {
 		TEST_CHECK(listnode_data(node) == i);
 		node = list_next(node);
 	}
@@ -47,11 +47,11 @@ void test_remove(void) {
 	}
 
 
-	for (int i = N - 1; i >= 0; i--) {
+	for (int i = 0; i < N; i++) {
 
 		TEST_CHECK(list_remove(list, i) == 1);
 
-        if (i > 0) TEST_CHECK(listnode_data(list_head(list)) == i - 1);
+        if (i < N-1) TEST_CHECK(listnode_data(list_head(list)) == i + 1);
         else TEST_CHECK(list_head(list) == NULL);
 	}
 
@@ -59,36 +59,39 @@ void test_remove(void) {
 		
 		list_insert(list, i);
 	}	
+    
 
 	TEST_CHECK(list_remove(list, N - 1) == 1);
+    
 
     Listnode node = list_head(list);
-    for (int i = N - 2; i >= 0; i--) {
+    for (int i = 0; i < N - 1; i++) {
         TEST_CHECK(listnode_data(node) == i);
         node = list_next(node);
     }
 
+    
     TEST_CHECK(list_remove(list, 300) == 1);
-
+    
 
 	node = list_head(list);
-    for (int i = N - 2; i >= 0; i--) {
+    for (int i = 0; i < N - 1; i++) {
         if (i == 300) continue;
         TEST_CHECK(listnode_data(node) == i);
         node = list_next(node);
     }
-
+    
 
 	TEST_CHECK(list_remove(list, 0) == 1);
 
 
 	node = list_head(list);
-    for (int i = N - 2; i >= 1; i--) {
+    for (int i = 1; i < N - 1; i++) {
         if (i == 300) continue;
         TEST_CHECK(listnode_data(node) == i);
         node = list_next(node);
     }
-
+    
     TEST_CHECK(list_remove(list, 1001) == 0);
 
 	list_free(list);

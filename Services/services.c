@@ -16,13 +16,22 @@ int seq_search(int value , int size , int *array)
 }
 
 
-void reverse(Avl *avls, List *R, int numberOfObjects) {
+void reverse(List *U, List *R, int numberOfObjects) {
+    Listnode neighbour;
+    int index;
+
     for (int i=0 ; i < numberOfObjects ; i++){
         list_initialize(&R[i]);
     }
 
     for(int i = 0; i < numberOfObjects; i++) {
-        avl_findReverses(avls, i, R);
+        neighbour = list_head(U[i]);
+        while(neighbour != NULL) {
+            index = listnode_data(neighbour);
+            list_insert(R[index], i);
+
+            neighbour = list_next(neighbour);
+        }
     }
 
     return;
