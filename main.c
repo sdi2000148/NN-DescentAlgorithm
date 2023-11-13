@@ -115,7 +115,7 @@ void find_solutions(void) {
         free(numbersSigmod);
     }*/
 
-    for(int i = 0; i < ks; i++) {
+    /*for(int i = 0; i < ks; i++) {
         numbersSigmod = readSigmod("Datasets/00050000-1.bin", &dataset);
         objects = dataset_getNumberOfObjects(dataset);
         start_time = clock();
@@ -130,7 +130,7 @@ void find_solutions(void) {
         neighbours_free_all(solution, objects);
         dataset_free(dataset);
         free(numbersSigmod);
-    }
+    }*/
 }
 
 

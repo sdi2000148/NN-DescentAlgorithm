@@ -11,7 +11,7 @@
 int **nn_descent(Dataset dataset, int k, Metric metric) {
     double val, rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, temp, evaluations = 0, **neighbours, flag,
-    sampling = (int)(0.1 *(float)k), count;
+    sampling = (int)(0.4 *(float)k), count;
     Heap *heaps = nng_initialization_random(dataset, k, metric); // nng initialization of random graph
     List *old = malloc(objects * sizeof(List)), *new = malloc(objects * sizeof(List)), *old_r = malloc(objects * sizeof(List)), *new_r = malloc(objects * sizeof(List));
     Listnode neighbour1, neighbour2;
@@ -41,8 +41,10 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
 
         // reverse calcuation
 
-        reverse(old, old_r, objects);
-        reverse(new, new_r, objects);
+        //reverse(old, old_r, objects);
+        //reverse(new, new_r, objects);
+        strict_reverse(old, old_r, objects, heaps);
+        strict_reverse(new, new_r, objects, heaps);
 
         for(int i = 0; i < objects; i++) {
             list_union(old[i], old_r[i], sampling);

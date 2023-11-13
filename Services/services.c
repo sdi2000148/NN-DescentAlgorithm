@@ -37,6 +37,32 @@ void reverse(List *U, List *R, int numberOfObjects) {
     return;
 }
 
+
+void strict_reverse(List *U, List *R, int numberOfObjects, Heap *heaps) {
+    Listnode neighbour;
+    int index;
+
+    for (int i=0 ; i < numberOfObjects ; i++){
+        list_initialize(&R[i]);
+    }
+
+    for(int i = 0; i < numberOfObjects; i++) {
+        neighbour = list_head(U[i]);
+        while(neighbour != NULL) {
+            index = listnode_data(neighbour);
+            if(heap_search(heaps[index], i) == 0)
+                list_insert(R[index], i);
+
+            neighbour = list_next(neighbour);
+        }
+    }
+
+
+
+    return;
+}
+
+
 void heap_free_all(Heap *heaps, int n)
 {
 	for (int i=0 ; i<n ; i++){
