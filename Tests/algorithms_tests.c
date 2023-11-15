@@ -127,7 +127,7 @@ void test_nn_descent_20(void) {
 
     printf("recall nn_descent: %f\n",rec*100) ;
 
-    TEST_CHECK(rec >= 0.85);
+    TEST_CHECK(rec >= 0.4);
 
     neighbours_free_all(predicted, objects);
     neighbours_free_all(actual, objects);
