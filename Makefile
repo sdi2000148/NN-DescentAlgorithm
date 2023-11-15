@@ -14,6 +14,8 @@ DEPS = $(wildcard $(INCLUDE_DIR)/*.h)
 
 TARGET = main
 
+ARGS = Datasets/00050000-1.bin l2 100 0.4 0.001 solution.txt
+
 .PHONY: all clean run valgrind
 
 all: $(TARGET)
@@ -28,7 +30,7 @@ clean:
 	rm -rf $(OBJS) $(TARGET)
 
 run: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) $(ARGS)
 
 valgrind: $(TARGET)
 	valgrind --leak-check=full ./$(TARGET) $(ARGS)

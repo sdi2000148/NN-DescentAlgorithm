@@ -108,7 +108,7 @@ void test_nn_descent_20(void) {
     double rec;
     Dataset dataset;
     int **actual, k = 10, objects, **predicted;
-    float *numbers;
+    float *numbers, p = 0.4, d = 0.001;
     clock_t start_time, end_time;
     
 
@@ -116,7 +116,7 @@ void test_nn_descent_20(void) {
     objects = dataset_getNumberOfObjects(dataset);
 
     start_time = clock();
-    predicted = nn_descent(dataset, k, l2);
+    predicted = nn_descent(dataset, l2, k, p, d);
     end_time = clock();
     printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
 

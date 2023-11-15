@@ -21,12 +21,12 @@
 
 // USED WITH CAUTION
 void find_solutions(void) {
-    char filename[BUFFER_SIZE], number[BUFFER_SIZE];
+    /*char filename[BUFFER_SIZE], number[BUFFER_SIZE];
     clock_t start_time, end_time;
     Dataset dataset;
     double *numbersRect;
     float *numbersSigmod;
-    int objects, **solution, k[] = {10, 20, 50, 100}, ks = sizeof(k)/sizeof(int);
+    int objects, **solution, k[] = {10, 20, 50, 100}, ks = sizeof(k)/sizeof(int);*/
 
     
     /*for(int i = 0; i < ks; i++) {
@@ -136,12 +136,12 @@ void find_solutions(void) {
 
 // USED WITH CAUTION
 void run_nn_descents(void) {
-    char filename[BUFFER_SIZE], number[BUFFER_SIZE];
+    /*char filename[BUFFER_SIZE], number[BUFFER_SIZE];
     clock_t start_time, end_time;
     Dataset dataset;
     double *numbersRect, rec;
-    float *numbersSigmod;
-    int objects, **solution, k[] = {10, 20, 50, 100}, ks = sizeof(k)/sizeof(int);
+    float *numbersSigmod, p = 0.4, d = 0.001;
+    int objects, **solution, k[] = {10, 20, 50, 100}, ks = sizeof(k)/sizeof(int);*/
 
     
     /*for(int i = 0; i < ks; i++) {
@@ -235,11 +235,11 @@ void run_nn_descents(void) {
         free(numbersSigmod);
     }*/
 
-    for(int i = 0; i < ks; i++) {
+    /*for(int i = 0; i < ks; i++) {
         numbersSigmod = readSigmod("Datasets/00050000-1.bin", &dataset);
         objects = dataset_getNumberOfObjects(dataset);
         start_time = clock();
-        solution = nn_descent(dataset, k[i], l2);
+        solution = nn_descent(dataset, l2, k[i], p, d);
         end_time = clock();
         printf("Brute force time 00050000-1.bin with k=%d:%f\n", k[i], (double)(end_time - start_time) / CLOCKS_PER_SEC);
         strcpy(filename, "Solutions/00050000-1.");
@@ -251,13 +251,47 @@ void run_nn_descents(void) {
         neighbours_free_all(solution, objects);
         dataset_free(dataset);
         free(numbersSigmod);
-    }
+    }*/
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
+    char path[BUFFER_SIZE], solution[BUFFER_SIZE], *endptr;
+    Dataset dataset;
+    double p, d;
+    float *numbersSigmod;
+    int k, objects, **nn_solution;
+    Metric metric;
+
+    if(argc < 6) {
+        printf("Give proper number of arguments");
+        return 1;
+    }
+
+    strcpy(path, argv[1]);
+  
+
+    if(strcmp(argv[2], "l2") == 0) {
+        metric = l2;
+    }
+    else {
+        printf("This metric doesn't exist\n");
+        return 1;
+    }
+
+    k = atoi(argv[3]);
+    p = strtod(argv[4], &endptr);
+    d = strtod(argv[5], &endptr);
+    strcpy(solution, argv[6]);
     
-    //find_solutions();
-    run_nn_descents();
+
+    numbersSigmod = readSigmod(path, &dataset);
+    objects = dataset_getNumberOfObjects(dataset);
+    nn_solution = nn_descent(dataset, metric, k, p, d);
+    save_solution(nn_solution, solution, objects, k);
+
+    free(numbersSigmod);
+    dataset_free(dataset);
+    free(nn_solution);
      
     return 0;
-}
+} 

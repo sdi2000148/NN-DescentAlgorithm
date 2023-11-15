@@ -8,14 +8,13 @@
 #include "nng_initialization.h"
 #include "nn_descent.h"
 
-int **nn_descent(Dataset dataset, int k, Metric metric) {
+int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
     double val;
     long double rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, **neighbours, flag,
-    sampling = (int)(0.4 *(float)k), count1, count2;
+    sampling = (int)(p *(double)k), count1, count2;
     unsigned int evaluations = 0, temp;
     Heap *heaps = nng_initialization_random(dataset, k, metric), *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
-    float d = 0.001;
 
     do {
         c = 0;
@@ -71,7 +70,7 @@ int **nn_descent(Dataset dataset, int k, Metric metric) {
         }
 
         printf("%d\n", c);
-    } while(c > (int)(d * (float)(objects * k)));
+    } while(c > (int)(d * (double)(objects * k)));
 
     temp = (unsigned int)objects * ((unsigned int)objects-1) / 2;
     rate = (long double)(evaluations) / (long double)temp; // scan rate
