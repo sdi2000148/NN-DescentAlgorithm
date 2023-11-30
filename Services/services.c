@@ -4,6 +4,7 @@
 #include "list.h"
 #include "avl.h"
 
+
 int seq_search(int value , int size , int *array)
 {
     int i ;
@@ -16,7 +17,7 @@ int seq_search(int value , int size , int *array)
 }
 
 
-void reverse(List *U, List *R, int numberOfObjects) {
+void reverse(List *B, List *R, int numberOfObjects) {
     Listnode neighbour;
     int index;
 
@@ -24,12 +25,11 @@ void reverse(List *U, List *R, int numberOfObjects) {
         list_initialize(&R[i]);
     }
 
-    for(int i = 0; i < numberOfObjects; i++) {
-        neighbour = list_head(U[i]);
+    for(int i=0; i < numberOfObjects; i++) {
+        neighbour = list_head(B[i]);
         while(neighbour != NULL) {
             index = listnode_data(neighbour);
             list_insert(R[index], i);
-
             neighbour = list_next(neighbour);
         }
     }
@@ -38,7 +38,7 @@ void reverse(List *U, List *R, int numberOfObjects) {
 }
 
 
-void strict_reverse(List *U, List *R, int numberOfObjects, Heap *heaps) {
+void strict_reverse(List *B, List *R, int numberOfObjects, Heap *heaps) {
     Listnode neighbour;
     int index;
 
@@ -47,7 +47,7 @@ void strict_reverse(List *U, List *R, int numberOfObjects, Heap *heaps) {
     }
 
     for(int i = 0; i < numberOfObjects; i++) {
-        neighbour = list_head(U[i]);
+        neighbour = list_head(B[i]);
         while(neighbour != NULL) {
             index = listnode_data(neighbour);
             if(heap_search(heaps[index], i) == 0)
@@ -56,8 +56,6 @@ void strict_reverse(List *U, List *R, int numberOfObjects, Heap *heaps) {
             neighbour = list_next(neighbour);
         }
     }
-
-
 
     return;
 }
