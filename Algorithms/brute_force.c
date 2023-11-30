@@ -4,16 +4,16 @@
 #include "heap.h"
 #include "services.h"
 
+
 int **brute_force(Dataset dataset, int k, Metric metric) {
     double val;
-    int objects = dataset_getNumberOfObjects(dataset), evaluations, **neighbours;
+    int objects = dataset_getNumberOfObjects(dataset), **neighbours;
     Heap *heaps = malloc(objects * (sizeof(Heap)));
     
     for (int i=0 ; i < objects ; i++){       
         heap_initialize(&heaps[i], k);
         for (int j=0 ; j < objects ; j++){
             if (j == i) continue;
-            evaluations++;
             val = metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, j), dataset_getDimensions(dataset));
             heap_update(heaps[i], j, val);
         }
