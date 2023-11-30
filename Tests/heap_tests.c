@@ -1,6 +1,7 @@
 #include "acutest.h"
 #include "heap.h"
 
+
 void test_initialize(void) {
 	Heap heap;
 
@@ -11,6 +12,7 @@ void test_initialize(void) {
 
 	heap_free(heap);
 }
+
 
 void test_update(void) {
 	Heap heap;
@@ -35,6 +37,7 @@ void test_update(void) {
     
 	heap_free(heap);
 }
+
 
 void test_search(void) {
     Heap heap;
@@ -79,10 +82,27 @@ void test_remove(void) {
 }
 
 
+void test_set_flag(void) {
+    Heap heap;
+    int item = 10;
+
+    heap_initialize(&heap, 1);
+    heap_update(heap, item, (double)item);
+
+    TEST_CHECK(heap_getCount(heap) == 1);
+    TEST_CHECK(heap_getFlag(heap, 0) == 1);
+    TEST_CHECK(heap_setFlag(heap, 0) == 1);
+    TEST_CHECK(heap_getFlag(heap, 0) == 0);
+
+    heap_free(heap); 
+}
+
+
 TEST_LIST = {
 	{ "heap_initialize", test_initialize },
     { "heap_search", test_search },
     { "heap_update", test_update },
     { "heap_remove", test_remove },
+    { "heap_set_flag", test_set_flag},
 	{ NULL, NULL } 
 };

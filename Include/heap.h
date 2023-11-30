@@ -2,8 +2,10 @@
 
 Max-heap data structure:
 
-Items are pairs of index-value. Value is used as basis for any comparison done
+Items are triplets of index-value-flag. Value is used as basis for any comparison done
 in the heap.
+
+Every time a new item is inserted in the heap, its the flag is set to 1
 
 */
 
@@ -68,15 +70,15 @@ int heap_getFlag(Heap hp, int i);
 int heap_setFlag(Heap hp, int i);
 
 
-// get index of root item 
+// get index of root item, or -1 when heap is empty
 int heap_getMaxIndex(Heap hp);
 
 
-// get value of root item
+// get value of root item, or -1.0 when heap is empty
 double heap_getMaxValue(Heap hp);
 
 
-// get flag of root item
+// get flag of root item, or -1 when heap is empty
 int heap_getMaxFlag(Heap hp);
 
 

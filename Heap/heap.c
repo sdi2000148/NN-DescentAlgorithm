@@ -149,7 +149,6 @@ int heap_remove(Heap hp)
 	hp->count--;
 	avl_remove(hp->indexes, returned_index);
 	
-
 	current = 1 ;
 	child = current*2 ;
 	while (child <= hp->count){
@@ -308,7 +307,6 @@ int heap_search(Heap hp, int index)
 {
 	return avl_search(hp->indexes, index);
 }
-
 
 
 
