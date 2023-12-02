@@ -15,6 +15,7 @@
 #include "nng_initialization.h"
 #include "nn_descent.h"
 #include "read.h"
+#include "timer.h"
 #define BUFFER_SIZE 1024
 
 
@@ -255,41 +256,72 @@ void run_nn_descents(void) {
 }
 
 int main(int argc, char *argv[]) {
-    char path[BUFFER_SIZE], solution[BUFFER_SIZE], *endptr;
+    char *path, *solution, *output, *metr, *endptr;
     Dataset dataset;
     double p, d;
     float *numbersSigmod;
-    int k, objects, **nn_solution;
+    double *rectNode, recall, start, finish;
+    int k, objects, type, **nn_solution;
     Metric metric;
 
-    if(argc < 6) {
-        printf("Give proper number of arguments");
+    if(argc != 9) {
+        printf("./main [type] [dataset path] [metric] [k] [p] [d] [solution path] [output csv]\n");
         return 1;
     }
 
-    strcpy(path, argv[1]);
-  
+    type = atoi(argv[1]);
+    path = argv[2];
+    metr = argv[3];
+    k = atoi(argv[4]);
+    p = strtod(argv[5], &endptr);
+    d = strtod(argv[6], &endptr);
+    solution = argv[7];
+    output = argv[8];
 
-    if(strcmp(argv[2], "l2") == 0) {
+    if(strcmp(metr, "l2") == 0) {
         metric = l2;
     }
     else {
-        printf("This metric doesn't exist\n");
+        printf("Given metric not supported\n");
         return 1;
     }
 
-    k = atoi(argv[3]);
-    p = strtod(argv[4], &endptr);
-    d = strtod(argv[5], &endptr);
-    strcpy(solution, argv[6]);
-    
+    if (type == 1){
+        numbersSigmod = readSigmod(path, &dataset);
+    }
+    else if (type == 2){
+        rectNode = readme(path, &dataset);
+    }
+    else{
+        printf("Given type not supported\n");
+        return 1;
+    }
 
-    numbersSigmod = readSigmod(path, &dataset);
-    objects = dataset_getNumberOfObjects(dataset);
+    GET_TIME(start);
     nn_solution = nn_descent(dataset, metric, k, p, d);
-    save_solution(nn_solution, solution, objects, k);
+    GET_TIME(finish);
 
-    free(numbersSigmod);
+    objects = dataset_getNumberOfObjects(dataset);
+    recall = recall_file(solution, nn_solution, objects, k);
+
+    // writing to csv file
+    FILE *fp;
+    fp = fopen(output, "a");
+    if (fp == NULL){
+        perror(output);
+        exit(EXIT_FAILURE);
+    }
+    fprintf(fp, "%d, %s, %d, %d, %.5f, %s, %.3f, %.5f, %e\n",type, path, objects, k, recall, metr, p, d, finish-start);
+    fclose(fp);
+
+    // save_solution(nn_solution, solution, objects, k);
+
+    if (type == 1){
+        free(numbersSigmod);
+    }
+    else if (type == 2){
+        free(rectNode);
+    }
     dataset_free(dataset);
     free(nn_solution);
      
