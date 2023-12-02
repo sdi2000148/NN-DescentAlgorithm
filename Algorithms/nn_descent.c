@@ -15,7 +15,6 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
     long double rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, **neighbours, flag,
     sampling = (int)(p *(double)k), count1, count2;
-    unsigned int evaluations = 0, temp;
     Heap *heaps = nng_initialization_random(dataset, k, metric), *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
 
     do {
@@ -25,7 +24,7 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
             heap_initialize(&old[i], k + sampling);
             heap_initialize(&new[i], 2*sampling);
         }
-    
+
         for(int i = 0; i < objects; i++) {
             for(int j = 0; j < k; j++) {
                 index = heap_getIndex(heaps[i], j);
@@ -41,6 +40,7 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
                 }
             }
         }
+        
 
         for(int i = 0; i < objects; i++){
             count1 = 0;
@@ -48,7 +48,6 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
                 count2 = count1 + 1;
                 while ((index2 = heap_getIndex(new[i], count2)) != -1){
                     val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
-                    evaluations++;
                     c += heap_update(heaps[index1], index2, val);
                     c += heap_update(heaps[index2], index1, val);
                     count2++;
@@ -56,7 +55,6 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
                 count2 = 0;
                 while ((index2 = heap_getIndex(old[i], count2)) != -1){
                     val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
-                    evaluations++;
                     c += heap_update(heaps[index1], index2, val);
                     c += heap_update(heaps[index2], index1, val);
                     count2++;
@@ -70,12 +68,9 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
             heap_free(old[i]);
         }
 
-        printf("%d\n", c);
     } while(c > (int)(d * (double)(objects * k)));
 
-    temp = (unsigned int)objects * ((unsigned int)objects-1) / 2;
-    rate = (long double)(evaluations) / (long double)temp; // scan rate
-    printf("nn descent scan-rate: %Lf\n", rate);
+    
 
     neighbours = getNeighbours(heaps, objects, k);
 

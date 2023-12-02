@@ -8,29 +8,48 @@ EXCLUDED_DIRS = $(INCLUDE_DIR) $(TESTS_DIR)
 
 DIRS_TO_INCLUDE := $(filter-out $(EXCLUDED_DIRS), $(wildcard */))
 
-SRCS = $(wildcard $(SRC_DIR)/*.c) $(foreach dir, $(DIRS_TO_INCLUDE), $(wildcard $(dir)*.c))
-OBJS = $(filter-out $(TESTS_DIR)/%.o, $(SRCS:.c=.o))
+SRCS_NN = nn.c $(foreach dir, $(DIRS_TO_INCLUDE), $(wildcard $(dir)*.c))
+SRCS_BRUTE = brute.c $(foreach dir, $(DIRS_TO_INCLUDE), $(wildcard $(dir)*.c))
+OBJS_NN = $(filter-out $(TESTS_DIR)/%.o, $(SRCS_NN:.c=.o))
+OBJS_BRUTE = $(filter-out $(TESTS_DIR)/%.o, $(SRCS_BRUTE:.c=.o))
 DEPS = $(wildcard $(INCLUDE_DIR)/*.h)
 
-TARGET = main
+TARGET_NN = nn
+TARGET_BRUTE = brute
 
-ARGS = Datasets/00050000-1.bin l2 100 0.4 0.001 solution.txt
+ARGS_NN = Datasets/00050000-1.bin l2 100 0.4 0.001 solution.txt
+ARGS_BRUTE = 0
 
-.PHONY: all clean run valgrind
+.PHONY: all clean run-nn run-brute valgrind-nn valgrind-brute
 
-all: $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@ -lm
+all: $(TARGET_NN) $(TARGET_BRUTE)
 
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@ 
 
+$(TARGET_NN): $(OBJS_NN)
+	$(CC) $(CFLAGS) $^ -o $@ -lm
+
+$(TARGET_BRUTE): $(OBJS_BRUTE)
+	$(CC) $(CFLAGS) $^ -o $@ -lm
+
 clean:
-	rm -rf $(OBJS) $(TARGET)
+	rm -rf $(OBJS_NN) $(TARGET_NN) $(OBJS_BRUTE) $(TARGET_BRUTE)
 
-run: $(TARGET)
-	./$(TARGET) $(ARGS)
+clean-nn:
+	rm -rf $(OBJS_NN) $(TARGET_NN)
 
-valgrind: $(TARGET)
-	valgrind --leak-check=full ./$(TARGET) $(ARGS)
+clean-brute:
+	rm -rf $(OBJS_BRUTE) $(TARGET_BRUTE)
+
+run-nn: $(TARGET_NN)
+	./$(TARGET_NN) $(ARGS_NN)
+
+run-brute: $(TARGET_BRUTE)
+	./$(TARGET_BRUTE) $(ARGS_BRUTE)
+
+valgrind-nn: $(TARGET_NN)
+	valgrind --leak-check=full ./$(TARGET_NN) $(ARGS_NN)
+
+valgrind-brute: $(TARGET_BRUTE)
+	valgrind --leak-check=full ./$(TARGET_BRUTE) $(ARGS_BRUTE)
