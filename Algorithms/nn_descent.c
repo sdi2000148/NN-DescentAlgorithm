@@ -12,10 +12,13 @@ static double get_random(void) { return ((double)rand() / (double)RAND_MAX); }
 
 int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
     double val;
-    long double rate;
     int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, **neighbours, flag,
     sampling = (int)(p *(double)k), count1, count2;
     Heap *heaps = nng_initialization_random(dataset, k, metric), *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
+
+    if(heaps == NULL) {
+        return NULL;
+    }
 
     do {
         c = 0;

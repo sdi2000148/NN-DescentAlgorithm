@@ -9,13 +9,17 @@ int **brute_force(Dataset dataset, int k, Metric metric) {
     double val;
     int objects = dataset_getNumberOfObjects(dataset), **neighbours;
     Heap *heaps = malloc(objects * (sizeof(Heap)));
-    
-    for (int i=0 ; i < objects ; i++){       
+
+
+    for(int i = 0; i < objects; i++) {
         heap_initialize(&heaps[i], k);
-        for (int j=0 ; j < objects ; j++){
-            if (j == i) continue;
+    }
+    
+    for (int i=0 ; i < objects ; i++){           
+        for (int j=i + 1 ; j < objects ; j++){
             val = metric(dataset_getFeatures(dataset, i), dataset_getFeatures(dataset, j), dataset_getDimensions(dataset));
             heap_update(heaps[i], j, val);
+            heap_update(heaps[j], i, val);
         }
     }
 

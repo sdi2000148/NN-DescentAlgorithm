@@ -14,8 +14,8 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
 
     samples = malloc(objects*sizeof(int));
 
-    if (objects < k) {
-        printf("K is bigger than the given objects!\n");
+    if (objects <= k) {
+        printf("K is bigger or equal than the given objects!\n");
         return NULL;
     }
 

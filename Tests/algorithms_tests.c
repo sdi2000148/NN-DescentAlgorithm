@@ -109,23 +109,16 @@ void test_nn_descent_20(void) {
     Dataset dataset;
     int **actual, k = 10, objects, **predicted;
     float *numbers, p = 0.4, d = 0.001;
-    clock_t start_time, end_time;
     
 
     numbers = readSigmod("../Datasets/00000020.bin", &dataset);
     objects = dataset_getNumberOfObjects(dataset);
 
-    start_time = clock();
     predicted = nn_descent(dataset, l2, k, p, d);
-    end_time = clock();
-    printf("nn descent time: %f\n", (double)(end_time - start_time) / CLOCKS_PER_SEC);
-
     
     actual = brute_force(dataset, k, l2);
 
     rec = recall(actual, predicted, objects, k);
-
-    printf("recall nn_descent: %f\n",rec*100) ;
 
     TEST_CHECK(rec >= 0.4);
 

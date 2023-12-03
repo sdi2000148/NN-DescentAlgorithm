@@ -15,10 +15,14 @@ for file in files_list:
     if part2 == 'bin':
         type = 1
     elif part2 == 'ascii':
+        continue
         type = 2
-    for k in [10, 20, 50, 100]:
+    for k in [100]:
         for metric in ['l2']:
             temp = solution_dir + part1 + '-' + str(k) + '.txt'
+            if os.path.exists(temp):
+                print(f"The file '{temp}' already exists.")
+                continue
             output = part1 + '.csv'
             if output not in outputs:
                 outputs.append(output)

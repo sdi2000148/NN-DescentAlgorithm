@@ -19,10 +19,10 @@
 #define BUFFER_SIZE 1024
 
 int main(int argc, char *argv[]) {
-    char *path, *solution, *output, *metr, *endptr;
+    char *path, *solution, *output, *metr;
     Dataset dataset;
     float *numbersSigmod;
-    double *rectNode, recall, start, finish;
+    double *rectNode, start, finish;
     int k, objects, type, **brute_solution;
     Metric metric;
 
