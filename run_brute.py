@@ -16,7 +16,6 @@ for file in files_list:
         type = 1
     elif part2 == 'ascii':
         continue
-        type = 2
     for k in [100]:
         for metric in ['l2']:
             temp = solution_dir + part1 + '-' + str(k) + '.txt'
@@ -33,6 +32,12 @@ if not os.path.exists(results_dir):
     print(f"Directory '{results_dir}' created successfully.")
 else:
     print(f"Directory '{results_dir}' already exists.")
+
+if not os.path.exists(solution_dir):
+    os.makedirs(solution_dir)
+    print(f"Directory '{solution_dir}' created successfully.")
+else:
+    print(f"Directory '{solution_dir}' already exists.")
 
 for output in outputs:
     filename = results_dir + output
