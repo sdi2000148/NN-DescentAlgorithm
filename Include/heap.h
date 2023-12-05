@@ -31,7 +31,7 @@ int heap_remove(Heap hp);
 
 
 // return 1 on change, 0 otherwise
-int heap_update(Heap hp, int index, double value);
+int heap_update(Heap hp, int index, float value);
 
 
 // print content of heap
@@ -57,7 +57,7 @@ int heap_getIndex(Heap hp, int i);
 
 // get value of ith item in heap array (ITEMS ARE NOT SORTED!!!)
 // return -1.0 when i is out of bounds
-double heap_getValue(Heap hp, int i);
+float heap_getValue(Heap hp, int i);
 
 
 // get flag of ith item in heap array (ITEMS ARE NOT SORTED!!!)
@@ -75,7 +75,7 @@ int heap_getMaxIndex(Heap hp);
 
 
 // get value of root item, or -1.0 when heap is empty
-double heap_getMaxValue(Heap hp);
+float heap_getMaxValue(Heap hp);
 
 
 // get flag of root item, or -1 when heap is empty

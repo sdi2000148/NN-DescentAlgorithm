@@ -7,7 +7,7 @@
 struct item{
     int index ;
 	int flag;
-    double value ;
+    float value ;
 };
 
 
@@ -20,7 +20,7 @@ struct heap{
 
 
 // return 1 when the two floating point numbers are equal, 0 otherwise
-static int equal(double a, double b)
+static int equal(float a, float b)
 {
 	if (fabs(a-b) < 1.0e-8){
 		return 1 ;
@@ -54,7 +54,7 @@ int heap_empty(Heap hp)
 
 // insert new item in heap
 // return 1 on success, 0 otherwise
-static int heap_insert(Heap hp, int index, double value)
+static int heap_insert(Heap hp, int index, float value)
 {
 	int child, parent ;
 
@@ -97,7 +97,7 @@ static int heap_insert(Heap hp, int index, double value)
 
 // replace root of heap with new item
 // return 1 on success, 0 otherwise
-static int heap_replace(Heap hp, int index, double value)
+static int heap_replace(Heap hp, int index, float value)
 {
 	int current, child ;
 
@@ -139,7 +139,7 @@ int heap_remove(Heap hp)
 {
 	int returned_index = hp->array[1].index;
 	int index = hp->array[hp->count].index;
-	double value = hp->array[hp->count].value; 
+	float value = hp->array[hp->count].value; 
 	int current, child ;
 
 	if (heap_empty(hp)){
@@ -180,7 +180,7 @@ int heap_remove(Heap hp)
 }
 
 
-int heap_update(Heap hp, int index, double value)
+int heap_update(Heap hp, int index, float value)
 {
 	int max = hp->array[1].index ; 
 
@@ -245,7 +245,7 @@ int heap_getIndex(Heap hp, int i)
 }
 
 
-double heap_getValue(Heap hp, int i)
+float heap_getValue(Heap hp, int i)
 {
 	i++;
 	if (i < 1 || i > hp->count){
@@ -285,7 +285,7 @@ int heap_getMaxIndex(Heap hp)
 }
 
 
-double heap_getMaxValue(Heap hp)
+float heap_getMaxValue(Heap hp)
 {
 	if (heap_empty(hp)){
 		return -1.0;
