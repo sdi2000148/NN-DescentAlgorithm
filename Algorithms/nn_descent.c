@@ -8,13 +8,13 @@
 #include "nng_initialization.h"
 #include "nn_descent.h"
 
-static double get_random(void) { return ((double)rand() / (double)RAND_MAX); }
+static float get_random(void) { return ((float)rand() / (float)RAND_MAX); }
 
 int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
-    double val;
-    int objects = dataset_getNumberOfObjects(dataset), dimensions = dataset_getDimensions(dataset), c, index, index1, index2, **neighbours, flag,
+    int objects = dataset_getNumberOfObjects(dataset), c, index, index1, index2, **neighbours, flag,
     sampling = (int)(p *(double)k), count1, count2;
     Heap *heaps = nng_initialization_random(dataset, k, metric), *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
+    float val;
 
     if(heaps == NULL) {
         return NULL;
@@ -50,14 +50,14 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
             while ((index1 = heap_getIndex(new[i], count1)) != -1){
                 count2 = count1 + 1;
                 while ((index2 = heap_getIndex(new[i], count2)) != -1){
-                    val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
+                    val = metric(dataset, index1, index2);
                     c += heap_update(heaps[index1], index2, val);
                     c += heap_update(heaps[index2], index1, val);
                     count2++;
                 }
                 count2 = 0;
                 while ((index2 = heap_getIndex(old[i], count2)) != -1){
-                    val = metric(dataset_getFeatures(dataset, index1), dataset_getFeatures(dataset, index2), dimensions);
+                    val = metric(dataset, index1, index2);
                     c += heap_update(heaps[index1], index2, val);
                     c += heap_update(heaps[index2], index1, val);
                     count2++;

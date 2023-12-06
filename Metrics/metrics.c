@@ -1,32 +1,34 @@
 #include <math.h>
 #include <stdlib.h>
-#include "common_types.h"
+#include "metrics.h"
+#include "dataset.h"
 
 
-double l2(Pointer *x, Pointer *y, int d) {
-    double result = 0.0, value;
-    for(int i = 0; i < d; i++) {
-        value = (double)(*(float*)x[i] - *(float*)y[i]);
+float l2(Dataset dataset, int x, int y) {
+    float result = 0.0, x_value, y_value, value;
+    int dimennsions = dataset_getDimensions(dataset);
+    for(int i = 0; i < dimennsions; i++) {
+        x_value = dataset_getFeature(dataset, x, i);
+        y_value = dataset_getFeature(dataset, y, i);
+        value = x_value - y_value;
         value = value*value;
         result += value;
     }
     return sqrt(result);
 }
 
-double manhattan(Pointer *x, Pointer *y, int d) {
-    double result = 0.0, value;
-    for(int i = 0; i < d; i++) {
-        value = (double)(*(float*)x[i] - *(float*)y[i]);
-        result += fabs(value);
-    }
-    return result;
-}
 
-double l2_double(Pointer *x, Pointer *y, int d) {
-    double result = 0.0, value;
-    for(int i = 0; i < d; i++) {
-        value = fabs(*(double*)x[i]- *(double*)y[i]);
-        result += pow(value, 2.0);
+float l2_search(Dataset dataset, int x, float *y) {
+    float result = 0.0, x_value, y_value, value;
+    int dimennsions = dataset_getDimensions(dataset);
+    for(int i = 0; i < dimennsions; i++) {
+        x_value = dataset_getFeature(dataset, x, i);
+        y_value = y[i];
+        value = x_value - y_value;
+        value = value*value;
+        result += value;
     }
     return sqrt(result);
 }
+
+

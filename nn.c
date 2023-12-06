@@ -14,32 +14,30 @@
 #include "services.h"
 #include "nng_initialization.h"
 #include "nn_descent.h"
-#include "read.h"
 #include "timer.h"
+#include "metrics.h"
 #define BUFFER_SIZE 1024
 
 int main(int argc, char *argv[]) {
     char *path, *solution, *output, *metr, *endptr;
     Dataset dataset;
     double p, d;
-    float *numbersSigmod;
-    double *rectNode, recall, start, finish;
-    int k, objects, type, **nn_solution;
+    double recall, start, finish;
+    int k, objects, **nn_solution;
     Metric metric;
 
-    if(argc != 9) {
-        printf("./main [type] [dataset path] [metric] [k] [p] [d] [solution path] [output csv]\n");
+    if(argc != 8) {
+        printf("./main [dataset path] [metric] [k] [p] [d] [solution path] [output csv]\n");
         return 1;
     }
 
-    type = atoi(argv[1]);
-    path = argv[2];
-    metr = argv[3];
-    k = atoi(argv[4]);
-    p = strtod(argv[5], &endptr);
-    d = strtod(argv[6], &endptr);
-    solution = argv[7];
-    output = argv[8];
+    path = argv[1];
+    metr = argv[2];
+    k = atoi(argv[3]);
+    p = strtod(argv[4], &endptr);
+    d = strtod(argv[5], &endptr);
+    solution = argv[6];
+    output = argv[7];
 
     if(strcmp(metr, "l2") == 0) {
         metric = l2;
@@ -49,16 +47,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (type == 1){
-        numbersSigmod = readSigmod(path, &dataset);
-    }
-    else if (type == 2){
-        rectNode = readme(path, &dataset);
-    }
-    else{
-        printf("Given type not supported\n");
-        return 1;
-    }
+    dataset_initialize_sigmod(&dataset, path);
+    
 
     GET_TIME(start);
     nn_solution = nn_descent(dataset, metric, k, p, d);
@@ -76,17 +66,9 @@ int main(int argc, char *argv[]) {
         perror(output);
         exit(EXIT_FAILURE);
     }
-    fprintf(fp, "%d, %s, %d, %d, %.5f, %s, %.3f, %.5f, %e\n",type, path, objects, k, recall, metr, p, d, finish-start);
+    fprintf(fp, "%s, %d, %d, %.5f, %s, %.3f, %.5f, %e\n", path, objects, k, recall, metr, p, d, finish-start);
     fclose(fp);
-
-    // save_solution(nn_solution, solution, objects, k);
-
-    if (type == 1){
-        free(numbersSigmod);
-    }
-    else if (type == 2){
-        free(rectNode);
-    }
+    
     dataset_free(dataset);
     free(nn_solution);
      

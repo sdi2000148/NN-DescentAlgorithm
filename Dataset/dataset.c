@@ -1,39 +1,80 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include "dataset.h"
-
-struct object {
-    Pointer *array;
-};
-
+#define DIMENSIONS 100
 
 struct dataset {
     int dimensions;
     int numberOfObjects;
-    Object *objects;
+    float **objects;
 };
 
-void dataset_initialize(Dataset *dataset, int numberOfObjects, int dimensions) {
-    (*dataset) = malloc(sizeof(struct dataset));
-    (*dataset)->numberOfObjects = numberOfObjects;
-    (*dataset)->dimensions = dimensions;
-    (*dataset)->objects = malloc(numberOfObjects*sizeof(Object));
+void dataset_initialize_sigmod(Dataset *dataset, char *path) {
+    int fp;
+    uint32_t N;
 
-    for(int i = 0; i < numberOfObjects; i++) {
-        (*dataset)->objects[i] = malloc(sizeof(struct object));
-        (*dataset)->objects[i]->array = calloc(dimensions, sizeof(Pointer)); // initiaize features 
+    fp = open(path, O_RDONLY, 0);
+
+    (*dataset) = malloc(sizeof(struct dataset));
+
+    if(fp == -1) {
+        printf("Can't open file\n");
+        close(fp);
+        return;
+    }
+
+    if (read(fp, &N, sizeof(uint32_t)) == 0) {
+        printf("Can't read N (number of obects)\n");
+        close(fp);
+        return;
+    }
+
+
+    (*dataset)->objects = malloc(N * sizeof(float *));
+    (*dataset)->numberOfObjects = N;
+    (*dataset)->dimensions = DIMENSIONS;
+
+    for(int i = 0; i < (*dataset)->numberOfObjects; i++) {
+        (*dataset)->objects[i] = malloc(DIMENSIONS * sizeof(float));
+        for(int j = 0; j < DIMENSIONS; j++) {
+            if (read(fp, &(*dataset)->objects[i][j], sizeof(float)) == 0) {
+                printf("Can't read float (item of obect)\n");
+                close(fp);
+                return;
+            }
+        }
     }
 }
 
-int dataset_addFeature(Dataset dataset, int i, int dimension, Pointer feature) {
+void dataset_initialize(Dataset *dataset, int N, int dimensions) {
+    (*dataset) = malloc(sizeof(struct dataset));
+    (*dataset)->objects = malloc(N * sizeof(float *));
+    (*dataset)->numberOfObjects = N;
+    (*dataset)->dimensions = dimensions;
+    for(int i = 0; i < (*dataset)->numberOfObjects; i++) {
+        (*dataset)->objects[i] = calloc(DIMENSIONS, sizeof(float));
+    }
+
+
+}
+
+
+int dataset_addFeature(Dataset dataset, int i, int dimension, float feature) {
     if(i > dataset->numberOfObjects || dimension > dataset->dimensions) {
         return -1;
     }
     
-    dataset->objects[i]->array[dimension] = feature; // add feature
+    dataset->objects[i][dimension] = feature; // add feature
 
     return 0;
 } 
+
+
 
 int dataset_getNumberOfObjects(Dataset dataset) {
     return dataset->numberOfObjects;
@@ -43,26 +84,22 @@ int dataset_getDimensions(Dataset dataset) {
     return dataset->dimensions;
 }
 
-Pointer dataset_getFeature(Dataset dataset, int i, int dimension) {
+float dataset_getFeature(Dataset dataset, int i, int dimension) {
     if(i > dataset->numberOfObjects || dimension > dataset->dimensions) {
-        return NULL;
+        return -1.0;
     }
-    return dataset->objects[i]->array[dimension]; // typical indexing
-} 
+    return dataset->objects[i][dimension]; // typical indexing
+}
 
-Pointer *dataset_getFeatures(Dataset dataset, int i) {
+float *dataset_getFeatures(Dataset dataset, int i) {
     if(i > dataset->numberOfObjects) {
         return NULL;
     }
-
-    return dataset->objects[i]->array; // return the whole array 
-
+    return dataset->objects[i]; // typical indexing
 }
-
 
 void dataset_free(Dataset dataset) {
     for(int i = 0; i < dataset->numberOfObjects; i++) {
-        free(dataset->objects[i]->array);
         free(dataset->objects[i]);
     }
     free(dataset->objects);

@@ -14,29 +14,27 @@
 #include "services.h"
 #include "nng_initialization.h"
 #include "nn_descent.h"
-#include "read.h"
 #include "timer.h"
+#include "metrics.h"
 #define BUFFER_SIZE 1024
 
 int main(int argc, char *argv[]) {
     char *path, *solution, *output, *metr;
     Dataset dataset;
-    float *numbersSigmod;
-    double *rectNode, start, finish;
-    int k, objects, type, **brute_solution;
+    double start, finish;
+    int k, objects, **brute_solution;
     Metric metric;
 
-    if(argc != 7) {
-        printf("./brute [type] [dataset path] [metric] [k] [solution path] [output csv]\n");
+    if(argc != 6) {
+        printf("./brute [dataset path] [metric] [k] [solution path] [output csv]\n");
         return 1;
     }
 
-    type = atoi(argv[1]);
-    path = argv[2];
-    metr = argv[3];
-    k = atoi(argv[4]);
-    solution = argv[5];
-    output = argv[6];
+    path = argv[1];
+    metr = argv[2];
+    k = atoi(argv[3]);
+    solution = argv[4];
+    output = argv[5];
 
     if(strcmp(metr, "l2") == 0) {
         metric = l2;
@@ -46,16 +44,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (type == 1){
-        numbersSigmod = readSigmod(path, &dataset);
-    }
-    else if (type == 2){
-        rectNode = readme(path, &dataset);
-    }
-    else{
-        printf("Given type not supported\n");
-        return 1;
-    }
+    dataset_initialize_sigmod(&dataset, path);
 
     GET_TIME(start);
     brute_solution = brute_force(dataset, k, metric);
@@ -70,17 +59,11 @@ int main(int argc, char *argv[]) {
         perror(output);
         exit(EXIT_FAILURE);
     }
-    fprintf(fp, "%d, %s, %d, %d, %s, %e\n",type, path, objects, k, metr, finish-start);
+    fprintf(fp, "%s, %d, %d, %s, %e\n", path, objects, k, metr, finish-start);
     fclose(fp);
 
     save_solution(brute_solution, solution, objects, k);
 
-    if (type == 1){
-        free(numbersSigmod);
-    }
-    else if (type == 2){
-        free(rectNode);
-    }
     dataset_free(dataset);
     free(brute_solution);
      

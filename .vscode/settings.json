@@ -28,6 +28,7 @@
         "recall.h": "c",
         "brute_force.h": "c",
         "list": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "read.h": "c"
     }
 }

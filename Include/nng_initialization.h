@@ -2,6 +2,7 @@
 #include "heap.h"
 #include "list.h"
 #include "avl.h"
+#include "metrics.h"
 
 
 /* Initialization of random K-NN graph given the dataset, the k and the metric, as well as initialization 

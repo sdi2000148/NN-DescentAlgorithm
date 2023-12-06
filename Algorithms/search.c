@@ -57,7 +57,7 @@ static int get_candidate(Heap pool, Avl computed, int k)
 }
 
 
-int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric metric)
+int *search_knn(Dataset dataset, int **graph, float *object, int k, Metric_search metric)
 {
     Heap pool;
     Avl computed;
@@ -70,7 +70,7 @@ int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric met
 
     srand(time(NULL));
     current = rand() % dataset_getNumberOfObjects(dataset);    // randomly chosen candidate node
-    val = metric(dataset_getFeatures(dataset, current), object, dataset_getDimensions(dataset));
+    val = metric(dataset, current, object);
 
     if (equal(val, 0.0) == 1){
         self = current;
@@ -95,7 +95,7 @@ int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric met
 
         for (int i=0 ; i < k ; i++){        // for every neighbor of the current candidate node
             neighbor = graph[current][i]; 
-            val = metric(dataset_getFeatures(dataset, neighbor), object, dataset_getDimensions(dataset));
+            val = metric(dataset, neighbor ,object);
             if (equal(val, 0.0) == 1){
                 self = neighbor;
                 continue;
@@ -123,7 +123,7 @@ int *search_knn(Dataset dataset, int **graph, Pointer *object, int k, Metric met
 }
 
 
-int *search_knn_brute_force(Dataset dataset, Pointer *object, int k, Metric metric)
+int *search_knn_brute_force(Dataset dataset, float *object, int k, Metric_search metric)
 {
     Heap heap;
     int heap_len;
@@ -133,7 +133,7 @@ int *search_knn_brute_force(Dataset dataset, Pointer *object, int k, Metric metr
     heap_initialize(&heap, k);
 
     for (int i=0 ; i < dataset_getNumberOfObjects(dataset) ; i++){
-        val = metric(dataset_getFeatures(dataset, i), object, dataset_getDimensions(dataset));
+        val = metric(dataset, i, object);
         if (equal(val, 0.0) == 1){
             continue;
         }

@@ -1,5 +1,9 @@
-#include "common_types.h"
+#include "dataset.h"
 
-double l2(Pointer *x, Pointer *y, int d);
+typedef float (*Metric)(Dataset dataset, int x, int y);
 
-double l2_double(Pointer *x, Pointer *y, int d);
+typedef float (*Metric_search)(Dataset dataset, int x, float *y);
+
+float l2(Dataset dataset, int x, int y);
+
+float l2_search(Dataset dataset, int x, float *y);
