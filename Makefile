@@ -17,8 +17,8 @@ DEPS = $(wildcard $(INCLUDE_DIR)/*.h)
 TARGET_NN = nn
 TARGET_BRUTE = brute
 
-ARGS_NN = 1 Datasets/0005000-3.bin l2 100 0.4 0.001 solution.txt
-ARGS_BRUTE = 1 Datasets/0005000-3.bin l2 100 solution.txt output.csv
+ARGS_NN = Datasets/00005000-3.bin l2 100 0.4 0.001 solution.txt
+ARGS_BRUTE = Datasets/00005000-3.bin l2 100 solution.txt output.csv
 
 .PHONY: all clean run-nn run-brute valgrind-nn valgrind-brute
 
