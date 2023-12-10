@@ -4,7 +4,7 @@
 
 static int equal(float a, float b)
 {
-	if (fabs(a-b) < 1.0e-8){
+	if (fabsf(a-b) < 1.0e-8){
 		return 1 ;
 	}
 	return 0 ;

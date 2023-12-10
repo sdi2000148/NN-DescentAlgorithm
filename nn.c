@@ -39,15 +39,16 @@ int main(int argc, char *argv[]) {
     solution = argv[6];
     output = argv[7];
 
+    dataset_initialize_sigmod(&dataset, path);
+
     if(strcmp(metr, "l2") == 0) {
         metric = l2;
+        dataset_calculateSquares(dataset);
     }
     else {
         printf("Given metric not supported\n");
         return 1;
     }
-
-    dataset_initialize_sigmod(&dataset, path);
     
 
     GET_TIME(start);

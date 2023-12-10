@@ -18,6 +18,10 @@ float dataset_getFeature(Dataset dataset, int i, int dimension);
 
 float *dataset_getFeatures(Dataset dataset, int i);
 
+void dataset_calculateSquares(Dataset dataset);
+
+float dataset_getSquare(Dataset dataset, int i);
+
 /* Free memory of dataset */
 void dataset_free(Dataset dataset);
 

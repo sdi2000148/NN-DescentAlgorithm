@@ -5,7 +5,7 @@
 
 static int equal(float a, float b)
 {
-	if (fabs(a-b) < 1.0e-8){
+	if (fabsf(a-b) < 1.0e-8){
 		return 1 ;
 	}
 	return 0 ;
@@ -23,11 +23,13 @@ void test_l2(void) {
         dataset_addFeature(dataset, 0, i, (float)(i + 1));
         dataset_addFeature(dataset, 1, i, (float)(i + 5));
     }
-    // sqr((1-5)^2 + (2-6)^2 + (3-7)^2 + (4-8)^2) = 8
+    // (1-5)^2 + (2-6)^2 + (3-7)^2 + (4-8)^2 = 64
+
+    dataset_calculateSquares(dataset);
 
     value = l2(dataset, 0, 1);
 
-    TEST_CHECK(equal(value, 8.0) == 1);
+    TEST_CHECK(equal(value, 64.0) == 1);
 
     dataset_free(dataset);
 

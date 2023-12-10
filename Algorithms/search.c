@@ -12,9 +12,9 @@
 
 
 // return 1 when the two floating point numbers are equal, 0 otherwise
-static int equal(double a, double b)
+static int equal(float a, float b)
 {
-	if (fabs(a-b) < 1.0e-12){
+	if (fabsf(a-b) < 1.0e-12){
 		return 1 ;
 	}
 	return 0 ;
@@ -63,7 +63,7 @@ int *search_knn(Dataset dataset, int **graph, float *object, int k, Metric_searc
     Avl computed;
     int *indexes = malloc(k * sizeof(int));
     int current, pool_len, neighbor, self = -1;
-    double val;
+    float val;
 
     heap_initialize(&pool, k);
     avl_initialize(&computed);

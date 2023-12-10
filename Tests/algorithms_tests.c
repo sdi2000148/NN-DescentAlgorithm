@@ -28,6 +28,8 @@ void test_brute_force(void) {
     dataset_addFeature(dataset, 4, 0, 1.0);
     dataset_addFeature(dataset, 4, 1, -10.0);
 
+    dataset_calculateSquares(dataset);
+
     actual = brute_force(dataset, k, l2);
 
     TEST_CHECK(seq_search(2, k, actual[0]) == 1);
@@ -63,6 +65,8 @@ void test_nng_initialization(void) {
     dataset_addFeature(dataset, 4, 0, 1.0);
     dataset_addFeature(dataset, 4, 1, -10.0);
 
+    dataset_calculateSquares(dataset);
+
     heap = nng_initialization_random(dataset, k, l2);
 
     for (int i = 0; i < objects; i++) {
@@ -89,6 +93,8 @@ void test_nn_descent_20(void) {
     dataset_initialize_sigmod(&dataset, "../Datasets/00000020.bin");
     objects = dataset_getNumberOfObjects(dataset);
 
+    dataset_calculateSquares(dataset);
+
     predicted = nn_descent(dataset, l2, k, p, d);
     
     actual = brute_force(dataset, k, l2);
@@ -111,6 +117,8 @@ void test_search(void)
     int *solution, *brute_force_solution;
 
     dataset_initialize_sigmod(&dataset, "../Datasets/00000020.bin");
+
+    dataset_calculateSquares(dataset);
 
     // using knn graph for searching
     int **actual = brute_force(dataset, k, l2);

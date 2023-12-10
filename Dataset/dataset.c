@@ -12,6 +12,7 @@ struct dataset {
     int dimensions;
     int numberOfObjects;
     float **objects;
+    float *squares;
 };
 
 void dataset_initialize_sigmod(Dataset *dataset, char *path) {
@@ -38,10 +39,11 @@ void dataset_initialize_sigmod(Dataset *dataset, char *path) {
     (*dataset)->objects = malloc(N * sizeof(float *));
     (*dataset)->numberOfObjects = N;
     (*dataset)->dimensions = DIMENSIONS;
+    (*dataset)->squares = malloc(N * sizeof(float));
 
     for(int i = 0; i < (*dataset)->numberOfObjects; i++) {
-        (*dataset)->objects[i] = malloc(DIMENSIONS * sizeof(float));
-        for(int j = 0; j < DIMENSIONS; j++) {
+        (*dataset)->objects[i] = malloc((*dataset)->dimensions * sizeof(float));
+        for(int j = 0; j < (*dataset)->dimensions; j++) {
             if (read(fp, &(*dataset)->objects[i][j], sizeof(float)) == 0) {
                 printf("Can't read float (item of obect)\n");
                 close(fp);
@@ -56,8 +58,9 @@ void dataset_initialize(Dataset *dataset, int N, int dimensions) {
     (*dataset)->objects = malloc(N * sizeof(float *));
     (*dataset)->numberOfObjects = N;
     (*dataset)->dimensions = dimensions;
+    (*dataset)->squares = malloc(N * sizeof(float));
     for(int i = 0; i < (*dataset)->numberOfObjects; i++) {
-        (*dataset)->objects[i] = calloc(DIMENSIONS, sizeof(float));
+        (*dataset)->objects[i] = calloc((*dataset)->dimensions, sizeof(float));
     }
 
 
@@ -73,8 +76,6 @@ int dataset_addFeature(Dataset dataset, int i, int dimension, float feature) {
 
     return 0;
 } 
-
-
 
 int dataset_getNumberOfObjects(Dataset dataset) {
     return dataset->numberOfObjects;
@@ -98,10 +99,31 @@ float *dataset_getFeatures(Dataset dataset, int i) {
     return dataset->objects[i]; // typical indexing
 }
 
+void dataset_calculateSquares(Dataset dataset) {
+    float result;
+
+    for(int i = 0; i < dataset->numberOfObjects; i++) {
+        result = 0.0;
+        for(int j = 0; j < dataset->dimensions; j++) {
+            result += dataset->objects[i][j]*dataset->objects[i][j];
+        }   
+        dataset->squares[i] = result;
+    }
+}
+
+float dataset_getSquare(Dataset dataset, int i) {
+    if(i > dataset->numberOfObjects) {
+        return -1.0;
+    }
+    return dataset->squares[i];
+}
+
+
 void dataset_free(Dataset dataset) {
     for(int i = 0; i < dataset->numberOfObjects; i++) {
         free(dataset->objects[i]);
     }
     free(dataset->objects);
+    free(dataset->squares);
     free(dataset);
 }
