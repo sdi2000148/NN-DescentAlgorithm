@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     fclose(fp);
     
     dataset_free(dataset);
-    free(nn_solution);
+    neighbours_free_all(nn_solution, objects);
      
     return 0;
 } 

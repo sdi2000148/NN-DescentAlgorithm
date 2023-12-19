@@ -21,13 +21,14 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
         return NULL;
     }
 
+    for(int i = 0; i < objects; i++) {
+        heap_initialize(&old[i], k + sampling);
+        heap_initialize(&new[i], 2*sampling);
+    }
+
     do {
         c = 0;
 
-        for(int i = 0; i < objects; i++) {
-            heap_initialize(&old[i], k + sampling);
-            heap_initialize(&new[i], 2*sampling);
-        }
 
         for(int i = 0; i < objects; i++) {
             for(int j = 0; j < k; j++) {
@@ -47,36 +48,49 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
         
 
         for(int i = 0; i < objects; i++){
-            count1 = 0;
-            while ((index1 = heap_getIndex(new[i], count1)) != -1){
-                count2 = count1 + 1;
-                while ((index2 = heap_getIndex(new[i], count2)) != -1){
-                    val = metric(dataset, index1, index2);
-                    c += heap_update(heaps[index1], index2, val);
-                    c += heap_update(heaps[index2], index1, val);
-                    count2++;
+            if(heap_empty(new[i]) == 0) {
+                count1 = 0;
+                while (count1 < heap_getCount(new[i]) - 1){
+                    index1 = heap_getIndex(new[i], count1);
+                    count2 = 0;
+                    while ((index2 = heap_getIndex(old[i], count2)) != -1){
+                        val = metric(dataset, index1, index2);
+                        c += heap_update(heaps[index1], index2, val);
+                        c += heap_update(heaps[index2], index1, val);
+                        count2++;
+                    }
+                    count1++;
                 }
-                count2 = 0;
-                while ((index2 = heap_getIndex(old[i], count2)) != -1){
-                    val = metric(dataset, index1, index2);
-                    c += heap_update(heaps[index1], index2, val);
-                    c += heap_update(heaps[index2], index1, val);
-                    count2++;
-                }
-                count1++;
-            }
-        }
 
-        for(int i = 0; i < objects; i++) {
-            heap_free(new[i]);
-            heap_free(old[i]);
+                index1 = heap_getIndex(new[i], count1);
+                while((index2 = heap_remove(old[i])) != -1) {
+                    val = metric(dataset, index1, index2);
+                    c += heap_update(heaps[index1], index2, val);
+                    c += heap_update(heaps[index2], index1, val);
+                }
+
+
+                while ((index1 = heap_remove(new[i])) != -1){
+                    count2 = 0;
+                    while ((index2 = heap_getIndex(new[i], count2)) != -1){
+                            val = metric(dataset, index1, index2);
+                            c += heap_update(heaps[index1], index2, val);
+                            c += heap_update(heaps[index2], index1, val);
+                            count2++;
+                    }
+                }
+            }
+
         }
 
     } while(c > (int)(d * (double)(objects * k)));
 
-    
-
     neighbours = getNeighbours(heaps, objects, k);
+
+    for(int i = 0; i < objects; i++) {
+        heap_free(new[i]);
+        heap_free(old[i]);
+    }
 
     heap_free_all(heaps, objects);
     free(new);

@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     save_solution(brute_solution, solution, objects, k);
 
     dataset_free(dataset);
-    free(brute_solution);
+    neighbours_free_all(brute_solution, objects);
      
     return 0;
 } 
