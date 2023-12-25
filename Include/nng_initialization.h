@@ -5,8 +5,10 @@
 #include "metrics.h"
 
 
-/* Initialization of random K-NN graph given the dataset, the k and the metric, as well as initialization 
-of R and avls avl tree arrays with sizes equal to the number of objects in the dataset. R contains all the 
-reverse neighbours for every object, and avls contains all the other objects that every object was compared
-to. */
+/* Initialization of random K-NN graph given the dataset, the k and the metric. */
 Heap* nng_initialization_random(Dataset dataset, int k, Metric metric);
+
+
+/* Initialization of K-NN graph with the use of random projection tree(s) given the dataset, 
+the k, the metric, the number of trees to be created and the minimum threshold number of a leaf */
+Heap *nng_initialization_rpt(Dataset dataset, Metric metric, int k, int trees, int threshold);

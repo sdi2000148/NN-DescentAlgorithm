@@ -8,7 +8,7 @@ LIST_OBJS = ../List/list.o
 AVL_OBJS = ../List/list.o ../Avl/avl.o
 HEAP_OBJS = ../List/list.o ../Heap/heap.o ../Avl/avl.o
 RECALL_OBJS = ../Heap/heap.o ../Avl/avl.o ../Evaluation/recall.o ../Dataset/dataset.o ../Services/services.o ../Algorithms/brute_force.o ../Metrics/metrics.o ../List/list.o
-ALGORITHMS_OBJS = ../Avl/avl.o ../Services/services.o ../Dataset/dataset.o ../Heap/heap.o ../Algorithms/brute_force.o ../List/list.o ../Metrics/metrics.o ../Algorithms/search.o ../Algorithms/nn_descent.o ../Algorithms/nng_initialization.o ../Evaluation/recall.o
+ALGORITHMS_OBJS = ../Avl/avl.o ../Services/services.o ../Dataset/dataset.o ../Heap/heap.o ../Algorithms/brute_force.o ../List/list.o ../Metrics/metrics.o ../Algorithms/search.o ../Algorithms/nn_descent.o ../Algorithms/nng_initialization.o ../Evaluation/recall.o ../Vector/vector.o
 DATASET_OBJS = ../Dataset/dataset.o
 METRIC_OBJS = ../Metrics/metrics.o ../Dataset/dataset.o
 

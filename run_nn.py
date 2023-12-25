@@ -25,7 +25,7 @@ for file in files_list:
     outputs.append(output_path)
     for k in [100]:
         solution_path = solution_dir + part1 + '-' + str(k) + '.txt'
-        for p in [0.2, 0.4, 1]:
+        for p in [0.1]:
             for d in [0.001]:
                 for metric in ['l2']:
                     args += [[output_path, dataset_dir+file, solution_path, k, p, d, metric]]

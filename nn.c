@@ -39,11 +39,12 @@ int main(int argc, char *argv[]) {
     solution = argv[6];
     output = argv[7];
 
+    srand(time(NULL));
+
     dataset_initialize_sigmod(&dataset, path);
 
     if(strcmp(metr, "l2") == 0) {
         metric = l2;
-        dataset_calculateSquares(dataset);
     }
     else {
         printf("Given metric not supported\n");
@@ -52,13 +53,16 @@ int main(int argc, char *argv[]) {
     
 
     GET_TIME(start);
+    dataset_calculateSquares(dataset);
     nn_solution = nn_descent(dataset, metric, k, p, d);
+    //nn_solution = nn_descent_parallel(dataset, metric, k, p, d);
     GET_TIME(finish);
 
     
 
     objects = dataset_getNumberOfObjects(dataset);
     recall = recall_file(solution, nn_solution, objects, k);
+    
 
     // writing to csv file
     FILE *fp;
@@ -67,6 +71,7 @@ int main(int argc, char *argv[]) {
         perror(output);
         exit(EXIT_FAILURE);
     }
+    
     fprintf(fp, "%s, %d, %d, %.5f, %s, %.3f, %.5f, %e\n", path, objects, k, recall, metr, p, d, finish-start);
     fclose(fp);
     

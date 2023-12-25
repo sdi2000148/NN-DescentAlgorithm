@@ -36,11 +36,12 @@ int main(int argc, char *argv[]) {
     solution = argv[4];
     output = argv[5];
 
+    srand(time(NULL));
+
     dataset_initialize_sigmod(&dataset, path);
 
     if(strcmp(metr, "l2") == 0) {
         metric = l2;
-        dataset_calculateSquares(dataset);
     }
     else {
         printf("Given metric not supported\n");
@@ -50,6 +51,7 @@ int main(int argc, char *argv[]) {
     
 
     GET_TIME(start);
+    dataset_calculateSquares(dataset);
     brute_solution = brute_force(dataset, k, metric);
     GET_TIME(finish);
 
