@@ -48,10 +48,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    
+    dataset_calculateSquares(dataset);
 
     GET_TIME(start);
-    dataset_calculateSquares(dataset);
     brute_solution = brute_force(dataset, k, metric);
     GET_TIME(finish);
 
