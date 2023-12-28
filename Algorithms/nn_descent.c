@@ -12,33 +12,31 @@
 
 static float get_random(void) { return ((float)rand() / (float)RAND_MAX); }
 
-int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
-    int objects = dataset_getNumberOfObjects(dataset), c, index, index1, index2, **neighbours, flag,
-    sampling = (int)(p *(double)k), count1, count2;
-    Heap *heaps, *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
-    float val;
+int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) 
+{
+    int    objects = dataset_getNumberOfObjects(dataset), c, index, index1, index2, **neighbours, flag;
+    int    sampling = (int)(p *(double)k), count1, count2;
+    int    threshold = (int)(d * (double)(objects * k));
+    float  val;
+    Heap   *heaps, *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
 
-    if(metric == l2) {
-        heaps = nng_initialization_rpt(dataset, metric, k, TREES, THRESHOLD);
-    }
-    else {
-        heaps = nng_initialization_random(dataset, k, metric);
-    }
-
-    if(heaps == NULL) {
+    // Initializing knn graph with random neighbors
+    heaps = nng_initialization_random(dataset, k, metric);
+    if(heaps == NULL){
         return NULL;
     }
 
-    // parallel for
+    // Initializing heaps for each object
     for(int i = 0; i < objects; i++) {
         heap_initialize(&old[i], k + sampling);
         heap_initialize(&new[i], 2*sampling);
     }
 
+    // Start of nn-descent
     do {
         c = 0;
-
-
+        
+        // reverse, union and sample in one full pass (fast single core paper)
         for(int i = 0; i < objects; i++) {
             for(int j = 0; j < k; j++) {
                 index = heap_getIndex(heaps[i], j);
@@ -55,10 +53,12 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
             }
         }
         
-        
-
+        // Local join for every object 
         for(int i = 0; i < objects; i++){
+            // No need to conduct local join if no new objects are present
             if(heap_empty(new[i]) == 0) {
+
+                // Conduct local join between new objects and old objects
                 count1 = 0;
                 while (count1 < heap_getCount(new[i]) - 1){
                     index1 = heap_getIndex(new[i], count1);
@@ -72,6 +72,9 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
                     count1++;
                 }
 
+                // Local join between the last new object and the old objects.
+                // This is done to empty the old heap, so as to be used in the next iteration:
+                // no need for free and malloc.
                 index1 = heap_getIndex(new[i], count1);
                 while((index2 = heap_remove(old[i])) != -1) {
                     val = metric(dataset, index1, index2);
@@ -79,22 +82,24 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d) {
                     c += heap_update(heaps[index2], index1, val);
                 }
 
-
+                // Conduct local join between new ojects.
+                // remove is used to empty the new heap, in order to avoid unnecessary frees and mallocs later
                 while ((index1 = heap_remove(new[i])) != -1){
                     count2 = 0;
                     while ((index2 = heap_getIndex(new[i], count2)) != -1){
-                            val = metric(dataset, index1, index2);
-                            c += heap_update(heaps[index1], index2, val);
-                            c += heap_update(heaps[index2], index1, val);
-                            count2++;
+                        val = metric(dataset, index1, index2);
+                        c += heap_update(heaps[index1], index2, val);
+                        c += heap_update(heaps[index2], index1, val);
+                        count2++;
                     }
                 }
             }
 
         }
 
-    } while(c > (int)(d * (double)(objects * k)));
+    } while(c > threshold);
 
+    // Get graph as 2D array
     neighbours = getNeighbours(heaps, objects, k);
 
     for(int i = 0; i < objects; i++) {
