@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Wextra -pthread
+CFLAGS = -g -Wall -Wextra -pthread -fopenmp
 SRC_DIR = .
 INCLUDE_DIR = Include
 TESTS_DIR = Tests

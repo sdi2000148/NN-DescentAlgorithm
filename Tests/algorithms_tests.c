@@ -110,6 +110,32 @@ void test_nn_descent_20(void) {
 }
 
 
+void test_nn_descent_parallel_20(void) {
+    double rec;
+    Dataset dataset;
+    int **actual, k = 10, objects, **predicted;
+    int thread_count = 4;
+    float p = 0.4, d = 0.001;
+    
+    dataset_initialize_sigmod(&dataset, "../Datasets/00000020.bin");
+    objects = dataset_getNumberOfObjects(dataset);
+
+    dataset_calculateSquares(dataset);
+
+    predicted = nn_descent_parallel(dataset, l2, k, p, d, thread_count);
+    
+    actual = brute_force(dataset, k, l2);
+
+    rec = recall(actual, predicted, objects, k);
+
+    TEST_CHECK(rec >= 0.4);
+
+    neighbours_free_all(predicted, objects);
+    neighbours_free_all(actual, objects);
+    dataset_free(dataset);
+}
+
+
 void test_search(void)
 {
     Dataset dataset;
@@ -180,5 +206,6 @@ TEST_LIST = {
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
     { "rpt_20", test_rpt},
+    { "nn_descent_parallel_20", test_nn_descent_parallel_20},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };

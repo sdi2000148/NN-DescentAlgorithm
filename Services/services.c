@@ -4,6 +4,7 @@
 #include "list.h"
 #include "avl.h"
 
+static float get_random(void) { return ((float)rand() / (float)RAND_MAX); }
 
 int seq_search(int value , int size , int *array)
 {
@@ -60,6 +61,17 @@ void strict_reverse(List *B, List *R, int numberOfObjects, Heap *heaps) {
     return;
 }
 
+void reverse_alt(Heap *B, int objects) 
+{
+    int index;
+
+    for (int i=0 ; i<objects ; i++){
+        for (int j=0 ; j<heap_getCount(B[i]) ; j++){
+            index = heap_getIndex(B[i], j);
+            heap_update(B[index], i, get_random());
+        }
+    }
+}
 
 void heap_free_all(Heap *heaps, int n)
 {

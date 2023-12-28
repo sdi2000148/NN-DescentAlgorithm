@@ -19,6 +19,11 @@ void reverse(List *B, List *R, int numberOfObjects);
 void strict_reverse(List *B, List *R, int numberOfObjects, Heap *heaps);
 
 
+// Used to find the reverse of new and old (incremental search).
+// Reverse neighbors will be inserted in the same heap as the direct ones.
+void reverse_alt(Heap *B, int objects);
+
+
 // Takes heaps where the direct neighbors of each object are stored and returns the knn graph as a N*k 2D array.
 // For each object the neighbors are sorted from closest to furthest.
 // NULL is returned in case of failure.
