@@ -23,11 +23,11 @@ int main(int argc, char *argv[]) {
     Dataset dataset;
     double p, d;
     double recall, start, finish;
-    int k, objects, **nn_solution;
+    int k, objects, thread_count, **nn_solution;
     Metric metric;
 
-    if(argc != 8) {
-        printf("./main [dataset path] [metric] [k] [p] [d] [solution path] [output csv]\n");
+    if(argc != 9) {
+        printf("./main [dataset path] [metric] [k] [p] [d] [thread_count] [solution path] [output csv]\n");
         return 1;
     }
 
@@ -36,8 +36,9 @@ int main(int argc, char *argv[]) {
     k = atoi(argv[3]);
     p = strtod(argv[4], &endptr);
     d = strtod(argv[5], &endptr);
-    solution = argv[6];
-    output = argv[7];
+    thread_count = atoi(argv[6]);
+    solution = argv[7];
+    output = argv[8];
 
     srand(time(NULL));
 
@@ -51,19 +52,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
+    dataset_calculateSquares(dataset);
 
     GET_TIME(start);
-    dataset_calculateSquares(dataset);
-    nn_solution = nn_descent(dataset, metric, k, p, d);
-    //nn_solution = nn_descent_parallel(dataset, metric, k, p, d);
+    if (thread_count == 1){
+        nn_solution = nn_descent(dataset, metric, k, p, d);
+    }
+    else{
+        nn_solution = nn_descent_parallel(dataset, metric, k, p, d, thread_count);
+    }
     GET_TIME(finish);
-
-    
 
     objects = dataset_getNumberOfObjects(dataset);
     recall = recall_file(solution, nn_solution, objects, k);
     
-
     // writing to csv file
     FILE *fp;
     fp = fopen(output, "a");
@@ -72,7 +74,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     
-    fprintf(fp, "%s, %d, %d, %.5f, %s, %.3f, %.5f, %e\n", path, objects, k, recall, metr, p, d, finish-start);
+    fprintf(fp, "%s,%d,%d,%.5f,%s,%.3f,%.5f,%d,%e\n", path, objects, k, recall, metr, p, d, thread_count, finish-start);
     fclose(fp);
     
     dataset_free(dataset);
