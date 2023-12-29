@@ -13,4 +13,4 @@ jobs:
     - name: make run
       run: |
         cd Tests/ 
-        make run CFLAGS=-fPIC
+        make run
