@@ -118,12 +118,13 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d)
 
 int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, double d, int thread_count) 
 {
-    int    objects = dataset_getNumberOfObjects(dataset), c, index, index1, index2, **neighbours, flag;
-    int    sampling = (int)(p *(double)k), count1, count2;
-    int    threshold = (int)(d * (double)(objects * k));
-    int    i, j;
-    float  val;
-    Heap   *heaps, *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
+    int        objects = dataset_getNumberOfObjects(dataset), c, index, index1, index2, **neighbours, flag;
+    int        sampling = (int)(p *(double)k), count1, count2;
+    int        threshold = (int)(d * (double)(objects * k));
+    int        i, j;
+    float      val;
+    Heap       *heaps, *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
+    omp_lock_t *locks = malloc(objects * sizeof(omp_lock_t));
 
     // Initializing knn graph with random neighbors
     heaps = nng_initialization_random(dataset, k, metric);
@@ -131,17 +132,18 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
         return NULL;
     }
 
-    # pragma omp parallel                                                               \
-      num_threads(thread_count)                                                         \
-      default(none)                                                                     \
-      private(i, j, index, flag, index1, index2, count1, count2, val)                   \
-      shared(objects, old, new, k, sampling, c, heaps, threshold, metric, dataset) 
+    # pragma omp parallel                                                                   \
+      num_threads(thread_count)                                                             \
+      default(none)                                                                         \
+      private(i, j, index, flag, index1, index2, count1, count2, val)                       \
+      shared(objects, old, new, k, sampling, c, heaps, threshold, metric, dataset, locks) 
     {
-        // Initializing heaps for each object
+        // Initializing heaps and locks for each object
         # pragma omp for
         for(i = 0; i < objects; i++) {
             heap_initialize(&old[i], k + sampling);
             heap_initialize(&new[i], 2*sampling);
+            omp_init_lock(&locks[i]);
         }
 
         // Start of nn-descent 
@@ -171,7 +173,7 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
             }
             
             // Local join for every object 
-            # pragma omp for 
+            # pragma omp for reduction(+: c)
             for(i = 0; i < objects; i++){
                 // No need to conduct local join if no new objects are present
                 if(heap_empty(new[i]) == 0) {
@@ -183,10 +185,15 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
                         count2 = 0;
                         while ((index2 = heap_getIndex(old[i], count2)) != -1){
                             val = metric(dataset, index1, index2);
-                            # pragma omp critical
+
+                            omp_set_lock(&locks[index1]);
                             c += heap_update(heaps[index1], index2, val);
-                            # pragma omp critical
+                            omp_unset_lock(&locks[index1]);
+
+                            omp_set_lock(&locks[index2]);
                             c += heap_update(heaps[index2], index1, val);
+                            omp_unset_lock(&locks[index2]);
+
                             count2++;
                         }
                         count1++;
@@ -198,10 +205,14 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
                     index1 = heap_getIndex(new[i], count1);
                     while((index2 = heap_remove(old[i])) != -1) {
                         val = metric(dataset, index1, index2);
-                        # pragma omp critical
+
+                        omp_set_lock(&locks[index1]);
                         c += heap_update(heaps[index1], index2, val);
-                        # pragma omp critical
+                        omp_unset_lock(&locks[index1]);
+
+                        omp_set_lock(&locks[index2]);
                         c += heap_update(heaps[index2], index1, val);
+                        omp_unset_lock(&locks[index2]);
                     }
 
                     // Conduct local join between new ojects.
@@ -210,10 +221,15 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
                         count2 = 0;
                         while ((index2 = heap_getIndex(new[i], count2)) != -1){
                             val = metric(dataset, index1, index2);
-                            # pragma omp critical
+                            
+                            omp_set_lock(&locks[index1]);
                             c += heap_update(heaps[index1], index2, val);
-                            # pragma omp critical
+                            omp_unset_lock(&locks[index1]);
+
+                            omp_set_lock(&locks[index2]);
                             c += heap_update(heaps[index2], index1, val);
+                            omp_unset_lock(&locks[index2]);
+
                             count2++;
                         }
                     }
@@ -227,6 +243,7 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
         for(i = 0; i < objects; i++) {
             heap_free(new[i]);
             heap_free(old[i]);
+            omp_destroy_lock(&locks[i]);
         }
     }
 
@@ -236,6 +253,7 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
     heap_free_all(heaps, objects);
     free(new);
     free(old);
+    free(locks);
 
     return neighbours;
 }

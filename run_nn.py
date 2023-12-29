@@ -44,7 +44,7 @@ for output in outputs:
     with open(output, 'w') as file:
         file.write('Dataset,N,k,Recall,Metric,p,d,Thread_count,Time\n')
 
-times = 4
+times = 1
 
 # run multiple experiments
 subprocess.run(['make', 'nn'])
