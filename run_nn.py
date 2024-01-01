@@ -42,18 +42,20 @@ else:
 
 for output in outputs:
     with open(output, 'w') as file:
-        file.write('Dataset,N,k,Recall,Metric,p,d,Thread_count,Time\n')
+        file.write('Dataset,N,k,Recall,Metric,p,d,Thread_count,Init,Trees,Threshold,Time\n')
 
 times = 1
+init = 2
 
 # run multiple experiments
 subprocess.run(['make', 'nn'])
 
 for output, dataset, solution, k, p, d, metric in args:
     for thread_count in range(0,3):
-        for i in range(0, times):
-            print('./nn', dataset, metric, str(k), str(p), str(d), str(pow(2, thread_count)), solution, output)
-            subprocess.run(['./nn', dataset, metric, str(k), str(p), str(d), str(pow(2, thread_count)), solution, output])
+        for trees, threshold in [[2, 2*k]]:
+            for i in range(0, times):
+                print('./nn', dataset, metric, str(k), str(p), str(d), str(pow(2, thread_count)), str(init), str(trees), str(threshold), solution, output)
+                subprocess.run(['./nn', dataset, metric, str(k), str(p), str(d), str(pow(2, thread_count)), str(init), str(trees), str(threshold), solution, output])
 
 subprocess.run(['make', 'clean-nn'])
 

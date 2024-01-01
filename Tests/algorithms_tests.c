@@ -114,7 +114,7 @@ void test_nn_descent_parallel_20(void) {
     double rec;
     Dataset dataset;
     int **actual, k = 10, objects, **predicted;
-    int thread_count = 4;
+    int thread_count = 4, init = 1, trees = 0, threshold = 0;
     float p = 0.4, d = 0.001;
     
     dataset_initialize_sigmod(&dataset, "../Datasets/00000020.bin");
@@ -122,7 +122,7 @@ void test_nn_descent_parallel_20(void) {
 
     dataset_calculateSquares(dataset);
 
-    predicted = nn_descent_parallel(dataset, l2, k, p, d, thread_count);
+    predicted = nn_descent_parallel(dataset, l2, k, p, d, thread_count, init, trees, threshold);
     
     actual = brute_force(dataset, k, l2);
 
