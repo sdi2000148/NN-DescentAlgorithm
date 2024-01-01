@@ -118,7 +118,7 @@ int **nn_descent(Dataset dataset, Metric metric, int k, double p, double d)
 
 int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, double d, int thread_count) 
 {
-    int        objects = dataset_getNumberOfObjects(dataset), c, index, index1, index2, **neighbours, flag;
+    int        objects = dataset_getNumberOfObjects(dataset), c, index, index1, index2, **neighbours, flag, **glob_neighbours;
     int        sampling = (int)(p *(double)k), count1, count2;
     int        threshold = (int)(d * (double)(objects * k));
     int        i, j;
@@ -126,17 +126,11 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
     Heap       *heaps, *new = malloc(objects * sizeof(Heap)), *old = malloc(objects * sizeof(Heap));
     omp_lock_t *locks = malloc(objects * sizeof(omp_lock_t));
 
-    // Initializing knn graph with random neighbors
-    heaps = nng_initialization_random(dataset, k, metric);
-    if(heaps == NULL){
-        return NULL;
-    }
-
-    # pragma omp parallel                                                                   \
-      num_threads(thread_count)                                                             \
-      default(none)                                                                         \
-      private(i, j, index, flag, index1, index2, count1, count2, val)                       \
-      shared(objects, old, new, k, sampling, c, heaps, threshold, metric, dataset, locks) 
+    # pragma omp parallel                                                                               \
+      num_threads(thread_count)                                                                         \
+      default(none)                                                                                     \
+      private(i, j, index, flag, index1, index2, count1, count2, val, heaps, neighbours)                \
+      shared(objects, old, new, k, sampling, c, threshold, metric, dataset, locks, glob_neighbours) 
     {
         // Initializing heaps and locks for each object
         # pragma omp for
@@ -145,6 +139,10 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
             heap_initialize(&new[i], 2*sampling);
             omp_init_lock(&locks[i]);
         }
+
+        // Initializing knn graph with random projection trees
+        // heaps = nng_initialization_rpt(dataset, metric, k, TREES, THRESHOLD, locks);
+        heaps = nng_initialization_random(dataset, k, metric);
 
         // Start of nn-descent 
         do {
@@ -239,23 +237,30 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
 
         } while(c > threshold);
 
+        // Get graph as 2D array
+        neighbours = getNeighbours(heaps, objects, k);
+
+        #pragma omp single
+        glob_neighbours = neighbours;  
+
         # pragma omp for
         for(i = 0; i < objects; i++) {
             heap_free(new[i]);
             heap_free(old[i]);
+            heap_free(heaps[i]);
             omp_destroy_lock(&locks[i]);
+        }
+
+        #pragma omp single
+        {
+            free(new);
+            free(old);
+            free(heaps);
+            free(locks);
         }
     }
 
-    // Get graph as 2D array
-    neighbours = getNeighbours(heaps, objects, k);
-
-    heap_free_all(heaps, objects);
-    free(new);
-    free(old);
-    free(locks);
-
-    return neighbours;
+    return glob_neighbours;
 }
 
 

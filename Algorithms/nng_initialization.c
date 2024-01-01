@@ -17,25 +17,28 @@ static int equal(float a, float b)
 	return 0 ;
 }
 
-
-
 Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
     int objects = dataset_getNumberOfObjects(dataset), index, *samples, unique;
-    Heap *heaps = malloc(objects* (sizeof(Heap)));
+    Heap *heaps;
     float val;
+
+    # pragma omp single copyprivate(heaps)
+    heaps = malloc(objects* (sizeof(Heap)));
 
     samples = malloc(objects*sizeof(int));
 
     if (objects <= k) {
+        # pragma omp single
         printf("K is bigger or equal than the given objects!\n");
         return NULL;
     }
 
-    // initialize ADTs
+    # pragma omp for
     for (int i = 0; i < objects; i++) {
         heap_initialize(&heaps[i], k);
     }
     
+    # pragma omp for
     for (int i = 0; i < objects; i++) {
         for(int j = 0; j < objects; j++) 
             samples[j] = 0;
@@ -51,7 +54,6 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
                 }
             } while(!unique); // duplicate avoidance 
 
-
             val = metric(dataset, index, i);
             heap_update(heaps[i], index, val);
         }
@@ -61,8 +63,7 @@ Heap* nng_initialization_random(Dataset dataset, int k, Metric metric) {
     return heaps;
 }
 
-
-static void rpt_split_rec(Dataset dataset, Heap *heaps, Metric metric, int *indexes, int start, int end, int threshold, int *temp) {
+static void rpt_split_rec(Dataset dataset, Heap *heaps, Metric metric, int *indexes, int start, int end, int threshold, int *temp, omp_lock_t *locks) {
     int point1, point2, dimensions = dataset_getDimensions(dataset), left = start, right = end, index1, index2;
     float offset, margin, *vector, *midpoint, *data, value;
 
@@ -97,7 +98,6 @@ static void rpt_split_rec(Dataset dataset, Heap *heaps, Metric metric, int *inde
         }
     }
 
-
     if(left == start || right == end) { // all points happened to be on one side only
         for(int i = start; i <= end; i++) {
             if(rand() % 2 == 0) {
@@ -119,43 +119,51 @@ static void rpt_split_rec(Dataset dataset, Heap *heaps, Metric metric, int *inde
             for(int j = i + 1; j <= end; j++) {
                 index2 = indexes[j];
                 value = metric(dataset, index1, index2);
+                omp_set_lock(&locks[index1]);
                 heap_update(heaps[index1], index2, value);
+                omp_unset_lock(&locks[index1]);
+
+                omp_set_lock(&locks[index2]);
                 heap_update(heaps[index2], index1, value);
+                omp_unset_lock(&locks[index2]);
             }
         }
     }
     else {
-        // task
-        rpt_split_rec(dataset, heaps, metric, indexes, start, left, threshold, temp);
-        // task
-        rpt_split_rec(dataset, heaps, metric, indexes, right, end, threshold, temp);
+        rpt_split_rec(dataset, heaps, metric, indexes, start, left, threshold, temp, locks);
+        rpt_split_rec(dataset, heaps, metric, indexes, right, end, threshold, temp, locks);
     }
+
     free(vector);
     free(midpoint);
 }
 
-
-
-
-Heap *nng_initialization_rpt(Dataset dataset, Metric metric, int k, int trees, int threshold) {
-    int dimensions = dataset_getDimensions(dataset), objects = dataset_getNumberOfObjects(dataset), *indexes = malloc(objects * sizeof(int)), *temp = malloc(objects * sizeof(int)), index1, index2, \
+Heap *nng_initialization_rpt(Dataset dataset, Metric metric, int k, int trees, int threshold, omp_lock_t *locks) {
+    int dimensions = dataset_getDimensions(dataset), objects = dataset_getNumberOfObjects(dataset), *indexes, *temp, index1, index2, \
     left, right;
     float offset, margin, *vector, *midpoint, *data, value;
-    Heap *heaps = malloc(objects * (sizeof(Heap)));
+    Heap *heaps;
 
-    // parallel for
+    # pragma omp single copyprivate(heaps)
+    {
+        heaps = malloc(objects* (sizeof(Heap)));
+    }
+
+    indexes = malloc(objects * sizeof(int));
+    temp = malloc(objects * sizeof(int));
+
+    # pragma omp for
     for (int i = 0; i < objects; i++) {
         heap_initialize(&heaps[i], k);
     }
 
-    // parallel for
+    # pragma omp for
     for(int i = 0; i < trees; i++) {
         index1 = rand() % objects;
 
         do {
             index2 = rand() % objects; 
         } while(index1 == index2);
-
 
         vector = hyperplane_vector_init(dataset, index1, index2); // vector between the first two random points
         midpoint = hyperplane_midpoint_init(dataset, index1, index2); // midpoint between the first two random points
@@ -182,7 +190,6 @@ Heap *nng_initialization_rpt(Dataset dataset, Metric metric, int k, int trees, i
             else {
                 indexes[right--] = j;
             }
-
         }
 
         if(left == 0 || right == objects - 1) { // all points happened to be on one side only
@@ -196,7 +203,6 @@ Heap *nng_initialization_rpt(Dataset dataset, Metric metric, int k, int trees, i
             }
         }    
 
-
         left--;
         right++;
 
@@ -206,27 +212,29 @@ Heap *nng_initialization_rpt(Dataset dataset, Metric metric, int k, int trees, i
                 for(int j = i + 1; j <= objects - 1; j++) {
                     index2 = indexes[j];
                     value = metric(dataset, index1, index2);
+
+                    omp_set_lock(&locks[index1]);
                     heap_update(heaps[index1], index2, value);
+                    omp_unset_lock(&locks[index1]);
+
+                    omp_set_lock(&locks[index2]);
                     heap_update(heaps[index2], index1, value);
+                    omp_unset_lock(&locks[index2]);
                 }
             }
         }
         else {
-            // task  
-            rpt_split_rec(dataset, heaps, metric, indexes, 0, left, threshold, temp);
-            // task
-            rpt_split_rec(dataset, heaps, metric, indexes, right, objects - 1, threshold, temp);        
+            rpt_split_rec(dataset, heaps, metric, indexes, 0, left, threshold, temp, locks);
+            rpt_split_rec(dataset, heaps, metric, indexes, right, objects - 1, threshold, temp, locks);   
         }
         free(vector);
         free(midpoint);
     }
 
-
     free(temp);
     free(indexes);
 
     return heaps;
-
 }
 
 

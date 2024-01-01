@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 #include "services.h"
 #include "list.h"
 #include "avl.h"
@@ -16,7 +17,6 @@ int seq_search(int value , int size , int *array)
     }
     return 0 ;
 }
-
 
 void reverse(List *B, List *R, int numberOfObjects) {
     Listnode neighbour;
@@ -37,7 +37,6 @@ void reverse(List *B, List *R, int numberOfObjects) {
 
     return;
 }
-
 
 void strict_reverse(List *B, List *R, int numberOfObjects, Heap *heaps) {
     Listnode neighbour;
@@ -93,7 +92,6 @@ void neighbours_free_all(int **neighbours, int n) {
     free(neighbours);
 }
 
-
 void save_solution(int **neighbours, char *path, int N, int k) {
     FILE *fp = fopen(path, "w");
 
@@ -110,14 +108,14 @@ void save_solution(int **neighbours, char *path, int N, int k) {
     fclose(fp);
 }
 
-
 int **getNeighbours(Heap *heaps, int N, int k) {
-    int **neighbours = malloc(N * sizeof(int *));
+    int **neighbours;
 
+    #pragma omp single copyprivate(neighbours)
+    neighbours = malloc(N * sizeof(int *));
+
+    # pragma omp for
     for (int i=0 ; i<N ; i++){
-        if (heap_getCount(heaps[i]) < k){
-            return NULL;
-        } 
         neighbours[i] = malloc(k * sizeof(int));
         for (int j=k-1 ; j>=0 ; j--){
             neighbours[i][j] = heap_getMaxIndex(heaps[i]);
@@ -126,5 +124,4 @@ int **getNeighbours(Heap *heaps, int N, int k) {
     }
 
     return neighbours;
-
 }
