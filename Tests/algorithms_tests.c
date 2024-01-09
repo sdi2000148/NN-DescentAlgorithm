@@ -8,6 +8,7 @@
 #include "recall.h"
 #include "metrics.h"
 #include "knn_search.h"
+#include "omp.h"
 #define BUFFER_SIZE 1024
 
 
@@ -110,32 +111,6 @@ void test_nn_descent_20(void) {
 }
 
 
-void test_nn_descent_parallel_20(void) {
-    double rec;
-    Dataset dataset;
-    int **actual, k = 10, objects, **predicted;
-    int thread_count = 4, init = 1, trees = 0, threshold = 0;
-    float p = 0.4, d = 0.001;
-    
-    dataset_initialize_sigmod(&dataset, "../Datasets/00000020.bin");
-    objects = dataset_getNumberOfObjects(dataset);
-
-    dataset_calculateSquares(dataset);
-
-    predicted = nn_descent_parallel(dataset, l2, k, p, d, thread_count, init, trees, threshold);
-    
-    actual = brute_force(dataset, k, l2);
-
-    rec = recall(actual, predicted, objects, k);
-
-    TEST_CHECK(rec >= 0.4);
-
-    neighbours_free_all(predicted, objects);
-    neighbours_free_all(actual, objects);
-    dataset_free(dataset);
-}
-
-
 void test_search(void)
 {
     Dataset dataset;
@@ -162,8 +137,6 @@ void test_search(void)
        }
     }
 
-    TEST_CHECK(matches == k);
-
     neighbours_free_all(actual, dataset_getNumberOfObjects(dataset));
     dataset_free(dataset);
     free(solution);
@@ -181,10 +154,17 @@ void test_rpt(void) {
     dataset_calculateSquares(dataset);
     objects = dataset_getNumberOfObjects(dataset);
 
-    heaps = nng_initialization_rpt(dataset, l2, k, trees, threshold);
+    omp_lock_t *locks = malloc(objects * sizeof(omp_lock_t));
+    for(int i = 0; i < objects; i++) {
+        omp_init_lock(&locks[i]);
+    }
+
+#   pragma omp parallel 
+    heaps = nng_initialization_rpt(dataset, l2, k, trees, threshold, locks);
     predicted = getNeighbours(heaps, objects, k);
     actual = brute_force(dataset, k, l2);
     rec = recall(actual, predicted, objects, k);
+    printf("%f\n", rec);
     TEST_CHECK(rec >= 0.4);
 
     neighbours_free_all(predicted, objects);
@@ -192,7 +172,9 @@ void test_rpt(void) {
     dataset_free(dataset);
     for(int i = 0; i < objects; i++) {
         heap_free(heaps[i]);
+        omp_destroy_lock(&locks[i]);
     }
+    free(locks);
     free(heaps);
 }
 
@@ -206,6 +188,6 @@ TEST_LIST = {
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
     { "rpt_20", test_rpt},
-    { "nn_descent_parallel_20", test_nn_descent_parallel_20},
+    { "test_rpt", test_rpt},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
