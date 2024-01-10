@@ -3,6 +3,8 @@
 #include "list.h"
 #include "avl.h"
 
+#include <omp.h>
+
 // perform sequential search in an array
 // return 1 when item is found, or 0 otherwise
 int seq_search(int value , int size , int *array);
@@ -21,7 +23,7 @@ void strict_reverse(List *B, List *R, int numberOfObjects, Heap *heaps);
 
 // Used to find the reverse of new and old (incremental search).
 // Reverse neighbors will be inserted in the same heap as the direct ones.
-void reverse_alt(Heap *B, int objects);
+void reverse_alt(Heap *B, int objects, omp_lock_t *locks);
 
 
 // Takes heaps where the direct neighbors of each object are stored and returns the knn graph as a N*k 2D array.

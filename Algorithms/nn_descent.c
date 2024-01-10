@@ -170,9 +170,9 @@ int **nn_descent_parallel(Dataset dataset, Metric metric, int k, double p, doubl
             # pragma omp single
             {
                 c = 0;
-                reverse_alt(old, objects);
-                reverse_alt(new, objects);
             }
+            reverse_alt(old, objects, locks);
+            reverse_alt(new, objects, locks);
             
             // Local join for every object 
             # pragma omp for reduction(+: c)
