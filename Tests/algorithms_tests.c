@@ -144,6 +144,32 @@ void test_search(void)
     free(brute_force_solution);
 }
 
+void test_rpt(void) {
+    Dataset dataset;
+    int threshold = 2, k = 2, trees = 4;
+    int **actual, objects, **predicted; 
+    Heap *heaps;
+    double rec;
+
+    dataset_initialize_sigmod(&dataset, "../Datasets/00000020.bin");
+    dataset_calculateSquares(dataset);
+    objects = dataset_getNumberOfObjects(dataset);
+
+    heaps = nng_initialization_rpt(dataset, l2, k, trees, threshold);
+    predicted = getNeighbours(heaps, objects, k);
+    actual = brute_force(dataset, k, l2);
+    rec = recall(actual, predicted, objects, k);
+    TEST_CHECK(rec >= 0.4);
+
+    neighbours_free_all(predicted, objects);
+    neighbours_free_all(actual, objects);
+    dataset_free(dataset);
+    for(int i = 0; i < objects; i++) {
+        heap_free(heaps[i]);
+    }
+    free(heaps);
+}
+
 
 
 
@@ -153,5 +179,6 @@ TEST_LIST = {
     { "searching knn", test_search },
     { "nng_initialization", test_nng_initialization },
     { "nn_descent_20", test_nn_descent_20},
+    { "rpt_20", test_rpt},
 	{ NULL, NULL } // τερματίζουμε τη λίστα με NULL
 };
