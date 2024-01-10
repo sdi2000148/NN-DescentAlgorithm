@@ -164,7 +164,6 @@ void test_rpt(void) {
     predicted = getNeighbours(heaps, objects, k);
     actual = brute_force(dataset, k, l2);
     rec = recall(actual, predicted, objects, k);
-    printf("%f\n", rec);
     TEST_CHECK(rec >= 0.4);
 
     neighbours_free_all(predicted, objects);
