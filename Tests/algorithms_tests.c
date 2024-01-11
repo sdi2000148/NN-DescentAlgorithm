@@ -150,7 +150,7 @@ void test_rpt(void) {
     Heap *heaps;
     double rec;
 
-    dataset_initialize_sigmod(&dataset, "../Datasets/00002000-1.bin");
+    dataset_initialize_sigmod(&dataset, "../Datasets/00000020.bin");
     dataset_calculateSquares(dataset);
     objects = dataset_getNumberOfObjects(dataset);
 
