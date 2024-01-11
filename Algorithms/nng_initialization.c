@@ -78,7 +78,7 @@ static void rpt_split_rec(Dataset dataset, Heap *heaps, Metric metric, int *inde
     offset = inner_product(vector, midpoint, dimensions, 0.0); // offset that is used as accumulator for the margin 
 
     for(int i = start; i <= end; i++) {
-        data = dataset_getFeatures(dataset, i);
+        data = dataset_getFeatures(dataset, indexes[i]);
         margin = inner_product(vector, data, dimensions, offset); // margin that determines which side a point is on
 
         if(equal(margin, 0.0) == 1) {
