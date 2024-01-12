@@ -60,17 +60,14 @@ void strict_reverse(List *B, List *R, int numberOfObjects, Heap *heaps) {
     return;
 }
 
-void reverse_alt(Heap *B, int objects, omp_lock_t *locks) 
+void reverse_alt(Heap *B, int objects) 
 {
     int index;
 
-    # pragma omp for 
     for (int i=0 ; i<objects ; i++){
         for (int j=0 ; j<heap_getCount(B[i]) ; j++){
             index = heap_getIndex(B[i], j);
-            omp_set_lock(&locks[index]);
             heap_update(B[index], i, get_random());
-            omp_unset_lock(&locks[index]);
         }
     }
 }
