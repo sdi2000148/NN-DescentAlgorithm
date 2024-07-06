@@ -1,10 +1,9 @@
 #include "list.h"
 
-typedef struct avl *Avl;
-
+typedef struct avl * Avl;
 
 /* Initialize avl */
-void avl_initialize(Avl *avl);
+void avl_initialize(Avl * avl);
 
 /* Insert value to avl, return 1 if succeeded, 0 if the value already existed */
 int avl_insert(Avl avl, int value);
@@ -18,8 +17,7 @@ int avl_search(Avl avl, int value);
 /* Insert all the values of the avl to the list */
 void avl_copyToList(Avl avl, List list, int maxSamples);
 
-
-void avl_findReverses(Avl *avls, int i, List *R);
+void avl_findReverses(Avl * avls, int i, List * R);
 
 /* Free memory of avl */
 void avl_free(Avl avl);

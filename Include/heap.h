@@ -9,81 +9,59 @@ Every time a new item is inserted in the heap, its the flag is set to 1
 
 */
 
+typedef struct heap * Heap;
 
-typedef struct heap* Heap ;
+/* Initialize heap with size k */
+void heap_initialize(Heap * hp, int k);
 
-
-// Initialize heap with size k 
-void heap_initialize(Heap *hp, int k);
-
-
-// return 1 if heap is full, 0 otherwise
+/* Return 1 if heap is full, 0 otherwise */
 int heap_full(Heap hp);
 
-
-// return 1 if heap is empty, 0 otherwise
+/* Return 1 if heap is empty, 0 otherwise */
 int heap_empty(Heap hp);
 
-
-// remove root from heap 
-// return index of removed item, otherwise return -1
+/* Remove root from heap return index of removed item, otherwise return -1 */
 int heap_remove(Heap hp);
 
-
-// return 1 on change, 0 otherwise
+/* Return 1 on change, 0 otherwise */
 int heap_update(Heap hp, int index, float value);
 
-
-// print content of heap
+/* Print content of heap */
 void heap_print(Heap hp);
 
-
-// free all memory reserved for heap
+/* Free all memory reserved for heap */
 void heap_free(Heap hp);
 
-
-// get max size of heap
+/* Get max size of heap */
 int heap_getCapacity(Heap hp);
 
-
-// get number of elements currently present in heap
+/* Get number of elements currently present in heap */
 int heap_getCount(Heap hp);
 
-
-// get index of ith item in heap array (ITEMS ARE NOT SORTED!!!)
-// return -1 when i is out of bounds
+/* Get index of ith item in heap array (ITEMS ARE NOT SORTED!!!). 
+Return -1 when i is out of bounds. */
 int heap_getIndex(Heap hp, int i);
 
-
-// get value of ith item in heap array (ITEMS ARE NOT SORTED!!!)
-// return -1.0 when i is out of bounds
+/* Get value of ith item in heap array (ITEMS ARE NOT SORTED!!!).
+Return -1.0 when i is out of bounds. */
 float heap_getValue(Heap hp, int i);
 
-
-// get flag of ith item in heap array (ITEMS ARE NOT SORTED!!!)
-// return -1 when i is out of bounds
+/* Get flag of ith item in heap array (ITEMS ARE NOT SORTED!!!).
+Return -1 when i is out of bounds. */
 int heap_getFlag(Heap hp, int i);
 
-
-// set flag of ith item in heap array to false (ITEMS ARE NOT SORTED!!!)
-// return -1 when i is out of bounds, on success return 1
+/* Set flag of ith item in heap array to false (ITEMS ARE NOT SORTED!!!).
+Return -1 when i is out of bounds, else return 1 on success. */
 int heap_setFlag(Heap hp, int i);
 
-
-// get index of root item, or -1 when heap is empty
+/* Get index of root item, or -1 when heap is empty */
 int heap_getMaxIndex(Heap hp);
 
-
-// get value of root item, or -1.0 when heap is empty
+/* Get value of root item, or -1.0 when heap is empty */
 float heap_getMaxValue(Heap hp);
 
-
-// get flag of root item, or -1 when heap is empty
+/* Get flag of root item, or -1 when heap is empty */
 int heap_getMaxFlag(Heap hp);
 
-
-// return 1 if item with given index is found in heap, else return 0
+/* Return 1 if item with given index is found in heap, else return 0 */
 int heap_search(Heap hp, int index);
-
-
-
