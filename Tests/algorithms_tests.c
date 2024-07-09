@@ -213,30 +213,30 @@ TEST_LIST = {
     "brute_force",
     test_brute_force
   },
-  // {
-  //   "searching knn",
-  //   test_search
-  // },
-  // {
-  //   "nng_initialization",
-  //   test_nng_initialization
-  // },
-  // {
-  //   "nn_descent_20",
-  //   test_nn_descent_20
-  // },
-  // {
-  //   "nn_descent_20_parallel",
-  //   test_nn_descent_parallel_20
-  // },
-  // {
-  //   "rpt_20",
-  //   test_rpt
-  // },
-  // {
-  //   "test_rpt",
-  //   test_rpt
-  // },
+  {
+    "searching knn",
+    test_search
+  },
+  {
+    "nng_initialization",
+    test_nng_initialization
+  },
+  {
+    "nn_descent_20",
+    test_nn_descent_20
+  },
+  {
+    "nn_descent_20_parallel",
+    test_nn_descent_parallel_20
+  },
+  {
+    "rpt_20",
+    test_rpt
+  },
+  {
+    "test_rpt",
+    test_rpt
+  },
   {
     NULL,
     NULL
